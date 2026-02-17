@@ -1,0 +1,40 @@
+user
+    id
+    username
+    email
+    password
+    full_name
+    role
+    is_verified 
+    verification_token 
+    created_at 
+    updated_at 
+    
+
+server
+    id
+    server_name 
+    ip_address
+    Mac_address
+    os_type 
+    web_server_type 
+    status 
+    agent_token 
+    installation_script 
+    user_id
+    agent_id
+
+agent
+    id
+    status 
+    last_heartbeat 
+    log_file_id
+    status
+    
+metrics
+    id 
+    server_id 
+    cpu_usage 
+    memory_usage 
+    request_count 
+    server_status
