@@ -1,0 +1,132 @@
+----> Sign up
+	->Registration Form
+
+	->Mandatory fields
+		-Email
+		-Username
+		-Password
+
+	->Optional fields
+		-Full name
+
+	->Validate user inputs
+
+	->Valid email, username format
+	->Password complexity (min length, special character)
+
+	->Unique username and email
+		If duplicate found, show error message
+	
+	->Store admin credentials in database
+		-Email
+		-Username
+		-Hashed password
+
+	->Send verification email to admin
+
+	->Mark admin as verified after successful verification
+
+	->Redirect admin to login page
+
+----> Admin Login
+    ->Login Form
+        -Email / Username
+        -Password
+    
+    ->Validate credentials
+        -Check user exists
+        -Verify password hash
+        -Check verification status
+    --If not verified, deny access
+
+    ->Generate authentication JWT token
+
+    ->Redirect to admin dashboard
+
+----> Server Onboarding form
+	->Admin adds server info
+		-server name	
+		-ip address
+		-os type
+		-web server type
+	
+	->Backend validates IP
+
+	->Store server as Inactive
+
+	->System generates:
+		Installation script
+		Auth token
+		Server ID
+
+	->Admin installs agent on server
+
+	->Agent registers with backend
+
+	->Backend verifies token
+
+	->Server marked Active
+
+	->Dashboard updates 
+
+----> Admin Dashboard
+		->Agent collects:
+			-CPU
+			-Memory
+			-Request count
+			-server Status 
+
+		->Agent sends data every 5 seconds
+
+		-Backend:
+		->Validates server matrics send by agent
+
+		->Stores metrics
+
+		->Pushes update to frontend
+
+		->Dashboard refreshes instantly
+
+----> Feature provied on Admin Dashboard
+
+	---> Basic Alerts
+		-Backend collect server matrics from agent
+
+		-Evaluates incoming metrics,
+			-When threshold exceeded:
+				Generate alert record
+				Mark alert status as ACTIVE
+				Associate alert with server ID
+
+		-send alert to the frontend
+
+		-show alert notification to the dashboard
+
+	---> Ip Blocking	
+		-Admin selects IP from list 
+
+		-Clicks "Block"
+
+		-Backend stores in blocked_ip table
+
+		-Agent periodically fetches block list
+
+		-Agent rejects matching IP traffic
+
+		-Dashboard updates block count
+
+
+----> Installtion process of agent on remote server
+	-gentrate installation script
+
+	-create curl or sudo cmd based on os , and display it to the dashboard
+	
+	-admin get server access by ssh connection
+
+	-past provied command on the server ssh terminal
+
+	-agent will auto config it self on server
+
+	-after that it will send metrics data from remote server
+
+	-backend verifies the request and process the data

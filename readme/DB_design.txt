@@ -1,0 +1,25 @@
+user
+	id
+	username
+	email
+	password
+	role
+	
+	
+
+server
+	id
+	user_id
+	ip_address
+	Mac_address
+	agent_id
+
+agent
+	id
+	log_file_id
+	status
+	
+metrics
+	cpu_load
+	gpu_load
+	request

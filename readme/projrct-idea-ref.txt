@@ -1,0 +1,17 @@
+web server management system
+	https://github.com/ColorlibHQ/gentelella
+	https://iqonic.design/product/server360-lite-free-server-monitoring-admin-dashboard/
+	https://www.cloudpanel.io/blog/master-control-panel/
+	https://templates.iqonic.design/product/lite/server360/index.html
+	
+abstract
+	The Web Server Management System  is a centralized, web-based platform designed to monitor, manage, and secure multiple web servers in real time. 
+The system follows a distributed agent-based architecture, where a lightweight monitoring agent is installed on each target server to collect system metrics and traffic data. 
+These agents securely communicate with a centralized backend server built using Spring Boot,
+while a React-based dashboard provides real-time visualization and administrative control.
+--Key Features
+-Multi-Server Centralized Monitoring
+-Intelligent Alert & Incident Management
+-Real-Time Streaming Architecture
+-Traffic Analytics & Visualization
+-Server State Management

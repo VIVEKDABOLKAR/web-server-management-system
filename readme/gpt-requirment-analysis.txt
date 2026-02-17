@@ -1,0 +1,304 @@
+Phase-1 Requirement Analysis
+Web Server Management System (MVP)
+
+Phase-1 Goal:
+Enable admin authentication, server onboarding, basic server monitoring (CPU & memory), basic traffic visualization, and minimal control actions.
+
+1. Admin Signup
+For Signup
+
+Registration Form
+
+Mandatory fields
+
+Email
+
+Username
+
+Password
+
+Optional fields
+
+Full name
+
+Validate user inputs
+
+Valid email format
+
+Unique username
+
+Password complexity (min length, special character)
+
+Prevent duplicate username and email
+
+If duplicate found, show error message
+
+Store admin credentials in database
+
+Email
+
+Username
+
+Hashed password
+
+Send verification email to admin
+
+Mark admin as verified after successful verification
+
+Redirect admin to login page
+
+2. Admin Login
+For Login
+
+Login Form
+
+Email / Username
+
+Password
+
+Validate credentials
+
+Check user exists
+
+Verify password hash
+
+Check verification status
+
+If not verified, deny access
+
+Generate authentication token/session
+
+Redirect to admin dashboard
+
+3. Admin Dashboard (Basic)
+For Dashboard Initialization
+
+Load dashboard after successful login
+
+Display summary cards
+
+Total servers
+
+Active servers
+
+Blocked IP count
+
+Establish WebSocket connection
+
+For real-time updates
+
+4. Add Server (Server Onboarding)
+For Adding a Server
+
+Add Server Form
+
+Server name
+
+Server IP address
+
+Server type (Linux / Windows)
+
+Description (optional)
+
+Validate server inputs
+
+Valid IP address format
+
+Prevent duplicate server IP
+
+Generate unique server ID
+
+Store server details in database
+
+Server ID
+
+Server name
+
+IP address
+
+Status (Inactive by default)
+
+Display server in dashboard with “Inactive” status
+
+5. Install Monitoring Agent on Server
+For Agent Installation
+
+Generate agent installation command/script
+
+Includes server ID and auth token
+
+Display installation steps on dashboard
+
+Download agent
+
+Run install command
+
+Agent registers with backend
+
+Sends server ID
+
+Authenticates using token
+
+Backend validates server registration
+
+Mark server as “Active” once agent is connected
+
+6. Server Health Monitoring (CPU & Memory)
+For Server Metrics Collection
+
+Agent collects system metrics
+
+CPU usage percentage
+
+Memory usage percentage
+
+Agent sends metrics at fixed intervals
+
+Example: every 5 seconds
+
+Backend receives and processes metrics
+
+Store latest metrics in memory (cache)
+
+For Server Metrics Visualization
+
+Display CPU usage as speedometer/gauge
+
+Real-time value
+
+Color indicators (Normal / High / Critical)
+
+Display memory usage as speedometer/gauge
+
+Auto-refresh values using WebSocket updates
+
+7. Server Details Page
+For Server Detail View
+
+Click on server from dashboard
+
+Display server information
+
+Server name
+
+IP address
+
+Status (Active / Inactive)
+
+Last heartbeat time
+
+Display live CPU and memory gauges
+
+8. Traffic & Request Analytics (Basic)
+For Traffic Collection
+
+Agent collects request count
+
+Total requests
+
+Requests per second (RPS)
+
+Agent sends traffic data to backend
+
+Backend processes traffic metrics
+
+For Traffic Visualization
+
+Display line graph for requests per second
+
+Display total requests count
+
+Support time filters
+
+Last 1 hour
+
+Last 24 hours
+
+9. User / IP Tracking (Basic)
+For IP Tracking
+
+Capture incoming request IP address
+
+Track request count per IP
+
+Store IP activity data
+
+IP address
+
+Request count
+
+Last request time
+
+10. IP Block / Unblock (Manual)
+For Blocking IP
+
+Display list of IP addresses with request counts
+
+Admin selects IP to block
+
+Confirm block action
+
+Store blocked IP in database
+
+Agent receives updated block list
+
+Agent rejects requests from blocked IP
+
+For Unblocking IP
+
+Admin selects blocked IP
+
+Confirm unblock action
+
+Remove IP from blocked list
+
+Agent updates firewall/filter rules
+
+11. Basic Alerts (Threshold-Based)
+For Alerts
+
+Define default thresholds
+
+CPU usage > 80%
+
+Memory usage > 80%
+
+RPS > limit
+
+Backend checks metrics against thresholds
+
+If threshold exceeded
+
+Mark alert status on dashboard
+
+12. Logout
+For Logout
+
+Admin clicks logout
+
+Invalidate session/token
+
+Redirect to login page
+
+Phase-1 Deliverables Summary
+
+✔ Signup & Login
+✔ Admin Dashboard
+✔ Add Server
+✔ Agent Installation
+✔ CPU & Memory Monitoring (Speedometer)
+✔ Basic Traffic Graph
+✔ Manual IP Blocking
+✔ Real-time updates
+
+If you want next, I can:
+
+Split this into backend vs frontend tasks
+
+Create database schema for Phase-1
+
+Design API endpoints
+
+Help you decide what NOT to build in Phase-1 (very important for scoring well)
+
+Just say the word
