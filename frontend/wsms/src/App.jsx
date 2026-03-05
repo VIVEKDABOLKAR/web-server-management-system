@@ -1,0 +1,51 @@
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Dashboard from "./pages/Dashboard";
+import ServerDetails from "./pages/ServerDetails";
+import AddServer from "./pages/AddServer";
+import ProtectedRoute from "./components/ProtectedRoute";
+import "./App.css";
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-server"
+          element={
+            <ProtectedRoute>
+              <AddServer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/servers/:id"
+          element={
+            <ProtectedRoute>
+              <ServerDetails />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;

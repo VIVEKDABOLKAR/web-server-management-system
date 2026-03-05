@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@keyframes slide-in {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
