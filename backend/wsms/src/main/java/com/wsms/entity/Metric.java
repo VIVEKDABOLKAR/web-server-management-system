@@ -40,8 +40,12 @@ public class Metric {
     @Column(nullable = false)
     private Double memoryUsage;
 
-    @Column(nullable = false)
-    private Long requestCount;
+    @Column
+    private Double diskUsage;
+
+    @Column
+    @Builder.Default
+    private Long requestCount = 0L;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

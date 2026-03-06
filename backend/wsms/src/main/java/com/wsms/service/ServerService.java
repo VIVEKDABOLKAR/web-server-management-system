@@ -60,4 +60,10 @@ public class ServerService {
         return serverRepository.findByIdAndUserId(serverId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Server not found"));
     }
+
+    @Transactional
+    public void deleteServer(Long serverId, Long userId) {
+        Server server = getServerByIdForUser(serverId, userId);
+        serverRepository.delete(server);
+    }
 }

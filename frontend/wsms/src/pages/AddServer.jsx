@@ -88,28 +88,21 @@ const AddServer = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="max-w-3xl mx-auto px-4 py-8">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="mb-4 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-          >
-            ← Back to Dashboard
-          </button>
-
-          <div className="bg-white p-8 rounded-lg shadow-lg">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">
+          <div className="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm border-2 border-gray-200 dark:border-slate-700 p-8 rounded-2xl shadow-lg dark:shadow-slate-900/30">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
               Add New Server
             </h1>
 
             {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              <div className="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-4">
                 {error}
               </div>
             )}
 
             {success && (
-              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+              <div className="bg-green-100 dark:bg-green-900/20 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-400 px-4 py-3 rounded mb-4">
                 {success}
               </div>
             )}
@@ -118,7 +111,7 @@ const AddServer = () => {
               <div className="mb-4">
                 <label
                   htmlFor="serverName"
-                  className="block text-gray-700 font-medium mb-2"
+                  className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
                 >
                   Server Name *
                 </label>
@@ -129,7 +122,7 @@ const AddServer = () => {
                   value={formData.serverName}
                   onChange={handleChange}
                   placeholder="e.g., Production Web Server 1"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                   required
                 />
               </div>
@@ -137,7 +130,7 @@ const AddServer = () => {
               <div className="mb-4">
                 <label
                   htmlFor="ipAddress"
-                  className="block text-gray-700 font-medium mb-2"
+                  className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
                 >
                   IP Address *
                 </label>
@@ -148,7 +141,7 @@ const AddServer = () => {
                   value={formData.ipAddress}
                   onChange={handleChange}
                   placeholder="e.g., 192.168.1.100"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                   required
                 />
               </div>
@@ -156,7 +149,7 @@ const AddServer = () => {
               <div className="mb-4">
                 <label
                   htmlFor="osType"
-                  className="block text-gray-700 font-medium mb-2"
+                  className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
                 >
                   Operating System *
                 </label>
@@ -165,7 +158,7 @@ const AddServer = () => {
                   name="osType"
                   value={formData.osType}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                   required
                 >
                   <option value="LINUX">Linux</option>
@@ -176,7 +169,7 @@ const AddServer = () => {
               <div className="mb-4">
                 <label
                   htmlFor="webServerType"
-                  className="block text-gray-700 font-medium mb-2"
+                  className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
                 >
                   Web Server Type *
                 </label>
@@ -185,7 +178,7 @@ const AddServer = () => {
                   name="webServerType"
                   value={formData.webServerType}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                   required
                 >
                   <option value="APACHE">Apache</option>
@@ -197,7 +190,7 @@ const AddServer = () => {
               <div className="mb-6">
                 <label
                   htmlFor="description"
-                  className="block text-gray-700 font-medium mb-2"
+                  className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
                 >
                   Description
                 </label>
@@ -208,25 +201,17 @@ const AddServer = () => {
                   onChange={handleChange}
                   placeholder="Enter server description (optional)"
                   rows="4"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                 />
               </div>
 
               <div className="flex gap-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 transition"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-md"
                   disabled={loading}
                 >
                   {loading ? "Adding Server..." : "Add Server"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate("/dashboard")}
-                  className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-400 transition"
-                  disabled={loading}
-                >
-                  Cancel
                 </button>
               </div>
             </form>

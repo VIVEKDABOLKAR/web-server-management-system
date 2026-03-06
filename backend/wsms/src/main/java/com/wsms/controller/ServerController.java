@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -81,6 +82,13 @@ public class ServerController {
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(script);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteServer(@PathVariable("id") Long serverId) {
+        Long userId = getLoggedInUserId();
+        serverService.deleteServer(serverId, userId);
+        return ResponseEntity.noContent().build();
     }
 
     private Long getLoggedInUserId() {

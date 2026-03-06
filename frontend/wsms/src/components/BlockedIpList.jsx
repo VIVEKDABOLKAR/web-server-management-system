@@ -55,17 +55,23 @@ const BlockedIpList = ({ serverId }) => {
 
   if (loading) {
     return (
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Blocked IPs</h2>
-        <p className="text-gray-500">Loading blocked IPs...</p>
+      <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-lg dark:shadow-slate-900/30">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+          Blocked IPs
+        </h2>
+        <p className="text-gray-500 dark:text-gray-400">
+          Loading blocked IPs...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <div className="flex justify-between items-center mb-4 pb-2 border-b">
-        <h2 className="text-xl font-bold text-gray-800">Blocked IPs</h2>
+    <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-lg dark:shadow-slate-900/30">
+      <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-200 dark:border-slate-700">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+          Blocked IPs
+        </h2>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm font-medium"
@@ -75,7 +81,7 @@ const BlockedIpList = ({ serverId }) => {
       </div>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-4">
           {error}
         </div>
       )}
@@ -83,10 +89,10 @@ const BlockedIpList = ({ serverId }) => {
       {showAddForm && (
         <form
           onSubmit={handleBlockIp}
-          className="mb-4 p-4 bg-gray-50 rounded-lg"
+          className="mb-4 p-4 bg-gray-50 dark:bg-slate-700 rounded-lg"
         >
           <div className="mb-3">
-            <label className="block text-gray-700 font-medium mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
               IP Address
             </label>
             <input
@@ -96,12 +102,12 @@ const BlockedIpList = ({ serverId }) => {
                 setNewIp({ ...newIp, ipAddress: e.target.value })
               }
               placeholder="e.g., 192.168.1.100"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               required
             />
           </div>
           <div className="mb-3">
-            <label className="block text-gray-700 font-medium mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
               Reason (Optional)
             </label>
             <input
@@ -109,7 +115,7 @@ const BlockedIpList = ({ serverId }) => {
               value={newIp.reason}
               onChange={(e) => setNewIp({ ...newIp, reason: e.target.value })}
               placeholder="e.g., Suspicious activity detected"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
           </div>
           <button
@@ -122,16 +128,18 @@ const BlockedIpList = ({ serverId }) => {
       )}
 
       {blockedIps.length === 0 ? (
-        <p className="text-gray-500 text-center py-4">No blocked IPs</p>
+        <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+          No blocked IPs
+        </p>
       ) : (
         <div className="space-y-3">
           {blockedIps.map((ip) => (
             <div
               key={ip.id}
-              className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition"
+              className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               <div className="flex justify-between items-start mb-2">
-                <span className="font-mono text-lg font-semibold text-red-600">
+                <span className="font-mono text-lg font-semibold text-red-600 dark:text-red-400">
                   {ip.ipAddress}
                 </span>
                 <button
@@ -141,11 +149,11 @@ const BlockedIpList = ({ serverId }) => {
                   Unblock
                 </button>
               </div>
-              <p className="text-gray-600 text-sm mb-2">
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
                 <span className="font-medium">Reason:</span>{" "}
                 {ip.reason || "No reason provided"}
               </p>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 dark:text-gray-500">
                 Blocked on:{" "}
                 {ip.blockedAt
                   ? new Date(ip.blockedAt).toLocaleString()
