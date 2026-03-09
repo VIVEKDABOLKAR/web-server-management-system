@@ -18,6 +18,9 @@ import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -60,6 +63,12 @@ public class Server {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private WebServerType webServerType;
+
+    //web server port - we need this field so e can tell server agent on which it has to perform network monitoring and port forwarding
+    @Column(nullable = false)
+    @Min(value = 1, message = "Port number must be >= 1")
+    @Max(value = 65535, message = "Port number must be <= 65535")
+    private Integer webServerPortNo;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

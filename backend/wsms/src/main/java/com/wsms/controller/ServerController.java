@@ -7,6 +7,7 @@ import com.wsms.entity.ServerStatus;
 import com.wsms.entity.User;
 import com.wsms.repository.UserRepository;
 import com.wsms.service.ServerService;
+import com.wsms.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -31,11 +32,20 @@ import org.springframework.web.server.ResponseStatusException;
 public class ServerController {
 
     private final ServerService serverService;
-    private final UserRepository userRepository;
+    //removed user Repository
+    private  final UserService  userService;
 
     @Value("${app.backend.url:http://localhost:8080}")
     private String backendUrl;
 
+    /**
+     * endpoint :- Post /api/servers/
+     * req :- server request (AddServerRequest DTO)
+     * res :- server object
+     * desc :- create server object
+     *          take userId from authorization object
+     *
+     */
     @PostMapping
     public ResponseEntity<ServerResponse> addServer(@Valid @RequestBody AddServerRequest request) {
         Long userId = getLoggedInUserId();
@@ -43,6 +53,12 @@ public class ServerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(savedServer));
     }
 
+    /**
+     * endpoint :- Get /api/servers/
+     * req :-
+     * res :- List server object
+     * desc :- fetch all the server for the user id - fetch from authorization object
+     */
     @GetMapping
     public ResponseEntity<List<ServerResponse>> getAllServersByLoggedInUser() {
         Long userId = getLoggedInUserId();
@@ -53,6 +69,12 @@ public class ServerController {
         return ResponseEntity.ok(servers);
     }
 
+    /**
+     * endpoint :- Get /api/servers/{id}
+     * req :- server id
+     * res :- server object
+     * desc :- get server object based on server id and user id
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ServerResponse> getServer(@PathVariable("id") Long serverId) {
         Long userId = getLoggedInUserId();
@@ -60,6 +82,7 @@ public class ServerController {
         return ResponseEntity.ok(toResponse(server));
     }
 
+    //ignore the endpoint - need to work on system design first
     @GetMapping(value = "/{id}/install-script", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> getInstallScript(@PathVariable("id") Long serverId) {
         Long userId = getLoggedInUserId();
@@ -84,6 +107,13 @@ public class ServerController {
                 .body(script);
     }
 
+    /**
+     * endpoint :- Delete /api/servers/{id}
+     * req :- server id
+     * res :- void -
+     * desc :- delete server object based on id and userId
+     *
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteServer(@PathVariable("id") Long serverId) {
         Long userId = getLoggedInUserId();
@@ -91,21 +121,25 @@ public class ServerController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * return user Id based on the authentication object user email
+     * @return
+     */
     private Long getLoggedInUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Logged in user not found"));
+        User user = userService.getCurrentUser();
 
         return user.getId();
     }
 
+    /**
+     * private method to create server Response based on the server object
+     */
     private ServerResponse toResponse(Server server) {
         ServerStatus effectiveStatus = server.getStatus();
-        if (server.getBlockedIps() != null && !server.getBlockedIps().isEmpty()) {
-            effectiveStatus = ServerStatus.BLOCKED;
-        }
+        //wrong check server status is not depended on blockIps no of rows
 
         return ServerResponse.builder()
                 .id(server.getId())

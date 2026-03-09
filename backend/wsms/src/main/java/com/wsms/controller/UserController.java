@@ -8,6 +8,7 @@ import com.wsms.entity.User;
 import com.wsms.repository.AlertRepository;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
+import com.wsms.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,79 +26,41 @@ import java.util.Map;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
+    //removed repository use directly into controller
+    //added service layer for user module
+    private final UserService userService;
 
-    private final UserRepository userRepository;
-    private final ServerRepository serverRepository;
-    private final AlertRepository alertRepository;
-    private final PasswordEncoder passwordEncoder;
-
+    /**
+     * endpoint :- Get /api/users/profile ;
+     * req Body :-;
+     * res Body :- UserProfile ;
+     * Desc :- return user details profile data;
+     */
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> getProfile() {
-        User user = getCurrentUser();
-        
-        // Get statistics
-        int totalServers = serverRepository.countByUserId(user.getId());
-        int activeServers = serverRepository.countByUserIdAndStatus(user.getId(), ServerStatus.ACTIVE);
-        int totalAlerts = alertRepository.countByServer_UserId(user.getId());
-        
-        UserProfileResponse response = UserProfileResponse.builder()
-                .id(user.getId())
-                .fullName(user.getFullName())
-                .email(user.getEmail())
-                .role(user.getRole())
-                .createdAt(user.getCreatedAt())
-                .isVerified(user.getIsVerified())
-                .totalServers(totalServers)
-                .activeServers(activeServers)
-                .totalAlerts(totalAlerts)
-                .build();
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(userService.getProfile());
     }
 
+    /**
+     * endpoint :- Put /api/users/profile ;
+     * req Body :-updateProfile ;
+     * res Body :- success or error message ;
+     * Desc :- update user details and return success or error
+     */
     @PutMapping("/profile")
-    public ResponseEntity<Map<String, String>> updateProfile(@Valid @RequestBody UpdateProfileRequest request) {
-        User user = getCurrentUser();
-        
-        // Check if email is being changed and already exists
-        if (!user.getEmail().equals(request.getEmail())) {
-            if (userRepository.existsByEmail(request.getEmail())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already in use");
-            }
-        }
-        
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
-        userRepository.save(user);
-        
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Profile updated successfully");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String,String>> updateProfile(@Valid @RequestBody UpdateProfileRequest request) {
+        return ResponseEntity.ok(userService.updateProfile(request));
     }
-
+    /**
+     * endpoint :- Put /api/users/change-password ;
+     * req Body :- old password and new password ;
+     * res Body :- success or error message ;
+     * Desc :- change password by verify from old password and set new password
+     */
     @PutMapping("/change-password")
-    public ResponseEntity<Map<String, String>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
-        User user = getCurrentUser();
-        
-        // Verify current password
-        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Current password is incorrect");
-        }
-        
-        // Update password
-        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        userRepository.save(user);
-        
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Password changed successfully");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String,String>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        return ResponseEntity.ok(userService.changePassword(request));
     }
 
-    private User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-    }
+
 }

@@ -32,7 +32,7 @@ public class BlockedIp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "ip_address", nullable = false, length = 45)
+    @Column(nullable = false, length = 45) //hibernate auto convert ipAddress -> ip_address
     private String ipAddress;
 
     @Column(length = 500)

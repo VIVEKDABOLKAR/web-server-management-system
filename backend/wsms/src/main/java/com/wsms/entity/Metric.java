@@ -40,7 +40,7 @@ public class Metric {
     @Column(nullable = false)
     private Double memoryUsage;
 
-    @Column
+    @Column(nullable = false)
     private Double diskUsage;
 
     @Column

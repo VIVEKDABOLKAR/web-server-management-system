@@ -3,5 +3,6 @@ package com.wsms.entity;
 public enum WebServerType {
     APACHE,
     NGINX,
-    IIS
+    IIS,
+    Tomcat
 }

@@ -37,6 +37,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * integrate new field username
+     * init :- not unique, by default :- user
+     * later change it after implementaion
+     */
+    @Column(nullable = false, length = 120, updatable = false)
+    private String username;
+
     @Column(nullable = false, length = 120, unique = true)
     private String email;
 
@@ -49,7 +57,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private UserRole role = UserRole.ADMIN;
+    private UserRole role = UserRole.USER; //change by default user.role - ADMIN -> USER
 
     @Column(nullable = false)
     @Builder.Default
