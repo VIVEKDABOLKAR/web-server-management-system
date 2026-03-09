@@ -21,11 +21,11 @@ const MetricsChart = ({ metrics, type = "cpu" }) => {
 
     return metrics
       .map((metric) => ({
-        timestamp: new Date(metric.timestamp).toLocaleTimeString([], {
+        timestamp: new Date(metric.createdAt).toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         }),
-        fullTime: new Date(metric.timestamp).toLocaleString(),
+        fullTime: new Date(metric.createdAt).toLocaleString(),
         cpu: parseFloat(metric.cpuUsage?.toFixed(2) || 0),
         memory: parseFloat(metric.memoryUsage?.toFixed(2) || 0),
         disk: parseFloat(metric.diskUsage?.toFixed(2) || 0),
