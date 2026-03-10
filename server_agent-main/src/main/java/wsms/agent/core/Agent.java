@@ -1,7 +1,10 @@
 package wsms.agent.core;
 
 import java.time.Instant;
+<<<<<<< Updated upstream
+=======
 import java.util.List;
+>>>>>>> Stashed changes
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -65,26 +68,27 @@ public class Agent {
         logger.infof("Collection Interval: %d seconds", config.getCollectionInterval().getSeconds());
         logger.info("========================================");
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Choose an option:");
-        System.out.println("1. Start collecting metrics");
-        System.out.println("2. Start monitoring incoming connections");
+        int choice = 1;
+        int port = 0;
+        
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.println("Choose an option:");
+            System.out.println("1. Start collecting metrics");
+            System.out.println("2. Start monitoring incoming connections");
 
             try {
                 choice = Integer.parseInt(scanner.nextLine().trim());
             } catch (Exception ignored) {
-            }
-
-        switch (choice) {
-            case 2 -> {
-                int port = 0;
-                try {
                     System.out.print("Enter port to monitor: ");
                     port = Integer.parseInt(scanner.nextLine().trim());
                 } catch (Exception ex) {
                     logger.error("Invalid port provided, monitor not started");
                 }
+            }
+        }
 
+        switch (choice) {
+            case 2 -> {
                 if (port > 0) {
                     System.out.printf("Starting connection monitor on port %d... to the port 5173 %n", port);
                     monitor = new ConnectionMonitor(port, logger);
@@ -105,7 +109,6 @@ public class Agent {
         logger.info("Received stop signal...");
         logger.info("Agent stopping...");
         logger.close();
-    }
 
     public void stop() {
         if (stopped.compareAndSet(false, true)) {
