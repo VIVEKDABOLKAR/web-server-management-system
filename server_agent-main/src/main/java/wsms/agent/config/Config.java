@@ -17,6 +17,7 @@ public class Config {
     private String webSocketUrl;
     private Duration collectionInterval;
 
+    //flag we used it in future - not now
     private boolean enableCPU;
     private boolean enableMemory;
     private boolean enableDisk;
@@ -26,10 +27,12 @@ public class Config {
     private boolean enableIPBlocking;
     private boolean enableBackup;
 
+    //threshold value for alert
     private double cpuThreshold;
     private double memoryThreshold;
     private double diskThreshold;
 
+    //future flages
     private Duration blockListRefreshInterval;
 
     private String logLevel;

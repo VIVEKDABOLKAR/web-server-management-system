@@ -35,6 +35,7 @@ public class ServerService {
                 .ipAddress(dto.getIpAddress())
                 .osType(dto.getOsType())
                 .webServerType(dto.getWebServerType())
+                .webServerPortNo(4017)
                 .description(dto.getDescription())
                 .status(ServerStatus.INACTIVE)
                 .agentToken(UUID.randomUUID().toString())

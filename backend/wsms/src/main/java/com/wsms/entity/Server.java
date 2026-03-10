@@ -65,10 +65,10 @@ public class Server {
     private WebServerType webServerType;
 
     //web server port - we need this field so e can tell server agent on which it has to perform network monitoring and port forwarding
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Min(value = 1, message = "Port number must be >= 1")
     @Max(value = 65535, message = "Port number must be <= 65535")
-    private Integer webServerPortNo;
+    private Integer webServerPortNo=4017;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

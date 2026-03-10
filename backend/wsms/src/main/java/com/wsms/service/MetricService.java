@@ -37,11 +37,7 @@ public class MetricService {
                 ));
 
         // Determine server status based on CPU and memory usage
-        ServerStatus status = determineServerStatus(
-                request.getCpuUsage(), 
-                request.getMemoryUsage(), 
-                request.getDiskUsage()
-        );
+        ServerStatus status = ServerStatus.ACTIVE; //for now testing put status by defult
 
         // Update server status if changed
         if (server.getStatus() != status) {
@@ -105,23 +101,23 @@ public class MetricService {
         return metrics.stream().map(this::toResponse).toList();
     }
 
-    private ServerStatus determineServerStatus(Double cpuUsage, Double memoryUsage, Double diskUsage) {
-        // Check if any metric is critically high
-        if ((cpuUsage != null && cpuUsage > 90) || 
-            (memoryUsage != null && memoryUsage > 90) ||
-            (diskUsage != null && diskUsage > 95)) {
-            return ServerStatus.ERROR;
-        }
-        
-        // Check if any metric is moderately high
-        if ((cpuUsage != null && cpuUsage > 75) || 
-            (memoryUsage != null && memoryUsage > 75) ||
-            (diskUsage != null && diskUsage > 85)) {
-            return ServerStatus.WARNING;
-        }
-        
-        return ServerStatus.ACTIVE;
-    }
+//    private ServerStatus determineServerStatus(Double cpuUsage, Double memoryUsage, Double diskUsage) {
+//        // Check if any metric is critically high
+//        if ((cpuUsage != null && cpuUsage > 90) ||
+//            (memoryUsage != null && memoryUsage > 90) ||
+//            (diskUsage != null && diskUsage > 95)) {
+//            return ServerStatus.ERROR;
+//        }
+//
+//        // Check if any metric is moderately high
+//        if ((cpuUsage != null && cpuUsage > 75) ||
+//            (memoryUsage != null && memoryUsage > 75) ||
+//            (diskUsage != null && diskUsage > 85)) {
+//            return ServerStatus.WARNING;
+//        }
+//
+//        return ServerStatus.ACTIVE;
+//    }
 
     private MetricResponse toResponse(Metric metric) {
         return MetricResponse.builder()

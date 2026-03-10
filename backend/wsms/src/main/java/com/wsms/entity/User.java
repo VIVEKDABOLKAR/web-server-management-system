@@ -42,8 +42,8 @@ public class User {
      * init :- not unique, by default :- user
      * later change it after implementaion
      */
-    @Column(nullable = false, length = 120, updatable = false)
-    private String username;
+    @Column(nullable = true, length = 120, updatable = false)
+    private String username = "user";
 
     @Column(nullable = false, length = 120, unique = true)
     private String email;

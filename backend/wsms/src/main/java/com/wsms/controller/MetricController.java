@@ -43,8 +43,7 @@ public class MetricController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found: " + email));
+        User user = userService.getCurrentUser();
         
         return user.getId();
     }
