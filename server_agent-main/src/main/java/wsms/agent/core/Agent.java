@@ -1,11 +1,6 @@
 package wsms.agent.core;
 
 import java.time.Instant;
-<<<<<<< Updated upstream
-=======
-import java.util.List;
->>>>>>> Stashed changes
-import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,6 +13,8 @@ import wsms.agent.model.Metrics;
 import wsms.agent.network.MetricSender;
 import wsms.agent.utils.Logger;
 
+// Note: ConnectionMonitor is not yet implemented
+
 public class Agent {
     private final Config config;
     private final Logger logger;
@@ -27,6 +24,7 @@ public class Agent {
     private final MetricSender metricSender;
     private final CountDownLatch stopLatch;
     private final AtomicBoolean stopped;
+    // private ConnectionMonitor monitor; // Not yet implemented
 
     private Agent(Config config) {
         this.config = config;
@@ -43,10 +41,10 @@ public class Agent {
                 && config.getServerIdLong() != null) {
             logger.info("Connecting to backend at " + config.getBackendUrl());
             this.metricSender = new MetricSender(
-                config.getBackendUrl(),
-                config.getAuthToken(),
-                config.getServerIdLong(),
-                logger
+                    config.getBackendUrl(),
+                    config.getAuthToken(),
+                    config.getServerIdLong(),
+                    logger
             );
             logger.info("Metric sender initialized with backend: " + config.getBackendUrl());
         } else {
@@ -68,47 +66,14 @@ public class Agent {
         logger.infof("Collection Interval: %d seconds", config.getCollectionInterval().getSeconds());
         logger.info("========================================");
 
-        int choice = 1;
-        int port = 0;
-        
-        try (Scanner scanner = new Scanner(System.in)) {
-            System.out.println("Choose an option:");
-            System.out.println("1. Start collecting metrics");
-            System.out.println("2. Start monitoring incoming connections");
-
-            try {
-                choice = Integer.parseInt(scanner.nextLine().trim());
-            } catch (Exception ignored) {
-                    System.out.print("Enter port to monitor: ");
-                    port = Integer.parseInt(scanner.nextLine().trim());
-                } catch (Exception ex) {
-                    logger.error("Invalid port provided, monitor not started");
-                }
-            }
-        }
-
-        switch (choice) {
-            case 2 -> {
-                if (port > 0) {
-                    System.out.printf("Starting connection monitor on port %d... to the port 5173 %n", port);
-                    monitor = new ConnectionMonitor(port, logger);
-                    try {
-                        monitor.start();
-                    } catch (Exception ex) {
-                        logger.errorf("Failed to start connection monitor: %s", ex.getMessage());
-                        stop();
-                    }
-                } else {
-                    stop();
-                }
-            }
-            default -> collectAndPrintInInterval();
-        }
+        // Start collecting metrics (connection monitor feature not yet implemented)
+        collectAndPrintInInterval();
 
         awaitStop();
         logger.info("Received stop signal...");
         logger.info("Agent stopping...");
         logger.close();
+    }
 
     public void stop() {
         if (stopped.compareAndSet(false, true)) {
