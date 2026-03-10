@@ -36,7 +36,7 @@ public class AuthService {
                 .username("user")
                 .password(passwordEncoder.encode(request.getPassword()))
                 .fullName(request.getFullName())
-                .role(UserRole.ADMIN)
+                .role(UserRole.USER) //change default user from ADMIN to USER
                 .isVerified(true)
                 .verificationToken(null)
                 .build();
