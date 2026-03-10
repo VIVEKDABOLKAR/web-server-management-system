@@ -32,6 +32,7 @@ public class Logger {
         write("[ERROR]", msg, null);
     }
 
+    //formated logging
     public synchronized void infof(String format, Object... args) {
         write("[INFO]", String.format(format, args), null);
     }
@@ -50,9 +51,16 @@ public class Logger {
     }
 
     private void write(String level, String msg, Throwable throwable) {
+        //formate of log
         String line = String.format("%s %s %s", level, LocalDateTime.now().format(FORMATTER), msg);
+
+        //print in console
         System.out.println(line);
+
+        //write in agent.log file
         fileWriter.println(line);
+
+        //print and write error
         if (throwable != null) {
             throwable.printStackTrace(System.out);
             throwable.printStackTrace(fileWriter);

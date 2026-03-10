@@ -5,8 +5,6 @@ import wsms.agent.collector.DiskCollector;
 import wsms.agent.collector.MemoryCollector;
 import wsms.agent.config.Config;
 import wsms.agent.model.Metrics;
-import wsms.agent.network.ConnectionMonitor;
-import wsms.agent.network.IPUtils;
 import wsms.agent.network.MetricSender;
 import wsms.agent.utils.Logger;
 
@@ -24,7 +22,6 @@ public class Agent {
     private final MemoryCollector memoryCollector;
     private final DiskCollector diskCollector;
     private final MetricSender metricSender;
-    private ConnectionMonitor monitor;
     private final CountDownLatch stopLatch;
     private final AtomicBoolean stopped;
 
@@ -36,14 +33,15 @@ public class Agent {
         this.diskCollector = new DiskCollector("/");
         this.stopLatch = new CountDownLatch(1);
         this.stopped = new AtomicBoolean(false);
-        
+
         // Initialize metric sender if backend URL and auth token are provided
-        if (config.getBackendUrl() != null && !config.getBackendUrl().isEmpty() 
+        if (config.getBackendUrl() != null && !config.getBackendUrl().isEmpty()
                 && config.getAuthToken() != null && !config.getAuthToken().isEmpty()
                 && config.getServerIdLong() != null) {
+            logger.info("Connecting to backend at " + config.getBackendUrl());
             this.metricSender = new MetricSender(
-                config.getBackendUrl(), 
-                config.getAuthToken(), 
+                config.getBackendUrl(),
+                config.getAuthToken(),
                 config.getServerIdLong(),
                 logger
             );
@@ -70,7 +68,6 @@ public class Agent {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Choose an option:");
         System.out.println("1. Start collecting metrics");
-        System.out.println("2. Start monitoring incoming connections");
 
         int choice = 1;
         try {
@@ -79,29 +76,7 @@ public class Agent {
         }
 
         switch (choice) {
-            case 2 -> {
-                int port = 0;
-                try {
-                    System.out.print("Enter port to monitor: ");
-                    port = Integer.parseInt(scanner.nextLine().trim());
-                } catch (Exception ex) {
-                    logger.error("Invalid port provided, monitor not started");
-                }
-
-                if (port > 0) {
-                    System.out.printf("Starting connection monitor on port %d... to the port 5173 %n", port);
-                    monitor = new ConnectionMonitor(port, logger);
-                    try {
-                        monitor.start();
-                    } catch (Exception ex) {
-                        logger.errorf("Failed to start connection monitor: %s", ex.getMessage());
-                        stop();
-                    }
-                } else {
-                    stop();
-                }
-            }
-            default -> collectAndPrintInInterval();
+            case 1 -> collectAndPrintInInterval();
         }
 
         awaitStop();
@@ -112,9 +87,6 @@ public class Agent {
 
     public void stop() {
         if (stopped.compareAndSet(false, true)) {
-            if (monitor != null) {
-                monitor.stop();
-            }
             stopLatch.countDown();
         }
     }
@@ -170,15 +142,8 @@ public class Agent {
             logger.errorf("Failed to collect Disk: %s", ex.getMessage());
         }
 
-        try {
-            List<String> primaryIPs = IPUtils.getAllPrimaryIPs();
-            logger.infof("Primary IP Address: %s", primaryIPs);
-        } catch (Exception ex) {
-            logger.errorf("Failed to get primary IP: %s", ex.getMessage());
-        }
-
         printMetrics(metrics);
-        
+
         // Send metrics to backend if configured
         if (metricSender != null) {
             metricSender.sendMetrics(metrics);

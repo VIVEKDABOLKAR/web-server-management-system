@@ -59,7 +59,7 @@ public class MetricSender {
                 logger.info("✓ Metrics sent successfully to backend");
                 return true;
             } else {
-                logger.errorf("✗ Failed to send metrics. Status: %d, Response: %s", 
+                logger.errorf("✗ Failed to send metrics. Status: %d, Response: %s",
                         response.statusCode(), response.body());
                 return false;
             }

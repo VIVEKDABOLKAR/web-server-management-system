@@ -4,6 +4,7 @@ import com.wsms.dto.metric.MetricResponse;
 import com.wsms.entity.User;
 import com.wsms.repository.UserRepository;
 import com.wsms.service.MetricService;
+import com.wsms.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,7 +19,8 @@ import java.util.List;
 public class MetricController {
 
     private final MetricService metricService;
-    private final UserRepository userRepository;
+    //remove userRepository to userService
+    private final UserService userService;
 
     @GetMapping("/server/{serverId}")
     public ResponseEntity<List<MetricResponse>> getMetricsByServer(
