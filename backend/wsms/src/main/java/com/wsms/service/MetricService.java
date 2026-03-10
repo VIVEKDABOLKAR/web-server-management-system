@@ -101,7 +101,7 @@ public class MetricService {
         return metrics.stream().map(this::toResponse).toList();
     }
 
-//    private ServerStatus determineServerStatus(Double cpuUsage, Double memoryUsage, Double diskUsage) {
+    private ServerStatus determineServerStatus(Double cpuUsage, Double memoryUsage, Double diskUsage) {
 //        // Check if any metric is critically high
 //        if ((cpuUsage != null && cpuUsage > 90) ||
 //            (memoryUsage != null && memoryUsage > 90) ||
@@ -115,9 +115,9 @@ public class MetricService {
 //            (diskUsage != null && diskUsage > 85)) {
 //            return ServerStatus.WARNING;
 //        }
-//
-//        return ServerStatus.ACTIVE;
-//    }
+        
+        return ServerStatus.ACTIVE;
+    }
 
     private MetricResponse toResponse(Metric metric) {
         return MetricResponse.builder()
