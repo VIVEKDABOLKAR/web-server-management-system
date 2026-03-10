@@ -8,6 +8,8 @@ import com.wsms.repository.AlertRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AlertService {
@@ -33,5 +35,24 @@ public class AlertService {
 
         //save alert object in db
         alertRepository.save(alert);
+    }
+
+    /**
+     * find alert by alertId
+     * @param id
+     * @return
+     */
+    public  Alert findById(Long id){
+        return alertRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * find all alert in server based on serverId
+     *      its order in created by desc
+     * @param server
+     * @return
+     */
+    public List<Alert> findAllByServerIdOrderByCreatedAtDesc(Server server){
+        return alertRepository.findAllByServerIdOrderByCreatedAtDesc(server.getId());
     }
 }
