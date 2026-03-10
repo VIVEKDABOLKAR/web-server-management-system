@@ -1,12 +1,12 @@
 package wsms.agent.config;
 
-import com.google.gson.Gson;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
+
+import com.google.gson.Gson;
 
 public class Config {
     private String serverId;
@@ -89,31 +89,57 @@ public class Config {
     }
 
     public void save(String path) throws IOException {
-        String json = "{\n" +
-                "  \"server_id\": \"" + safe(serverId) + "\",\n" +
-                "  \"server_id_long\": " + (serverIdLong != null ? serverIdLong : 1) + ",\n" +
-                "  \"server_name\": \"" + safe(serverName) + "\",\n" +
-                "  \"auth_token\": \"" + safe(authToken) + "\",\n" +
-                "  \"backend_url\": \"" + safe(backendUrl) + "\",\n" +
-                "  \"websocket_url\": \"" + safe(webSocketUrl) + "\",\n" +
-                "  \"collection_interval\": " + seconds(collectionInterval) + ",\n" +
-                "  \"enable_cpu\": " + enableCPU + ",\n" +
-                "  \"enable_memory\": " + enableMemory + ",\n" +
-                "  \"enable_disk\": " + enableDisk + ",\n" +
-                "  \"enable_network\": " + enableNetwork + ",\n" +
-                "  \"enable_web_server\": " + enableWebServer + ",\n" +
-                "  \"enable_alerts\": " + enableAlerts + ",\n" +
-                "  \"enable_ip_blocking\": " + enableIPBlocking + ",\n" +
-                "  \"enable_backup\": " + enableBackup + ",\n" +
-                "  \"cpu_threshold\": " + cpuThreshold + ",\n" +
-                "  \"memory_threshold\": " + memoryThreshold + ",\n" +
-                "  \"disk_threshold\": " + diskThreshold + ",\n" +
-                "  \"block_list_refresh_interval\": " + seconds(blockListRefreshInterval) + ",\n" +
-                "  \"log_level\": \"" + safe(logLevel) + "\",\n" +
-                "  \"log_file\": \"" + safe(logFile) + "\",\n" +
-                "  \"web_server_type\": \"" + safe(webServerType) + "\",\n" +
-                "  \"web_server_port\": " + webServerPort + "\n" +
-                "}\n";
+        String json = """
+                {
+                  "server_id": "%s",
+                  "server_id_long": %d,
+                  "server_name": "%s",
+                  "auth_token": "%s",
+                  "backend_url": "%s",
+                  "websocket_url": "%s",
+                  "collection_interval": %d,
+                  "enable_cpu": %b,
+                  "enable_memory": %b,
+                  "enable_disk": %b,
+                  "enable_network": %b,
+                  "enable_web_server": %b,
+                  "enable_alerts": %b,
+                  "enable_ip_blocking": %b,
+                  "enable_backup": %b,
+                  "cpu_threshold": %f,
+                  "memory_threshold": %f,
+                  "disk_threshold": %f,
+                  "block_list_refresh_interval": %d,
+                  "log_level": "%s",
+                  "log_file": "%s",
+                  "web_server_type": "%s",
+                  "web_server_port": %d
+                }
+                """.formatted(
+                safe(serverId),
+                serverIdLong != null ? serverIdLong : 1,
+                safe(serverName),
+                safe(authToken),
+                safe(backendUrl),
+                safe(webSocketUrl),
+                seconds(collectionInterval),
+                enableCPU,
+                enableMemory,
+                enableDisk,
+                enableNetwork,
+                enableWebServer,
+                enableAlerts,
+                enableIPBlocking,
+                enableBackup,
+                cpuThreshold,
+                memoryThreshold,
+                diskThreshold,
+                seconds(blockListRefreshInterval),
+                safe(logLevel),
+                safe(logFile),
+                safe(webServerType),
+                webServerPort
+        );
         Files.writeString(Path.of(path), json);
     }
 

@@ -54,17 +54,17 @@ const Landing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors">
       {/* Navigation */}
-      <nav className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-md border-b border-gray-200 dark:border-slate-700 sticky top-0 z-50">
+      <nav className="bg-white dark:bg-slate-900 shadow-md border-b border-gray-200 dark:border-slate-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+              <div className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center shadow">
                 <span className="text-white font-bold text-xl">W</span>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 WSMS
               </span>
             </div>
@@ -92,7 +92,7 @@ const Landing = () => {
               </button>
               <button
                 onClick={() => navigate("/signup")}
-                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition font-semibold shadow-lg hover:shadow-xl"
+                className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold shadow"
               >
                 Get Started
               </button>
@@ -105,7 +105,7 @@ const Landing = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-16">
           <h1 className="text-6xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="text-blue-600 dark:text-blue-400">
               Web Server Monitoring
             </span>
             <br />
@@ -121,13 +121,13 @@ const Landing = () => {
           <div className="flex gap-4 justify-center">
             <button
               onClick={() => navigate("/signup")}
-              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition font-bold shadow-2xl hover:shadow-3xl text-lg transform hover:-translate-y-1"
+              className="px-8 py-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-bold shadow text-lg"
             >
               Start Monitoring Free 🚀
             </button>
             <button
               onClick={() => navigate("/login")}
-              className="px-8 py-4 bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 transition font-bold shadow-lg hover:shadow-xl border-2 border-gray-200 dark:border-slate-700 text-lg"
+              className="px-8 py-4 bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 rounded hover:bg-gray-50 dark:hover:bg-slate-700 transition font-bold shadow border-2 border-gray-200 dark:border-slate-700 text-lg"
             >
               Sign In
             </button>
@@ -137,7 +137,7 @@ const Landing = () => {
         {/* Features Grid */}
         <div className="mt-24">
           <h2 className="text-4xl font-bold text-center mb-4">
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-blue-600 dark:text-blue-400">
               Powerful Features
             </span>
           </h2>
@@ -149,7 +149,7 @@ const Landing = () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm p-8 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 border-2 border-gray-100 dark:border-slate-700"
+                className="bg-white dark:bg-slate-800 p-8 rounded shadow transition border border-gray-200 dark:border-slate-700"
               >
                 <div className="text-5xl mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">
@@ -164,7 +164,7 @@ const Landing = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="mt-24 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-12 shadow-2xl">
+        <div className="mt-24 bg-blue-600 rounded p-12 shadow">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center text-white">
             <div>
               <div className="text-5xl font-bold mb-2">24/7</div>
@@ -184,7 +184,7 @@ const Landing = () => {
         {/* How It Works */}
         <div className="mt-24">
           <h2 className="text-4xl font-bold text-center mb-4">
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-blue-600 dark:text-blue-400">
               How It Works
             </span>
           </h2>
@@ -194,7 +194,7 @@ const Landing = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 shadow-lg">
+              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 shadow">
                 1
               </div>
               <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">
@@ -206,7 +206,7 @@ const Landing = () => {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 shadow-lg">
+              <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 shadow">
                 2
               </div>
               <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">
@@ -218,7 +218,7 @@ const Landing = () => {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 shadow-lg">
+              <div className="w-16 h-16 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 shadow">
                 3
               </div>
               <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">
@@ -230,7 +230,7 @@ const Landing = () => {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 shadow-lg">
+              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 shadow">
                 4
               </div>
               <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">
@@ -244,9 +244,9 @@ const Landing = () => {
         </div>
 
         {/* Final CTA */}
-        <div className="mt-24 text-center bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm rounded-3xl p-12 shadow-xl border-2 border-gray-100 dark:border-slate-700">
+        <div className="mt-24 text-center bg-white dark:bg-slate-800 rounded p-12 shadow border border-gray-200 dark:border-slate-700">
           <h2 className="text-4xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-blue-600 dark:text-blue-400">
               Ready to Get Started?
             </span>
           </h2>
@@ -255,7 +255,7 @@ const Landing = () => {
           </p>
           <button
             onClick={() => navigate("/signup")}
-            className="px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition font-bold shadow-2xl text-lg transform hover:-translate-y-1"
+            className="px-10 py-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-bold shadow text-lg"
           >
             Create Free Account →
           </button>
@@ -263,14 +263,14 @@ const Landing = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-slate-800 border-t-2 border-gray-200 dark:border-slate-700 mt-20 transition-colors">
+      <footer className="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 mt-20 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+              <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center shadow">
                 <span className="text-white font-bold text-sm">W</span>
               </div>
-              <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
                 WSMS
               </span>
             </div>

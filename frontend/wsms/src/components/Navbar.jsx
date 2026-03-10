@@ -35,7 +35,7 @@ const Navbar = ({ hideDashboard = false }) => {
       const response = await api.get("/api/users/profile");
       setUserProfile(response.data);
     } catch (err) {
-      console.error("Failed to fetch user profile:", err);
+      // Silently fail - user can still use the app
     }
   };
 
@@ -74,10 +74,10 @@ const Navbar = ({ hideDashboard = false }) => {
               className="flex items-center gap-3 cursor-pointer group"
               onClick={() => navigate("/dashboard")}
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-xl transition">
+              <div className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center shadow group-hover:shadow-lg transition">
                 <span className="text-white font-bold text-xl">W</span>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 WSMS
               </span>
             </div>
@@ -88,7 +88,7 @@ const Navbar = ({ hideDashboard = false }) => {
                 {!hideDashboard && (
                   <button
                     onClick={() => navigate("/dashboard")}
-                    className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg"
+                    className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition hover:bg-blue-50 dark:hover:bg-slate-800 rounded"
                   >
                     Dashboard
                   </button>
@@ -97,15 +97,39 @@ const Navbar = ({ hideDashboard = false }) => {
                 {/* Dark Mode Toggle */}
                 <button
                   onClick={toggleDarkMode}
-                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition"
+                  className="p-2 rounded hover:bg-gray-100 dark:hover:bg-slate-800 transition"
                   title={
                     isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
                   }
                 >
                   {isDarkMode ? (
-                    <span className="text-2xl">☀️</span>
+                    <svg
+                      className="w-5 h-5 text-gray-700 dark:text-gray-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                      />
+                    </svg>
                   ) : (
-                    <span className="text-2xl">🌙</span>
+                    <svg
+                      className="w-5 h-5 text-gray-700 dark:text-gray-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                      />
+                    </svg>
                   )}
                 </button>
 
@@ -113,9 +137,9 @@ const Navbar = ({ hideDashboard = false }) => {
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setShowDropdown(!showDropdown)}
-                    className="flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-xl p-2 transition group"
+                    className="flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-slate-800 rounded p-2 transition group"
                   >
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md group-hover:shadow-lg transition">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shadow group-hover:shadow-lg transition">
                       {userProfile ? getInitials(userProfile.fullName) : "U"}
                     </div>
                     <div className="hidden md:block text-left">
@@ -143,11 +167,11 @@ const Navbar = ({ hideDashboard = false }) => {
 
                   {/* Dropdown Menu */}
                   {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 py-2 animate-fadeIn">
+                    <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-slate-800 rounded shadow border border-gray-200 dark:border-slate-700 py-2 animate-fadeIn">
                       {/* User Info Header */}
                       <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                          <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow">
                             {userProfile
                               ? getInitials(userProfile.fullName)
                               : "U"}
@@ -175,7 +199,7 @@ const Navbar = ({ hideDashboard = false }) => {
 
                       {/* Stats */}
                       {userProfile && (
-                        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
+                        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-slate-800">
                           <div className="grid grid-cols-3 gap-2 text-center">
                             <div>
                               <div className="text-xl font-bold text-blue-600">
@@ -212,9 +236,21 @@ const Navbar = ({ hideDashboard = false }) => {
                             navigate("/profile");
                             setShowDropdown(false);
                           }}
-                          className="w-full px-4 py-3 text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 transition flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                          className="w-full px-4 py-3 text-left hover:bg-blue-50 dark:hover:bg-slate-700 transition flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
                         >
-                          <span className="text-xl">👤</span>
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
                           <div>
                             <div className="font-medium">My Profile</div>
                             <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -226,7 +262,19 @@ const Navbar = ({ hideDashboard = false }) => {
                           onClick={handleLogout}
                           className="w-full px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/20 transition flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400"
                         >
-                          <span className="text-xl">🚪</span>
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                            />
+                          </svg>
                           <div>
                             <div className="font-medium">Logout</div>
                             <div className="text-xs text-gray-500 dark:text-gray-400">

@@ -21,7 +21,6 @@ const BlockedIpList = ({ serverId }) => {
       setBlockedIps(response.data);
     } catch (err) {
       setError("Failed to fetch blocked IPs");
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -39,7 +38,6 @@ const BlockedIpList = ({ serverId }) => {
       fetchBlockedIps();
     } catch (err) {
       setError("Failed to block IP");
-      console.error(err);
     }
   };
 
@@ -49,7 +47,6 @@ const BlockedIpList = ({ serverId }) => {
       fetchBlockedIps();
     } catch (err) {
       setError("Failed to unblock IP");
-      console.error(err);
     }
   };
 

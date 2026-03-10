@@ -16,7 +16,6 @@ const AlertList = ({ serverId }) => {
       setAlerts(response.data);
     } catch (err) {
       setError("Failed to fetch alerts");
-      console.error(err);
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,12 @@
 package wsms.agent.core;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import wsms.agent.collector.CPUCollector;
 import wsms.agent.collector.DiskCollector;
 import wsms.agent.collector.MemoryCollector;
@@ -7,13 +14,6 @@ import wsms.agent.config.Config;
 import wsms.agent.model.Metrics;
 import wsms.agent.network.MetricSender;
 import wsms.agent.utils.Logger;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Scanner;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Agent {
     private final Config config;
@@ -68,15 +68,37 @@ public class Agent {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Choose an option:");
         System.out.println("1. Start collecting metrics");
+        System.out.println("2. Start monitoring incoming connections");
 
-        int choice = 1;
-        try {
-            choice = Integer.parseInt(scanner.nextLine().trim());
-        } catch (Exception ignored) {
-        }
+            try {
+                choice = Integer.parseInt(scanner.nextLine().trim());
+            } catch (Exception ignored) {
+            }
 
         switch (choice) {
-            case 1 -> collectAndPrintInInterval();
+            case 2 -> {
+                int port = 0;
+                try {
+                    System.out.print("Enter port to monitor: ");
+                    port = Integer.parseInt(scanner.nextLine().trim());
+                } catch (Exception ex) {
+                    logger.error("Invalid port provided, monitor not started");
+                }
+
+                if (port > 0) {
+                    System.out.printf("Starting connection monitor on port %d... to the port 5173 %n", port);
+                    monitor = new ConnectionMonitor(port, logger);
+                    try {
+                        monitor.start();
+                    } catch (Exception ex) {
+                        logger.errorf("Failed to start connection monitor: %s", ex.getMessage());
+                        stop();
+                    }
+                } else {
+                    stop();
+                }
+            }
+            default -> collectAndPrintInInterval();
         }
 
         awaitStop();

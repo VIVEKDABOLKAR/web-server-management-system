@@ -105,14 +105,14 @@ const Profile = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-8">
+          <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-8">
             User Profile
           </h1>
 
           {/* Profile Information Card */}
-          <div className="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm border-2 border-gray-200 dark:border-slate-700 p-6 rounded-2xl shadow-lg dark:shadow-slate-900/30 mb-6">
+          <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-6 rounded shadow mb-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
                 Profile Information
@@ -120,7 +120,7 @@ const Profile = () => {
               {!isEditingProfile && (
                 <button
                   onClick={() => setIsEditingProfile(true)}
-                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition font-semibold shadow-md"
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold shadow"
                 >
                   Edit Profile
                 </button>
@@ -190,7 +190,7 @@ const Profile = () => {
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                     required
                   />
                 </div>
@@ -202,14 +202,14 @@ const Profile = () => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                     required
                   />
                 </div>
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition font-semibold shadow-md"
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold shadow"
                   >
                     Save Changes
                   </button>
@@ -220,7 +220,7 @@ const Profile = () => {
                       setFullName(profile.fullName);
                       setEmail(profile.email);
                     }}
-                    className="px-4 py-2 bg-gray-500 dark:bg-slate-600 text-white rounded-lg hover:bg-gray-600 dark:hover:bg-slate-700 transition font-semibold shadow-md"
+                    className="px-4 py-2 bg-gray-500 dark:bg-slate-600 text-white rounded hover:bg-gray-600 dark:hover:bg-slate-700 transition font-semibold shadow"
                   >
                     Cancel
                   </button>
@@ -230,12 +230,12 @@ const Profile = () => {
           </div>
 
           {/* Statistics Card */}
-          <div className="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm border-2 border-gray-200 dark:border-slate-700 p-6 rounded-2xl shadow-lg dark:shadow-slate-900/30 mb-6">
+          <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-6 rounded shadow mb-6">
             <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
               Account Statistics
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+              <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded">
                 <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                   {profile.totalServers}
                 </p>
@@ -243,7 +243,7 @@ const Profile = () => {
                   Total Servers
                 </p>
               </div>
-              <div className="text-center p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
+              <div className="text-center p-4 bg-green-50 dark:bg-green-900/30 rounded">
                 <p className="text-3xl font-bold text-green-600 dark:text-green-400">
                   {profile.activeServers}
                 </p>
@@ -251,7 +251,7 @@ const Profile = () => {
                   Active Servers
                 </p>
               </div>
-              <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg">
+              <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded">
                 <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
                   {profile.totalAlerts}
                 </p>
@@ -263,7 +263,7 @@ const Profile = () => {
           </div>
 
           {/* Security Card */}
-          <div className="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm border-2 border-gray-200 dark:border-slate-700 p-6 rounded-2xl shadow-lg dark:shadow-slate-900/30">
+          <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-6 rounded shadow">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
                 Security
@@ -271,7 +271,7 @@ const Profile = () => {
               {!isChangingPassword && (
                 <button
                   onClick={() => setIsChangingPassword(true)}
-                  className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition font-semibold shadow-md"
+                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition font-semibold shadow"
                 >
                   Change Password
                 </button>
@@ -292,7 +292,7 @@ const Profile = () => {
                     type="password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-green-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                     required
                   />
                 </div>
@@ -304,7 +304,7 @@ const Profile = () => {
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-green-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                     required
                     minLength="6"
                   />
@@ -320,14 +320,14 @@ const Profile = () => {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-green-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                     required
                   />
                 </div>
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition font-semibold shadow-md"
+                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition font-semibold shadow"
                   >
                     Change Password
                   </button>
@@ -339,7 +339,7 @@ const Profile = () => {
                       setNewPassword("");
                       setConfirmPassword("");
                     }}
-                    className="px-4 py-2 bg-gray-500 dark:bg-slate-600 text-white rounded-lg hover:bg-gray-600 dark:hover:bg-slate-700 transition font-semibold shadow-md"
+                    className="px-4 py-2 bg-gray-500 dark:bg-slate-600 text-white rounded hover:bg-gray-600 dark:hover:bg-slate-700 transition font-semibold shadow"
                   >
                     Cancel
                   </button>

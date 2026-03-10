@@ -41,9 +41,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      console.log("Attempting login with:", { email: formData.email });
       const response = await api.post("/auth/login", formData);
-      console.log("Login response:", response.data);
 
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
@@ -52,7 +50,6 @@ const Login = () => {
         setError("No token received from server");
       }
     } catch (err) {
-      console.error("Login error:", err);
 
       if (err.code === "ERR_NETWORK") {
         setError(
@@ -71,8 +68,8 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors flex items-center justify-center px-4">
-      <div className="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm border-2 border-gray-200 dark:border-slate-700 p-8 rounded-2xl shadow-lg w-full max-w-md">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors flex items-center justify-center px-4">
+      <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-8 rounded shadow w-full max-w-md">
         <h2 className="text-4xl font-bold text-gray-800 dark:text-white text-center mb-2">
           Login to WSMS
         </h2>
@@ -101,7 +98,7 @@ const Login = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
               required
             />
           </div>
@@ -120,14 +117,14 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter your password"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-md"
+            className="w-full bg-blue-600 text-white py-3 rounded font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow"
             disabled={loading}
           >
             {loading ? "Logging in..." : "Login"}

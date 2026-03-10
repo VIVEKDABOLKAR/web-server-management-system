@@ -10,7 +10,7 @@ const ConfirmDialog = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-2xl max-w-md w-full mx-4 overflow-hidden border border-gray-300 dark:border-slate-700 animate-slideUp">
+      <div className="bg-white dark:bg-slate-800 rounded shadow max-w-md w-full mx-4 overflow-hidden border border-gray-300 dark:border-slate-700 animate-slideUp">
         {/* Header */}
         <div className="bg-gray-100 dark:bg-slate-700 px-6 py-4 border-b border-gray-300 dark:border-slate-600">
           <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">

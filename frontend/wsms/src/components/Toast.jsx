@@ -11,11 +11,11 @@ const Toast = ({ message, type = "success", onClose }) => {
 
   const styles = {
     success: {
-      bg: "bg-gradient-to-r from-green-500 to-green-600",
+      bg: "bg-green-600",
       icon: "✓",
     },
     error: {
-      bg: "bg-gradient-to-r from-red-500 to-red-600",
+      bg: "bg-red-600",
       icon: "✕",
     },
   };
@@ -25,7 +25,7 @@ const Toast = ({ message, type = "success", onClose }) => {
   return (
     <div className="fixed top-6 right-6 z-50 animate-slide-in">
       <div
-        className={`${bg} text-white px-5 py-4 rounded-xl shadow-2xl flex items-center gap-4 min-w-[320px] backdrop-blur-sm`}
+        className={`${bg} text-white px-5 py-4 rounded shadow flex items-center gap-4 min-w-[320px]`}
       >
         <div className="flex-shrink-0 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold text-lg">
           {icon}

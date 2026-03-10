@@ -18,30 +18,19 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchServers();
-    // Auto-refresh every 30 seconds
     const interval = setInterval(fetchServers, 30000);
     return () => clearInterval(interval);
   }, []);
 
   const fetchServers = async () => {
     try {
-      console.log("Fetching servers from /api/servers...");
       const response = await api.get("/api/servers");
-      console.log("API Response:", response);
-      console.log("Response data:", response.data);
-      console.log("Number of servers:", response.data?.length);
-
-      // Handle both array response and object with data property
       const serverData = Array.isArray(response.data)
         ? response.data
         : response.data?.data || [];
-
-      console.log("Processed server data:", serverData);
       setServers(serverData);
     } catch (err) {
       setError("Failed to fetch servers");
-      console.error("Error fetching servers:", err);
-      console.error("Error response:", err.response?.data);
     } finally {
       setLoading(false);
     }
@@ -69,18 +58,15 @@ const Dashboard = () => {
 
   const confirmDelete = async () => {
     const { serverId } = deleteDialog;
-
     try {
       await api.delete(`/api/servers/${serverId}`);
       setServers(
-        servers.filter((s) => (s.id || s._id || s.serverId) !== serverId),
+        servers.filter((s) => (s.id || s._id || s.serverId) !== serverId)
       );
-      console.log(`Server ${serverId} deleted successfully`);
     } catch (err) {
-      console.error("Error deleting server:", err);
       alert(
         err.response?.data?.message ||
-          "Failed to delete server. Please try again.",
+          "Failed to delete server. Please try again."
       );
     }
   };
@@ -94,14 +80,11 @@ const Dashboard = () => {
 
   const stats = getStats();
 
-  console.log("Servers state:", servers);
-  console.log("Stats:", stats);
-
   if (loading) {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600 dark:border-blue-400 mb-4"></div>
             <div className="text-gray-600 dark:text-gray-300 text-xl font-medium">
@@ -116,12 +99,12 @@ const Dashboard = () => {
   return (
     <>
       <Navbar hideDashboard={true} />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors">
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Header Section */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+              <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
                 Server Dashboard
               </h1>
               <p className="text-gray-600 dark:text-gray-300">
@@ -130,10 +113,9 @@ const Dashboard = () => {
             </div>
             <button
               onClick={() => navigate("/add-server")}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-purple-700 transition font-semibold shadow-lg hover:shadow-xl flex items-center gap-2"
+              className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition font-medium"
             >
-              <span className="text-xl">+</span>
-              Add Server
+              + Add Server
             </button>
           </div>
 
@@ -145,46 +127,46 @@ const Dashboard = () => {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm border-2 border-blue-200 dark:border-blue-500/30 p-6 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
-              <h3 className="text-blue-600 dark:text-blue-300 text-sm font-semibold uppercase tracking-wide mb-4">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-5 rounded shadow">
+              <h3 className="text-gray-600 dark:text-gray-400 text-sm font-medium uppercase mb-3">
                 Total Servers
               </h3>
-              <p className="text-5xl font-bold text-blue-700 dark:text-blue-200">
+              <p className="text-4xl font-bold text-gray-900 dark:text-white">
                 {stats.total}
               </p>
             </div>
 
-            <div className="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm border-2 border-green-200 dark:border-green-500/30 p-6 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
-              <h3 className="text-green-600 dark:text-green-300 text-sm font-semibold uppercase tracking-wide mb-4">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-5 rounded shadow">
+              <h3 className="text-gray-600 dark:text-gray-400 text-sm font-medium uppercase mb-3">
                 Active Servers
               </h3>
-              <p className="text-5xl font-bold text-green-700 dark:text-green-200">
+              <p className="text-4xl font-bold text-green-600 dark:text-green-400">
                 {stats.active}
               </p>
             </div>
 
-            <div className="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm border-2 border-amber-200 dark:border-amber-500/30 p-6 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
-              <h3 className="text-amber-600 dark:text-amber-300 text-sm font-semibold uppercase tracking-wide mb-4">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-5 rounded shadow">
+              <h3 className="text-gray-600 dark:text-gray-400 text-sm font-medium uppercase mb-3">
                 Blocked
               </h3>
-              <p className="text-5xl font-bold text-amber-700 dark:text-amber-200">
+              <p className="text-4xl font-bold text-amber-600 dark:text-amber-400">
                 {stats.blocked}
               </p>
             </div>
 
-            <div className="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm border-2 border-red-200 dark:border-red-500/30 p-6 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
-              <h3 className="text-red-600 dark:text-red-300 text-sm font-semibold uppercase tracking-wide mb-4">
+            <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-5 rounded shadow">
+              <h3 className="text-gray-600 dark:text-gray-400 text-sm font-medium uppercase mb-3">
                 Inactive
               </h3>
-              <p className="text-5xl font-bold text-red-700 dark:text-red-200">
+              <p className="text-4xl font-bold text-red-600 dark:text-red-400">
                 {stats.inactive}
               </p>
             </div>
           </div>
 
           {/* Servers List */}
-          <div className="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm border-2 border-gray-200 dark:border-slate-700 rounded-2xl shadow-lg overflow-hidden transition-colors">
-            <div className="p-6 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-gray-50 to-white dark:from-slate-800/50 dark:to-slate-800/50">
+          <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded shadow overflow-hidden">
+            <div className="p-5 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-700">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                   All Servers
@@ -196,7 +178,7 @@ const Dashboard = () => {
                       placeholder="Search servers by name, IP, or OS..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                     />
                   </div>
                 </div>
@@ -210,7 +192,7 @@ const Dashboard = () => {
                 </p>
                 <button
                   onClick={() => navigate("/add-server")}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-xl hover:from-blue-700 hover:to-purple-700 transition font-semibold shadow-lg"
+                  className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition font-medium"
                 >
                   + Add Your First Server
                 </button>
@@ -250,7 +232,7 @@ const Dashboard = () => {
                     {filteredServers.map((server) => (
                       <tr
                         key={server.id || server._id || server.serverId}
-                        className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 transition cursor-pointer"
+                        className="hover:bg-gray-50 dark:hover:bg-slate-700 transition cursor-pointer"
                         onClick={() => {
                           const serverId =
                             server.id || server._id || server.serverId;
@@ -259,7 +241,7 @@ const Dashboard = () => {
                       >
                         <td className="py-4 px-6">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                            <div className="w-10 h-10 rounded bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow">
                               {server.serverName?.charAt(0).toUpperCase()}
                             </div>
                             <span className="font-semibold text-gray-800 dark:text-gray-200">
@@ -268,13 +250,13 @@ const Dashboard = () => {
                           </div>
                         </td>
                         <td className="py-4 px-6">
-                          <span className="font-mono text-sm bg-gray-100 dark:bg-slate-700 px-3 py-1 rounded-lg text-gray-700 dark:text-gray-300">
+                          <span className="font-mono text-sm bg-gray-100 dark:bg-slate-700 px-3 py-1 rounded text-gray-700 dark:text-gray-300">
                             {server.ipAddress}
                           </span>
                         </td>
                         <td className="py-4 px-6">
                           <span
-                            className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wide shadow-sm ${
+                            className={`px-3 py-1 rounded text-xs font-bold uppercase tracking-wide ${
                               server.status?.toLowerCase() === "active"
                                 ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-700"
                                 : server.status?.toLowerCase() === "blocked"
@@ -298,15 +280,9 @@ const Dashboard = () => {
                                 e.stopPropagation();
                                 const serverId =
                                   server.id || server._id || server.serverId;
-                                console.log(
-                                  "Navigating to server:",
-                                  serverId,
-                                  "Full server:",
-                                  server,
-                                );
                                 navigate(`/servers/${serverId}`);
                               }}
-                              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 hover:-translate-y-0.5 transition-all duration-200 text-sm font-semibold shadow-md hover:shadow-xl flex items-center gap-1"
+                              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition text-sm font-medium"
                             >
                               View Details
                             </button>
@@ -318,7 +294,7 @@ const Dashboard = () => {
                                   e,
                                 )
                               }
-                              className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-2 border-red-300 dark:border-red-700 px-3 py-2 rounded-lg hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white hover:-translate-y-0.5 transition-all duration-200 text-sm font-semibold shadow-md hover:shadow-xl"
+                              className="bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 border border-red-300 dark:border-red-600 px-3 py-2 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition text-sm font-medium"
                               title="Delete Server"
                             >
                               Delete

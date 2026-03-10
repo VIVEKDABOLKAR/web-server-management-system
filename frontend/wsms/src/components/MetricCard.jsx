@@ -13,7 +13,7 @@ const MetricCard = ({ title, value, unit, max = 100 }) => {
     unit === "%" ? parseFloat(value).toFixed(2) : Math.round(value);
 
   return (
-    <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-lg dark:shadow-slate-900/30">
+    <div className="bg-white dark:bg-slate-800 p-5 rounded shadow border border-gray-200 dark:border-slate-700">
       <h3 className="text-gray-600 dark:text-gray-400 text-sm font-medium uppercase mb-2">
         {title}
       </h3>
