@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import ServerDetails from "./pages/ServerDetails";
@@ -20,6 +21,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/signup" element={<Signup />} />
         <Route
           path="/dashboard"

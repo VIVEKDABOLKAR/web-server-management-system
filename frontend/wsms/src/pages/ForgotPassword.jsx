@@ -88,8 +88,10 @@ const ForgotPassword = () => {
       return;
     }
 
-    if (newPassword.length < 8) {
-      setError("Password must be at least 8 characters.");
+    const passwordStrongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!passwordStrongRegex.test(newPassword)) {
+      setError(
+        "weak password" )
       return;
     }
 

@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ensure the sensitive properties file is not committed
+application-secret.properties

@@ -24,7 +24,7 @@ public class PasswordResetService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
-    private static final int OTP_EXPIRATION_MINUTES = 15;
+    private static final int OTP_EXPIRATION_MINUTES = 2;
 
     public Map<String, String> requestPasswordReset(String email) {
         User user = userRepository.findByEmail(email)
