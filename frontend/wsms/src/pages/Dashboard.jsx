@@ -30,7 +30,7 @@ const Dashboard = () => {
         : response.data?.data || [];
       setServers(serverData);
     } catch (err) {
-      setError("Failed to fetch servers");
+      setError("Failed to fetch servers" + err);
     } finally {
       setLoading(false);
     }

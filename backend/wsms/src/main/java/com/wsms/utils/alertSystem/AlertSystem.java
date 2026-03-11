@@ -15,7 +15,7 @@ public class AlertSystem {
     private final AlertService alertService;
 
     /**
-     * it will evaluate matrics , and if it pass threshold value
+     * it will evaluate matrics , and if it passed threshold value
      * create alert object and reutrn true
      * @param server
      * @param metricSubmitRequest

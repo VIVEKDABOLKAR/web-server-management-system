@@ -28,11 +28,21 @@ public class AgentController {
     private final ServerRepository serverRepository;
     private final AlertSystem alertSystem;
 
+    /**
+     * agent send matrics to this backend using this /api/agent/metrics
+     * it will store matrics inside db
+     * pass it through alert system
+     * if alert created, store in db
+     * @param authHeader
+     * @param request
+     * @return
+     */
     @PostMapping("/metrics")
     public ResponseEntity<Map<String, Object>> submitMetrics(
             @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody MetricSubmitRequest request) {
-        
+
+        //log server matrics
         log.info("Received metrics from agent. Server ID: {}, CPU: {}%, Memory: {}%, Disk: {}%", 
                 request.getServerId(), 
                 request.getCpuUsage(), 
@@ -63,6 +73,14 @@ public class AgentController {
 
         //send metrics to alert system
         boolean alertOccured = alertSystem.evaluate(server, request);
+
+        //just for test :- remove it during commit
+        if(!alertOccured) {
+            System.out.println("Alert not occured .......................................................................................");
+        }
+        else {
+            System.out.println("Alert occured ##########################################################################################");
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
