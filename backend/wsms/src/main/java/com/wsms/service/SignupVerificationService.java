@@ -7,7 +7,6 @@ import com.wsms.repository.UserRepository;
 import com.wsms.repository.VerificationOtpRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,35 +17,31 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class PasswordResetService {
+public class SignupVerificationService {
 
     private final UserRepository userRepository;
     private final VerificationOtpRepository tokenRepository;
-    private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
-    private static final int OTP_EXPIRATION_MINUTES = 2;
+    private static final int OTP_EXPIRATION_MINUTES = 10;
 
-    public Map<String, String> requestPasswordReset(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
+    public Map<String, String> sendVerificationCode(User user) {
         String otp = generateOtp();
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(OTP_EXPIRATION_MINUTES);
 
         VerificationOtp token = VerificationOtp.builder()
                 .user(user)
-                .purpose(OtpPurpose.PASSWORD_RESET)
+                .purpose(OtpPurpose.SIGNUP)
                 .otp(otp)
                 .expiresAt(expiresAt)
                 .used(false)
                 .build();
 
         tokenRepository.save(token);
-        emailService.sendOtp(user.getEmail(), otp);
+        emailService.sendVerificationOtp(user.getEmail(), otp);
 
         Map<String, String> response = new HashMap<>();
-        response.put("message", "OTP sent to email if it exists");
+        response.put("message", "Verification code sent to email");
         return response;
     }
 
@@ -54,37 +49,21 @@ public class PasswordResetService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        VerificationOtp token = tokenRepository.findByUserAndOtpAndPurposeAndUsedFalse(user, otp, OtpPurpose.PASSWORD_RESET)
+        VerificationOtp token = tokenRepository.findByUserAndOtpAndPurposeAndUsedFalse(user, otp, OtpPurpose.SIGNUP)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid OTP"));
 
         if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OTP has expired");
         }
 
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "OTP is valid");
-        return response;
-    }
-
-    public Map<String, String> resetPassword(String email, String otp, String newPassword) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        VerificationOtp token = tokenRepository.findByUserAndOtpAndPurposeAndUsedFalse(user, otp, OtpPurpose.PASSWORD_RESET)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid OTP"));
-
-        if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OTP has expired");
-        }
-
-        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setIsVerified(true);
         userRepository.save(user);
 
         token.setUsed(true);
         tokenRepository.save(token);
 
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Password reset successful");
+        response.put("message", "Email verified successfully");
         return response;
     }
 

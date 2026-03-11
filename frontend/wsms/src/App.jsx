@@ -8,6 +8,7 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import Signup from "./pages/Signup";
+import VerifySignup from "./pages/VerifySignup";
 import Dashboard from "./pages/Dashboard";
 import ServerDetails from "./pages/ServerDetails";
 import AddServer from "./pages/AddServer";
@@ -23,6 +24,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/signup/verify" element={<VerifySignup />} />
         <Route
           path="/dashboard"
           element={

@@ -20,7 +20,7 @@ public class EmailService {
 
     public void sendOtp(String to, String otp) {
         String subject = "WSMS Password Reset Code";
-        String text = "Your password reset code is: " + otp + "\n\nThis code will expire in 15 minutes.";
+        String text = "Your password reset code is: " + otp + "\n\nThis code will expire in 1 minute.";
 
         if (!mailEnabled) {
             System.out.println("[EMAIL DISABLED] OTP for " + to + ": " + otp);
@@ -35,4 +35,23 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+    public void sendVerificationOtp(String to, String otp) {
+        String subject = "WSMS Email Verification Code";
+        String text = "Your verification code is: " + otp + "\n\nThis code will expire in 10 minutes.";
+
+        if (!mailEnabled) {
+            System.out.println("[EMAIL DISABLED] Verification OTP for " + to + ": " + otp);
+            return;
+        }
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+
+        mailSender.send(message);
+    }
 }
+

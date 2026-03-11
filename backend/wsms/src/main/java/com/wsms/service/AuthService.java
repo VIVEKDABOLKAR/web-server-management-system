@@ -7,6 +7,7 @@ import com.wsms.entity.User;
 import com.wsms.entity.UserRole;
 import com.wsms.repository.UserRepository;
 import com.wsms.security.JwtService;
+import com.wsms.service.SignupVerificationService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final SignupVerificationService signupVerificationService;
 
     public AuthResponse signup(SignupRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -33,18 +35,19 @@ public class AuthService {
 
         User user = User.builder()
                 .email(request.getEmail())
-                .username("user")
+                .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .fullName(request.getFullName())
-                .role(UserRole.USER) //change default user from ADMIN to USER
-                .isVerified(true)
+                .role(UserRole.USER)
+                .isVerified(false)
                 .verificationToken(null)
                 .build();
 
         userRepository.save(user);
+        signupVerificationService.sendVerificationCode(user);
 
         return AuthResponse.builder()
-                .message("Signup successful")
+                .message("Signup successful, verification code sent to your email")
                 .token(null)
                 .build();
     }
@@ -60,6 +63,10 @@ public class AuthService {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
+
+        if (!Boolean.TRUE.equals(user.getIsVerified())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Email not verified");
+        }
 
         String token = jwtService.generateToken(
                 user.getEmail(),

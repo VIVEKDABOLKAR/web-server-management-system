@@ -4,6 +4,7 @@ import api from "../services/api";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
+    username: "",
     fullName: "",
     email: "",
     password: "",
@@ -20,8 +21,12 @@ const Signup = () => {
   };
 
   const validateForm = () => {
-    if (!formData.fullName || !formData.email || !formData.password) {
-      setError("All fields are required");
+    if (!formData.username || !formData.email || !formData.password) {
+      setError("Username, email and password are required");
+      return false;
+    }
+    if (formData.username.length < 3) {
+      setError("Username must be at least 3 characters");
       return false;
     }
     if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -47,13 +52,16 @@ const Signup = () => {
 
     try {
       const payload = {
+        username: formData.username,
         fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
       };
 
       const response = await api.post("/auth/signup", payload);
-      navigate("/login");
+      console.log("Signup response:", response.status, response.data);
+      console.log("Signup successful, redirecting to verification page");
+      navigate(`/signup/verify?email=${encodeURIComponent(formData.email)}`);
     } catch (err) {
 
       if (err.code === "ERR_NETWORK") {
@@ -100,6 +108,25 @@ const Signup = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
+              htmlFor="username"
+              className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="Choose a username"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label
               htmlFor="fullName"
               className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
             >
@@ -111,9 +138,8 @@ const Signup = () => {
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              placeholder="Enter your full name"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
-              required
+              placeholder="Enter your full name (optional)"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
             />
           </div>
 

@@ -8,6 +8,7 @@ import com.wsms.dto.auth.VerifyOtpRequest;
 import com.wsms.dto.auth.SignupRequest;
 import com.wsms.service.AuthService;
 import com.wsms.service.PasswordResetService;
+import com.wsms.service.SignupVerificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,10 +27,16 @@ public class AuthController {
 
     private final AuthService authService;
     private final PasswordResetService passwordResetService;
+    private final SignupVerificationService signupVerificationService;
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> signup(@Valid @RequestBody SignupRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(request));
+    }
+
+    @PostMapping("/signup/verify")
+    public ResponseEntity<Map<String, String>> verifySignup(@Valid @RequestBody VerifyOtpRequest request) {
+        return ResponseEntity.ok(signupVerificationService.verifyOtp(request.getEmail(), request.getOtp()));
     }
 
     @PostMapping("/login")
