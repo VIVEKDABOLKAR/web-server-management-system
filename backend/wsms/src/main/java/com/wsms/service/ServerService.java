@@ -21,6 +21,12 @@ public class ServerService {
     private final ServerRepository serverRepository;
     private final UserRepository userRepository;
 
+    /**
+     * add server to the db
+     * @param dto
+     * @param userId
+     * @return
+     */
     @Transactional
     public Server addServer(AddServerRequest dto, Long userId) {
         if (serverRepository.existsByIpAddress(dto.getIpAddress())) {
@@ -45,23 +51,44 @@ public class ServerService {
         return serverRepository.save(server);
     }
 
+    /**
+     * get all server based on the userId
+     * @param userId
+     * @return
+     */
     @Transactional(readOnly = true)
     public List<Server> getAllServersByUser(Long userId) {
         return serverRepository.findAllByUserId(userId);
     }
 
+    /**
+     * get single server based on serverId
+     * @param serverId
+     * @return
+     */
     @Transactional(readOnly = true)
     public Server getServerById(Long serverId) {
         return serverRepository.findById(serverId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Server not found"));
     }
 
+    /**
+     * get server object based on serverId and userId (it use to resolve duplicted serverId but unique userId)
+     * @param serverId
+     * @param userId
+     * @return Server
+     */
     @Transactional(readOnly = true)
     public Server getServerByIdForUser(Long serverId, Long userId) {
         return serverRepository.findByIdAndUserId(serverId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Server not found"));
     }
 
+    /**
+     * delete server from db
+     * @param serverId
+     * @param userId
+     */
     @Transactional
     public void deleteServer(Long serverId, Long userId) {
         Server server = getServerByIdForUser(serverId, userId);

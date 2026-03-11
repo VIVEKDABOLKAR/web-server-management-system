@@ -5,6 +5,7 @@ import com.wsms.dto.metric.MetricSubmitRequest;
 import com.wsms.entity.Server;
 import com.wsms.repository.ServerRepository;
 import com.wsms.service.MetricService;
+import com.wsms.utils.alertSystem.AlertSystem;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,14 +23,26 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AgentController {
 
+    //DI
     private final MetricService metricService;
     private final ServerRepository serverRepository;
+    private final AlertSystem alertSystem;
 
+    /**
+     * agent send matrics to this backend using this /api/agent/metrics
+     * it will store matrics inside db
+     * pass it through alert system
+     * if alert created, store in db
+     * @param authHeader
+     * @param request
+     * @return
+     */
     @PostMapping("/metrics")
     public ResponseEntity<Map<String, Object>> submitMetrics(
             @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody MetricSubmitRequest request) {
-        
+
+        //log server matrics
         log.info("Received metrics from agent. Server ID: {}, CPU: {}%, Memory: {}%, Disk: {}%", 
                 request.getServerId(), 
                 request.getCpuUsage(), 
@@ -46,6 +59,7 @@ public class AgentController {
                         "Server not found"
                 ));
 
+        //validate agent token
         if (!server.getAgentToken().equals(token)) {
             log.warn("Invalid agent token for server ID: {}", request.getServerId());
             throw new ResponseStatusException(
@@ -56,6 +70,17 @@ public class AgentController {
 
         // Submit metric
         MetricResponse response = metricService.submitMetric(request);
+
+        //send metrics to alert system
+        boolean alertOccured = alertSystem.evaluate(server, request);
+
+        //just for test :- remove it during commit
+        if(!alertOccured) {
+            System.out.println("Alert not occured .......................................................................................");
+        }
+        else {
+            System.out.println("Alert occured ##########################################################################################");
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
