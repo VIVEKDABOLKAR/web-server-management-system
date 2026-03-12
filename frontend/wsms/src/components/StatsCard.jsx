@@ -32,12 +32,18 @@ const StatsCard = ({ title, value, icon, variant = "neutral" }) => {
       text: "text-white",
       value: "text-4xl",
     },
+    subtle: {
+      bg: "bg-gradient-to-r from-stone-500 to-gray-500 text-white",
+      border: "border-gray-200",
+      text: "text-white",
+      value: "text-4xl",
+    },
   };
 
   const current = variants[variant] || variants.neutral;
 
   return (
-    <div className={`rounded-xl shadow-lg border ${current.border} ${current.bg} p-4`}>      
+    <div className={`rounded-xl shadow-lg border ${current.border} ${current.bg} p-4`}>
       <div className="flex items-center gap-3">
         {icon && <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">{icon}</div>}
         <p className={`text-xs uppercase tracking-wider font-semibold ${current.text} opacity-90`}>{title}</p>

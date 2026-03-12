@@ -92,7 +92,6 @@ const Profile = () => {
   if (loading) {
     return (
       <>
-        <Navbar />
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center text-gray-500 dark:text-gray-400 text-xl">
             Loading profile...
@@ -104,7 +103,6 @@ const Profile = () => {
 
   return (
     <>
-      <Navbar />
       <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-8">

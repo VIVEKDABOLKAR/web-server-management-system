@@ -79,9 +79,9 @@ const Landing = () => {
                 }
               >
                 {isDarkMode ? (
-                  <span className="text-2xl">☀️</span>
-                ) : (
                   <span className="text-2xl">🌙</span>
+                ) : (
+                  <span className="text-2xl">☀️</span>
                 )}
               </button>
               <button

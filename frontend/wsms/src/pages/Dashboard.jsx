@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import ConfirmDialog from "../components/ConfirmDialog";
 import StatsCard from "../components/StatsCard";
 import ServerTable from "../components/ServerTable";
+import DashboardLayout from "../components/dashboard/DashboardLayout";
 
 const Dashboard = () => {
   const [servers, setServers] = useState([]);
@@ -48,6 +49,9 @@ const Dashboard = () => {
     return { total, active, inactive, blocked };
   }, [servers]);
 
+  /**
+   *  const which change it value when Server or searchTerm change
+   */
   const filteredServers = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) return servers;
@@ -91,53 +95,59 @@ const Dashboard = () => {
 
   return (
     <>
-      <Navbar hideDashboard={true} />
-      <div className="min-h-screen bg-slate-100 dark:bg-slate-950 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">Admin Server Dashboard</h1>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Visualize system health, manage servers and keep configurations under control with a modern admin UI.</p>
+      {/* <Navbar hideDashboard={true} /> */}
+      <DashboardLayout>
+
+        <div className="min-h-screen bg-slate-100 dark:bg-slate-950 transition-colors">
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+              {/* dashboard title */}
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">Admin Server Dashboard</h1>
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Visualize system health, manage servers and keep configurations under control with a modern admin UI.</p>
+              </div>
+              {/* add server button :- To Do - create buuton component addserver - reuseability */}
+              <button
+                onClick={() => navigate("/add-server")}
+                className="bg-sky-600 text-white px-4 py-2 rounded-lg border border-sky-500 shadow hover:bg-sky-700 transition"
+              >
+                + New Server
+              </button>
             </div>
-            <button
-              onClick={() => navigate("/add-server")}
-              className="bg-sky-600 text-white px-4 py-2 rounded-lg border border-sky-500 shadow hover:bg-sky-700 transition"
-            >
-              + New Server
-            </button>
+
+            {error && (
+              <div className="mb-6 rounded-lg px-4 py-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300">{error}</div>
+            )}
+
+            {/* server stats card To Do :- icon change from # ->  */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <StatsCard title="Total Servers" value={stats.total} variant="primary" icon="#" />
+              <StatsCard title="Active Servers" value={stats.active} variant="success" icon="#" />
+              <StatsCard title="Inactive Servers" value={stats.inactive} variant="danger" icon="#" />
+              <StatsCard title="Unknown Servers" value={stats.blocked} variant="subtle" icon="#" />
+            </div>
+
+            {/* ServeTable component :- show list of server  */}
+            <ServerTable
+              servers={filteredServers}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              onView={(id) => navigate(`/servers/${id}`)}
+              onDelete={handleDeleteServer}
+              onAdd={() => navigate("/add-server")}
+            />
           </div>
-
-          {error && (
-            <div className="mb-6 rounded-lg px-4 py-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300">{error}</div>
-          )}
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <StatsCard title="Total Servers" value={stats.total} variant="primary" icon="#" />
-            <StatsCard title="Active Servers" value={stats.active} variant="success" icon="#" />
-            <StatsCard title="Blocked Servers" value={stats.blocked} variant="warning" icon="#" />
-            <StatsCard title="Inactive Servers" value={stats.inactive} variant="danger" icon="#" />
-          </div>
-
-          <ServerTable
-            servers={servers}
-            filteredServers={filteredServers}
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            onView={(id) => navigate(`/servers/${id}`)}
-            onDelete={handleDeleteServer}
-            onAdd={() => navigate("/add-server")}
-          />
         </div>
-      </div>
 
-      <ConfirmDialog
-        isOpen={deleteDialog.isOpen}
-        onClose={() => setDeleteDialog({ isOpen: false, serverId: null, serverName: "" })}
-        onConfirm={confirmDelete}
-        title="Delete Server"
-        message={`Are you sure you want to delete ${deleteDialog.serverName || "this server"}?`}
-        serverName={deleteDialog.serverName}
-      />
+        <ConfirmDialog
+          isOpen={deleteDialog.isOpen}
+          onClose={() => setDeleteDialog({ isOpen: false, serverId: null, serverName: "" })}
+          onConfirm={confirmDelete}
+          title="Delete Server"
+          message={`Are you sure you want to delete ${deleteDialog.serverName || "this server"}?`}
+          serverName={deleteDialog.serverName}
+        />
+      </DashboardLayout>
     </>
   );
 };
