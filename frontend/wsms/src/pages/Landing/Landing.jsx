@@ -9,6 +9,14 @@ import "./ScaleAndWorkSection.css";
 import "./FeatureSection.css"
 import "./GetStart.css";
 
+//icon
+import serverIcon from  "../../assets/svg/pc.svg"
+import chartIcon from  "../../assets/svg/chart.svg"
+import alertIcon from  "../../assets/svg/alert.svg"
+import ipManageIcon from  "../../assets/svg/ipManage.svg"
+import multiIcon from  "../../assets/svg/multi.svg"
+import trackIcon from  "../../assets/svg/track.svg"
+
 const Landing = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -30,37 +38,37 @@ const Landing = () => {
 
   const features = [
     {
-      icon: "🖥️",
+      icon: <img src={serverIcon} className="w-10 h-10" />,
       title: "Real-Time Monitoring",
       description:
         "Monitor CPU, memory, disk usage, and system metrics in real-time with automatic updates every 30 seconds.",
     },
     {
-      icon: "📊",
+      icon: <img src={chartIcon} className="w-10 h-10" />,
       title: "Performance Analytics",
       description:
         "Track server performance trends with detailed metrics and visual representations of system health.",
     },
     {
-      icon: "🚨",
+      icon: <img src={alertIcon} className="w-10 h-10" />,
       title: "Smart Alerts",
       description:
         "Receive instant notifications when servers exceed critical thresholds or experience issues.",
     },
     {
-      icon: "🔒",
+      icon: <img src={ipManageIcon} className="w-10 h-10" />,
       title: "IP Management",
       description:
         "Automatically block suspicious IPs and manage your server's security with built-in protection.",
     },
     {
-      icon: "⚡",
+      icon: <img src={multiIcon} className="w-10 h-10" />,
       title: "Multi-Server Support",
       description:
         "Manage multiple servers from a single dashboard with easy navigation and comprehensive oversight.",
     },
     {
-      icon: "📈",
+      icon: <img src={trackIcon} className="w-10 h-10" />,
       title: "Status Tracking",
       description:
         "Automatic server status updates based on performance metrics with color-coded indicators.",
