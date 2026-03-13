@@ -1,0 +1,183 @@
+/* ============================= */
+/* FEATURES SECTION BACKGROUND */
+/* ============================= */
+
+.features-section {
+  position: relative;
+  min-height: 100vh;
+  padding: 80px 40px;
+  overflow: hidden;
+}
+
+/* LIGHT MODE → DARK BLUE */
+.features-light {
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(90,140,220,0.9) 0%,
+      rgba(50, 98, 189, 0.95) 50%,
+      rgb(119, 155, 228) 90%
+    );
+}
+
+/* DARK MODE → BLACK LIKE STATS */
+.features-dark {
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(60,60,60,0.4) 0%,
+      rgba(0,0,0,0.95) 70%
+    ),
+    linear-gradient(to bottom,#05010d,#000000);
+}
+
+/* GRID DOT PATTERN */
+
+.features-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    radial-gradient(rgba(255,255,255,0.3) 1px, transparent 1px);
+
+  background-size: 24px 24px;
+  opacity: 0.35;
+}
+
+/* ============================= */
+/* CONTENT */
+/* ============================= */
+
+.features-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: auto;
+  text-align: center;
+}
+
+/* ============================= */
+/* TITLES */
+/* ============================= */
+
+.features-title {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* LIGHT MODE TITLE */
+
+.features-light .features-title {
+  color: black;
+}
+
+/* DARK MODE TITLE */
+
+.features-dark .features-title {
+  color: white;
+}
+
+.features-subtitle {
+  max-width: 600px;
+  margin: auto;
+  margin-bottom: 50px;
+  font-size: 16px;
+}
+
+/* LIGHT MODE SUBTITLE */
+
+.features-light .features-subtitle {
+  color: #1e293b;
+}
+
+/* DARK MODE SUBTITLE */
+
+.features-dark .features-subtitle {
+  color: #e2e8f0;
+}
+
+/* ============================= */
+/* GRID → 3 PER ROW */
+/* ============================= */
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+/* ============================= */
+/* CARDS */
+/* ============================= */
+
+.feature-card {
+  padding: 26px;
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+/* DARK MODE CARD */
+.features-dark .feature-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* LIGHT MODE CARD */
+.features-light .feature-card {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* HOVER */
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* ============================= */
+/* TEXT */
+/* ============================= */
+
+.feature-icon {
+  font-size: 34px;
+  margin-bottom: 10px;
+}
+
+.feature-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* LIGHT MODE CARD TITLE */
+
+.features-light .feature-title {
+  color: black;
+}
+
+/* DARK MODE CARD TITLE */
+
+.features-dark .feature-title {
+  color: white;
+}
+
+.feature-desc {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* LIGHT MODE DESCRIPTION */
+
+.features-light .feature-desc {
+  color: #1e293b;
+}
+
+/* DARK MODE DESCRIPTION */
+
+.features-dark .feature-desc {
+  color: #e2e8f0;
+}

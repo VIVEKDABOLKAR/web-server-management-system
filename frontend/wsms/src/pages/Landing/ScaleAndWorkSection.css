@@ -1,0 +1,248 @@
+.hero-bg {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+}
+
+/* DARK MODE BACKGROUND */
+.hero-bg.dark-mode {
+  background: radial-gradient(
+      circle at 50% 80%,
+      rgba(80,82,88,0.6) 0%,
+      rgba(0,0,0,0.95) 60%
+    ),
+    linear-gradient(to bottom, #05010d, #000000);
+}
+
+
+/* GRID FLOOR */
+.hero-bg::after {
+  content: "";
+  position: absolute;
+  bottom: -200px;
+  left: -50%;
+  width: 200%;
+  height: 600px;
+
+  background-size: 80px 80px;
+  transform: perspective(600px) rotateX(60deg);
+  opacity: 0.6;
+}
+
+/* DARK GRID */
+.hero-bg.dark-mode::after {
+  background-image:
+    linear-gradient(rgba(80,82,88,0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 101, 107, 0.25) 1px, transparent 1px);
+}
+
+
+
+/* GLOW EFFECT */
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 600px;
+  filter: blur(120px);
+}
+
+/* DARK GLOW */
+.hero-bg.dark-mode::before {
+  background: radial-gradient(
+    circle,
+    rgba(90, 92, 99, 0.45) 0%,
+    transparent 70%
+  );
+}
+/* LIGHT MODE BACKGROUND (more blue) */
+.hero-bg.light-mode {
+  background: linear-gradient(
+      rgba(120,170,255,0.9),
+      rgba(150,190,255,0.85)
+    ),
+    radial-gradient(
+      circle at 50% 80%,
+      rgba(0, 0, 0, 0.75) 0%,
+      rgba(0, 0, 0, 0.85) 60%
+    );
+}
+
+/* LIGHT GRID */
+.hero-bg.light-mode::after {
+  background-image:
+    linear-gradient(rgba(40,100,220,0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(40,100,220,0.6) 1px, transparent 1px);
+}
+
+/* LIGHT GLOW */
+.hero-bg.light-mode::before {
+  background: radial-gradient(
+    circle,
+    rgba(90,140,255,0.9) 0%,
+    rgba(140,180,255,0.6) 40%,
+    transparent 70%
+  );
+}
+
+/* ============================= */
+/* HOW SECTION */
+/* ============================= */
+
+.how-section {
+  padding: 80px 40px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+/* LIGHT MODE */
+
+.how-light {
+  background: linear-gradient(
+    180deg,
+    #66a7af,
+    #7ab0e6
+  );
+}
+
+/* DARK MODE */
+
+.how-dark {
+  background: linear-gradient(
+    180deg,
+    #18191a,
+    #1a1a1b
+  );
+}
+
+
+/* CONTENT */
+
+.how-content {
+  max-width: 1200px;
+  margin: auto;
+  text-align: center;
+}
+
+
+/* TITLES */
+
+.how-title {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.how-light .how-title {
+  color: #0f172a;
+}
+
+.how-dark .how-title {
+  color: white;
+}
+
+
+/* SUBTITLE */
+
+.how-subtitle {
+  margin-bottom: 60px;
+}
+
+.how-light .how-subtitle {
+  color: #475569;
+}
+
+.how-dark .how-subtitle {
+  color: #cbd5f5;
+}
+
+
+/* GRID */
+
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+
+/* CARDS */
+
+.how-card {
+  padding: 24px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.how-light .how-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+}
+
+.how-dark .how-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.how-card:hover {
+  transform: translateY(-5px);
+}
+
+
+/* STEP CIRCLE */
+
+.how-step {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto auto 16px;
+  font-weight: bold;
+  color: white;
+  font-size: 22px;
+}
+
+.blue {
+  background: #2563eb;
+}
+
+.purple {
+  background: #7c3aed;
+}
+
+.pink {
+  background: #ec4899;
+}
+
+
+/* CARD TEXT */
+
+.how-card-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.how-light .how-card-title {
+  color: #0f172a;
+}
+
+.how-dark .how-card-title {
+  color: white;
+}
+
+.how-card-desc {
+  font-size: 14px;
+}
+
+.how-light .how-card-desc {
+  color: #475569;
+}
+
+.how-dark .how-card-desc {
+  color: #cbd5f5;
+}
