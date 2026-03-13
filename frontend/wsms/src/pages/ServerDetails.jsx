@@ -72,7 +72,6 @@ const ServerDetails = () => {
   if (loading) {
     return (
       <>
-        <Navbar />
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center text-gray-500 dark:text-gray-400 text-xl">
             Loading server details...
@@ -85,7 +84,6 @@ const ServerDetails = () => {
   if (error || !server) {
     return (
       <>
-        <Navbar />
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-4">
             {error || "Server not found"}
@@ -97,7 +95,6 @@ const ServerDetails = () => {
 
   return (
     <>
-      <Navbar />
       <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-8">

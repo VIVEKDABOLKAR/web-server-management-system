@@ -4,7 +4,7 @@ import api from "../services/api";
 import Toast from "./Toast";
 import { useDarkMode } from "../context/DarkModeContext";
 
-const NavbarDsh = ({ hideDashboard = false }) => {
+const NavbarDashboard = ({ hideDashboard = false }) => {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const { isDarkMode, toggleDarkMode } = useDarkMode();
@@ -297,4 +297,4 @@ const NavbarDsh = ({ hideDashboard = false }) => {
     );
 };
 
-export default Navbar;
+export default NavbarDashboard;

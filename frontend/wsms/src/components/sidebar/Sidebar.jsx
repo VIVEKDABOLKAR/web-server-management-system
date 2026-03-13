@@ -29,7 +29,7 @@ const Sidebar = ({ isOpen, toggleOpen }) => {
             {!isOpen ? (
                 <button
                     onClick={toggleOpen}
-                    className="fixed top-3 left-4 z-50 p-2 rounded-md bg-white dark:bg-slate-800 shadow-md"
+                    className="fixed top-3 left-4 z-50 p-2  rounded-md bg-white dark:bg-slate-800 shadow-md border-2 border-gray-400 "
                 >
                     ☰
                 </button>
@@ -39,7 +39,7 @@ const Sidebar = ({ isOpen, toggleOpen }) => {
                 <div
                     className={`
                         fixed md:relative left-0 top-0 h-screen w-64 z-50 md:z-0
-                        bg-gradient-to-b from-slate-500 to-slate-300 dark:from-slate-900 dark:to-slate-950
+                        bg-gradient-to-b from-slate-500 to-slate-300 dark:from-slate-900 dark:to-slate-950 bg-fixed
                         border-r border-slate-200 dark:border-slate-700
                         shadow-2xl md:shadow-none
                         rounded-r-xl

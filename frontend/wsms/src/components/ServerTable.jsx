@@ -1,4 +1,5 @@
 import React from "react";
+import AddButton from "./AddButton";
 
 /**
  * it create server table :- 
@@ -28,12 +29,14 @@ const ServerTable = ({
               onChange={(e) => onSearchChange(e.target.value)}
             />
             {/* add server :- replace it with add servr button */}
-            <button
-              onClick={onAdd}
-              className="inline-flex items-center gap-2 bg-sky-600 text-white px-4 py-2 rounded-lg hover:bg-sky-700 transition"
-            >
-              + Add Server
-            </button>
+            <AddButton
+                title="New Server"
+                onClick={onAdd}
+                variant="primary"
+                size="md"
+                icon="+"
+                className=""
+              />
           </div>
         </div>
       </div>

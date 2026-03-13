@@ -24,7 +24,7 @@ const AddButton = ({
   // Variant styles
   const variantStyles = {
     primary:
-      "bg-sky-600 text-white hover:bg-sky-700 active:bg-sky-800 disabled:bg-sky-400",
+      "bg-sky-600 text-white hover:bg-sky-700 active:bg-sky-800 disabled:bg-sky-400 dark:bg-sky-900",
     secondary:
       "bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100 hover:bg-slate-300 dark:hover:bg-slate-600 active:bg-slate-400 disabled:bg-slate-300",
     outline:

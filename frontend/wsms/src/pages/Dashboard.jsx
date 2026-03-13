@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-import Navbar from "../components/Navbar";
+import AddButton from "../components/AddButton"
 import ConfirmDialog from "../components/ConfirmDialog";
 import StatsCard from "../components/StatsCard";
 import ServerTable from "../components/ServerTable";
@@ -82,7 +82,6 @@ const Dashboard = () => {
   if (loading) {
     return (
       <>
-        <Navbar />
         <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex items-center justify-center p-6">
           <div className="rounded-2xl p-8 bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 text-center">
             <div className="animate-spin rounded-full h-14 w-14 border-4 border-sky-500 border-t-transparent mx-auto mb-4" />
@@ -98,21 +97,24 @@ const Dashboard = () => {
       {/* <Navbar hideDashboard={true} /> */}
       <DashboardLayout>
 
-        <div className="min-h-screen bg-slate-100 dark:bg-slate-950 transition-colors">
-          <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className=" bg-slate-100 dark:bg-slate-950 transition-colors">
+          {/* <div className="max-w-7xl mx-auto px-4 py-8"> */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
               {/* dashboard title */}
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">Admin Server Dashboard</h1>
                 <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Visualize system health, manage servers and keep configurations under control with a modern admin UI.</p>
               </div>
-              {/* add server button :- To Do - create buuton component addserver - reuseability */}
-              <button
+              {/* add server button :- To Do - create buuton component addserver - reuseability :- DONE*/}
+              <AddButton
+                title="New Server"
                 onClick={() => navigate("/add-server")}
-                className="bg-sky-600 text-white px-4 py-2 rounded-lg border border-sky-500 shadow hover:bg-sky-700 transition"
-              >
-                + New Server
-              </button>
+                variant="primary"
+                size="lg"
+                icon="+"
+                className=""
+              />
+
             </div>
 
             {error && (
@@ -137,7 +139,7 @@ const Dashboard = () => {
               onAdd={() => navigate("/add-server")}
             />
           </div>
-        </div>
+        {/* </div> */}
 
         <ConfirmDialog
           isOpen={deleteDialog.isOpen}

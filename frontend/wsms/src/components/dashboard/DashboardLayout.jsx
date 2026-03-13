@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Sidebar from "../sidebar/Sidebar";
 // import Sidebar from "../Sidebar";
 
@@ -15,13 +15,16 @@ const DashboardLayout = ({ children, pageTitle = "Dashboard" }) => {
     
 
     return (
-        <div className="flex h-screen bg-slate-100 dark:bg-slate-950 overflow-hidden" key={pageTitle}>
+        <div className="flex  bg-slate-100 dark:bg-slate-950 overflow-hidden" key={pageTitle}>
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col overflow-auto">
+            <main className="flex-1 flex flex-col ">
                 {/* Content Area */}
-                <div className="flex-1 overflow-auto">
+                <div className="flex-1 overflow-auto ">
+                    <div className="max-w-7xl mx-auto px-4 py-8">
+
                     {children}
+                    </div>
                 </div>
             </main>
         </div>
