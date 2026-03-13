@@ -1,0 +1,86 @@
+
+/*======================================================*/
+.cta-section {
+  position: relative;
+  margin: 40px auto;
+  border-radius: 20px;
+  padding: 100px 40px;
+  overflow: hidden;
+  width: 70%;
+  text-align: center;
+}
+
+/* ============================= */
+/* LIGHT MODE */
+/* ============================= */
+
+.cta-light {
+  background-image: url("/src/assets/startImage.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  background-color: #5e95cc;
+}
+
+
+/* ============================= */
+/* DARK MODE */
+/* ============================= */
+
+.cta-dark {
+   background-image: url("/src/assets/startImage.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #292525;
+}
+
+
+/* ============================= */
+/* CONTENT */
+/* ============================= */
+
+.cta-content {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  margin: auto;
+}
+
+
+/* ============================= */
+/* TITLE */
+/* ============================= */
+
+.cta-title {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.cta-light .cta-title {
+  color: #1e293b;
+}
+
+.cta-dark .cta-title {
+  color: #60a5fa;
+}
+
+
+/* ============================= */
+/* TEXT */
+/* ============================= */
+
+.cta-text {
+  font-size: 20px;
+  margin-bottom: 35px;
+}
+
+.cta-light .cta-text {
+  color: #475569;
+}
+
+.cta-dark .cta-text {
+  color: #cbd5f5;
+}
