@@ -41,7 +41,7 @@ public class ServerService {
                 .ipAddress(dto.getIpAddress())
                 .osType(dto.getOsType())
                 .webServerType(dto.getWebServerType())
-                .webServerPortNo(dto.getWebServerPort())
+                .webServerPortNo(dto.getWebServerPortNo())
                 .description(dto.getDescription())
                 .status(ServerStatus.INACTIVE) //we add machnisim to make it active :- based on agent installation and agen heartbeat response
                 .agentToken(UUID.randomUUID().toString())
