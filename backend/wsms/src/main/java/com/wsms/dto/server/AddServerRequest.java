@@ -28,5 +28,8 @@ public class AddServerRequest {
     @NotNull
     private WebServerType webServerType;
 
+    @NotNull
+    private Integer webServerPortNo;
+
     private String description;
 }

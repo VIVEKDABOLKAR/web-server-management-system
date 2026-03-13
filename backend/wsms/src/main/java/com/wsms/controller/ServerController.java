@@ -147,6 +147,7 @@ public class ServerController {
                 .ipAddress(server.getIpAddress())
                 .osType(server.getOsType())
                 .webServerType(server.getWebServerType())
+                .webServerPortNo(server.getWebServerPortNo())
                 .status(effectiveStatus)
                 .agentToken(server.getAgentToken())
                 .description(server.getDescription())

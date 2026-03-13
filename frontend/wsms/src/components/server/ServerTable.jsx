@@ -1,5 +1,5 @@
 import React from "react";
-import AddButton from "./AddButton";
+import AddButton from "../AddButton";
 
 /**
  * it create server table :- 
@@ -14,6 +14,8 @@ const ServerTable = ({
   onDelete,
   onAdd,
 }) => {
+  console.log(servers);
+  
   return (
     <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden">
       <div className="p-5 border-b border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-900">
@@ -57,6 +59,7 @@ const ServerTable = ({
                 <th className="px-5 py-4 font-semibold">Status</th>
                 <th className="px-5 py-4 font-semibold">OS</th>
                 <th className="px-5 py-4 font-semibold">Web Server</th>
+                <th className="px-5 py-4 font-semibold">Port No</th>
                 <th className="px-5 py-4 font-semibold text-right">Actions</th>
               </tr>
             </thead>
@@ -111,6 +114,11 @@ const ServerTable = ({
                     {/* webServerType */}
                     <td className="px-5 py-3 text-slate-700 dark:text-slate-200">
                       {server.webServerType || "-"}
+                    </td>
+
+                    {/* webServerPortNo */}
+                    <td className="px-5 py-3 text-slate-700 dark:text-slate-200">
+                      {server.webServerPortNo || "-"}
                     </td>
 
                     {/* actions */}

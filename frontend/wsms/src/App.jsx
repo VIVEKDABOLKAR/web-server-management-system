@@ -12,7 +12,7 @@ import VerifySignup from "./pages/VerifySignup";
 import Dashboard from "./pages/Dashboard";
 import ServerDetails from "./pages/ServerDetails";
 import AddServer from "./pages/AddServer";
-import Profile from "./pages/Profile";
+import Profile from "./pages/profile/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 

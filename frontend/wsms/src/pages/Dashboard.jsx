@@ -4,7 +4,7 @@ import api from "../services/api";
 import AddButton from "../components/AddButton"
 import ConfirmDialog from "../components/ConfirmDialog";
 import StatsCard from "../components/StatsCard";
-import ServerTable from "../components/ServerTable";
+import ServerTable from "../components/server/ServerTable";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 
 const Dashboard = () => {
@@ -60,7 +60,8 @@ const Dashboard = () => {
         server.serverName?.toLowerCase().includes(term) ||
         server.ipAddress?.toLowerCase().includes(term) ||
         server.osType?.toLowerCase().includes(term) ||
-        server.webServerType?.toLowerCase().includes(term)
+        server.webServerType?.toLowerCase().includes(term) ||
+        server.webServerPortNo?.toLowerCase().includes(term)
     );
   }, [servers, searchTerm]);
 

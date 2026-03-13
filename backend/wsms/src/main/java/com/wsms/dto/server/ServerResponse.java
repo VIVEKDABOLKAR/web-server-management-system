@@ -16,6 +16,7 @@ public class ServerResponse {
     private String ipAddress;
     private OSType osType;
     private WebServerType webServerType;
+    private Integer webServerPortNo;
     private ServerStatus status;
     private String agentToken;
     private String description;
