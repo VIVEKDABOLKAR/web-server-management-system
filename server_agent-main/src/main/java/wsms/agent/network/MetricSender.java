@@ -1,7 +1,7 @@
 package wsms.agent.network;
 
-import com.google.gson.Gson;
 import wsms.agent.model.Metrics;
+import wsms.agent.utils.JsonUtils;
 import wsms.agent.utils.Logger;
 
 import java.net.URI;
@@ -17,7 +17,6 @@ public class MetricSender {
     private final String authToken;
     private final Long serverId;
     private final HttpClient httpClient;
-    private final Gson gson;
     private final Logger logger;
 
     public MetricSender(String backendUrl, String authToken, Long serverId, Logger logger) {
@@ -28,7 +27,6 @@ public class MetricSender {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
-        this.gson = new Gson();
     }
 
     public boolean sendMetrics(Metrics metrics) {
@@ -41,7 +39,7 @@ public class MetricSender {
             payload.put("diskUsage", metrics.getDisk());
             payload.put("timestamp", metrics.getTimestamp().toString());
 
-            String jsonPayload = gson.toJson(payload);
+            String jsonPayload = JsonUtils.toJson(payload);
 
             // Build request
             HttpRequest request = HttpRequest.newBuilder()
@@ -75,7 +73,7 @@ public class MetricSender {
             payload.put("serverId", serverId);
             payload.put("status", "ACTIVE");
 
-            String jsonPayload = gson.toJson(payload);
+            String jsonPayload = JsonUtils.toJson(payload);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(backendUrl + "/api/agent/heartbeat"))

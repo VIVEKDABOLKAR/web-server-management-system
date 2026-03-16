@@ -1,68 +1,25 @@
 package wsms.agent;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import wsms.agent.config.Config;
+import wsms.agent.config.ConfigUtils;
 import wsms.agent.core.Agent;
 
 public class Main {
     public static void main(String[] args) {
-        String configPath = "config.json";
-        if (args.length > 0) {
-            configPath = args[0];
-        }
+
+        //parse args :- --configPath= --serverId= --agentToken= --serverName --backendUrl --collectionInterval
+        Map<String, String> configArgs = parseArgs(args);
+
+        //get config file
+        String configPath = configArgs.getOrDefault("configPath", "config.json");
 
         // Load config
-        Config config = Config.load(configPath);
-        
-        // Check if server ID and token are configured
-        if (config.getServerIdLong() == null || config.getServerIdLong() == 1L || 
-            config.getAuthToken() == null || config.getAuthToken().isEmpty() || 
-            config.getAuthToken().equals("your-agent-token-here")) {
-            
-            System.out.println("========================================");
-            System.out.println("Agent Configuration Required");
-            System.out.println("========================================");
-            System.out.println("Please provide the following information from your database:");
-            System.out.println();
-            
-            try (Scanner scanner = new Scanner(System.in)) {
-                System.out.print("Enter Server ID (from servers table): ");
-                String serverIdInput = scanner.nextLine().trim();
-                Long serverId;
-                try {
-                    serverId = Long.parseLong(serverIdInput);
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid Server ID. Must be a number.");
-                    System.exit(1);
-                    return;
-                }
-                
-                System.out.print("Enter Agent Token (from servers table): ");
-                String agentToken = scanner.nextLine().trim();
-                
-                if (agentToken.isEmpty()) {
-                    System.out.println("Agent Token cannot be empty.");
-                    System.exit(1);
-                    return;
-                }
-                
-                config.setServerIdLong(serverId);
-                config.setAuthToken(agentToken);
-                
-                try {
-                    config.save(configPath);
-                    System.out.println();
-                    System.out.println("✓ Configuration saved to " + configPath);
-                    System.out.println("✓ You won't need to enter these values again!");
-                    System.out.println();
-                } catch (Exception e) {
-                    System.out.println("Failed to save configuration: " + e.getMessage());
-                    System.exit(1);
-                    return;
-                }
-            }
-        }
+        Config config = ConfigUtils.saveConfigArgs(configArgs , configPath);
+
 
         Agent agent;
         try {
@@ -79,5 +36,22 @@ public class Main {
         }));
 
         agent.start();
+    }
+
+    //parse cmd args
+    private static Map<String, String> parseArgs(String[] args) {
+        Map<String, String> map = new HashMap<>();
+
+        //convert strings args into key-value map
+        for (String arg : args) {
+            if (arg.startsWith("--")) {
+                String[] parts = arg.substring(2).split("=", 2);
+                if (parts.length == 2) {
+                    map.put(parts[0], parts[1]);
+                }
+            }
+        }
+
+        return map;
     }
 }

@@ -9,6 +9,7 @@ import wsms.agent.collector.CPUCollector;
 import wsms.agent.collector.DiskCollector;
 import wsms.agent.collector.MemoryCollector;
 import wsms.agent.config.Config;
+import wsms.agent.config.ConfigUtils;
 import wsms.agent.model.Metrics;
 import wsms.agent.network.MetricSender;
 import wsms.agent.utils.Logger;
@@ -28,7 +29,7 @@ public class Agent {
 
     private Agent(Config config) {
         this.config = config;
-        this.logger = new Logger(config.getLogFile());
+        this.logger = new Logger(config.getConfigPath());
         this.cpuCollector = new CPUCollector();
         this.memoryCollector = new MemoryCollector();
         this.diskCollector = new DiskCollector("/");
@@ -38,12 +39,12 @@ public class Agent {
         // Initialize metric sender if backend URL and auth token are provided
         if (config.getBackendUrl() != null && !config.getBackendUrl().isEmpty()
                 && config.getAuthToken() != null && !config.getAuthToken().isEmpty()
-                && config.getServerIdLong() != null) {
+                && config.getServerId() != null) {
             logger.info("Connecting to backend at " + config.getBackendUrl());
             this.metricSender = new MetricSender(
                     config.getBackendUrl(),
                     config.getAuthToken(),
-                    config.getServerIdLong(),
+                    Long.parseLong(config.getServerId()), //change it to the string , by testing
                     logger
             );
             logger.info("Metric sender initialized with backend: " + config.getBackendUrl());
@@ -54,7 +55,7 @@ public class Agent {
     }
 
     public static Agent newAgent(String configPath) {
-        Config config = Config.load(configPath);
+        Config config = ConfigUtils.loadConfig(configPath);
         return new Agent(config);
     }
 

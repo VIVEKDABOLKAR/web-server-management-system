@@ -1,0 +1,10 @@
+{
+  "serverId" : "1",
+  "serverName" : "server",
+  "authToken" : "hii",
+  "configPath" : null,
+  "backendUrl" : "http://localhost:8080",
+  "webSocketUrl" : null,
+  "collectionInterval" : 5.000000000,
+  "blockListRefreshInterval" : 60.000000000
+}
