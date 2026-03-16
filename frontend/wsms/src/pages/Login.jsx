@@ -1,15 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../services/api";
+import { useLoginMutation } from "../store/authApi";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [login, { isLoading, isSuccess, data, error }] = useLoginMutation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isSuccess) {
+      return;
+    }
+
+    if (data?.token) {
+      localStorage.setItem("token", data.token);
+      setSuccessMessage("Login successful. Redirecting...");
+      navigate("/dashboard");
+      return;
+    }
+
+    setFormError("No token received from server");
+  }, [isSuccess, data, navigate]);
 
   const handleChange = (e) => {
     setFormData({
@@ -20,66 +36,78 @@ const Login = () => {
 
   const validateForm = () => {
     if (!formData.email || !formData.password) {
-      setError("All fields are required");
+      setFormError("All fields are required");
       return false;
     }
     if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      setError("Please enter a valid email");
+      setFormError("Please enter a valid email");
       return false;
     }
     return true;
   };
 
+  const getApiErrorMessage = () => {
+    if (!error) {
+      return "";
+    }
+
+    if (error.status === "FETCH_ERROR") {
+      return "Cannot connect to server. Is the backend running on port 8080?";
+    }
+
+    if (typeof error.data === "string") {
+      return error.data;
+    }
+
+    if (error.data?.message) {
+      return error.data.message;
+    }
+
+    if (typeof error.status === "number") {
+      return `Server error: ${error.status}`;
+    }
+
+    return "Login failed. Please try again.";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setFormError("");
+    setSuccessMessage("");
 
     if (!validateForm()) {
       return;
     }
 
-    setLoading(true);
-
     try {
-      const response = await api.post("/auth/login", formData);
-
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-        navigate("/dashboard");
-      } else {
-        setError("No token received from server");
-      }
-    } catch (err) {
-
-      if (err.code === "ERR_NETWORK") {
-        setError(
-          "Cannot connect to server. Is the backend running on port 8080?",
-        );
-      } else if (err.response) {
-        setError(
-          err.response.data?.message || `Server error: ${err.response.status}`,
-        );
-      } else {
-        setError("Login failed. Please try again.");
-      }
-    } finally {
-      setLoading(false);
+      await login(formData).unwrap();
+    } catch {
+      // Handled via RTK Query mutation error state.
     }
   };
 
+  const apiErrorMessage = getApiErrorMessage();
+  const errorMessage = formError || apiErrorMessage;
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors flex items-center justify-center px-4">
-      <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-8 rounded shadow w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 dark:bg-slate-900 transition-colors flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md rounded-2xl border border-slate-200/80 bg-white/90 p-8 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.35)] backdrop-blur-sm dark:bg-slate-800 dark:border-slate-700">
         <h2 className="text-4xl font-bold text-gray-800 dark:text-white text-center mb-2">
           Login to WSMS
         </h2>
-        <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
+        <p className="text-slate-600 dark:text-gray-300 text-center mb-6">
           Web Server Monitoring System
         </p>
 
-        {error && (
+        {errorMessage && (
           <div className="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-4">
-            {error}
+            {errorMessage}
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="bg-green-100 dark:bg-green-900/20 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-400 px-4 py-3 rounded mb-4">
+            {successMessage}
           </div>
         )}
 
@@ -87,7 +115,7 @@ const Login = () => {
           <div className="mb-4">
             <label
               htmlFor="email"
-              className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+              className="block text-slate-800 dark:text-gray-300 font-semibold mb-2"
             >
               Email
             </label>
@@ -98,7 +126,7 @@ const Login = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 shadow-sm transition focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-100"
               required
             />
           </div>
@@ -106,7 +134,7 @@ const Login = () => {
           <div className="mb-6">
             <label
               htmlFor="password"
-              className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+              className="block text-slate-800 dark:text-gray-300 font-semibold mb-2"
             >
               Password
             </label>
@@ -117,7 +145,7 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter your password"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 shadow-sm transition focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-100"
               required
             />
           </div>
@@ -125,26 +153,25 @@ const Login = () => {
           <div className="text-right mb-4">
             <Link
               to="/forgot-password"
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              className="text-sm font-medium text-cyan-700 hover:text-cyan-800 hover:underline dark:text-blue-400"
             >
               Forgot password?
             </Link>
           </div>
-
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow"
-            disabled={loading}
+            className="w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 py-3 text-white font-semibold shadow-lg shadow-cyan-500/25 transition hover:from-cyan-700 hover:to-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={isLoading}
           >
-            {loading ? "Logging in..." : "Login"}
+            {isLoading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <p className="text-center text-gray-600 dark:text-gray-300 mt-6">
+        <p className="mt-6 text-center text-slate-600 dark:text-gray-300">
           Don't have an account?{" "}
           <Link
             to="/signup"
-            className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            className="font-semibold text-cyan-700 hover:text-cyan-800 hover:underline dark:text-blue-400"
           >
             Sign up here
           </Link>
