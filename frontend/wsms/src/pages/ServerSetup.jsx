@@ -1,27 +1,58 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import WebTerminal from "../components/terminal/WebTerminal";
+import api from "../services/api";
 
 const ServerSetup = () => {
   const { serverId } = useParams();
   const { state } = useLocation();
 
+  const [scriptUrl, setScriptUrl] = useState(null);
+  const [server, setServer] = useState(null);
+
   const serverName = state?.serverName || `Server #${serverId}`;
   const ipAddress = state?.ipAddress || "YOUR_AWS_PUBLIC_IP";
   const terminalControlRef = useRef(null);
+
+    useEffect(() => {
+    const fetchScriptUrl = async () => {
+      try {
+        const res = await api.get(`/api/servers/${serverId}/install-script`);        
+        setScriptUrl(res.data);
+      } catch (err) {
+        showToast("Failed to load install script", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchServerDetails = async () => {
+    try {
+      const response = await api.get(`/api/servers/${serverId}`);
+      console.log(response.data);
+      
+      setServer(response.data);
+    } catch (err) {
+      setError("Failed to fetch server details");
+    }
+  };
+    
+    fetchScriptUrl();
+    fetchServerDetails();
+  }, [serverId]);
 
   const instructions = [
     {
       title: "SSH into your server",
       description: "Connect to your server using SSH",
-      command: `ssh ubuntu@${ipAddress}`,
+      command: `ssh username@${server.ipAddress}`,
     },
     {
       title: "Download install script",
       description: "Fetch the installer from the server",
       command:
-        "curl -fL https://billing-software-dukaantech.s3.eu-north-1.amazonaws.com/install-script-1.sh -o ./install-script.sh",
+        `curl -fL ${scriptUrl} -o ./install-script.sh`,
     },
     {
       title: "Make script executable",

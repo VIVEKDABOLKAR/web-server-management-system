@@ -27,21 +27,22 @@ const Profile = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await api.get("/api/users/profile");
+        setProfile(res.data);
+        setFullName(res.data.fullName);
+        setEmail(res.data.email);
+      } catch (err) {
+        showToast("Failed to load profile", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     fetchProfile();
   }, []);
 
-  const fetchProfile = async () => {
-    try {
-      const res = await api.get("/api/users/profile");
-      setProfile(res.data);
-      setFullName(res.data.fullName);
-      setEmail(res.data.email);
-    } catch (err) {
-      showToast("Failed to load profile", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const showToast = (message, type) => {
     setToast({ message, type });
