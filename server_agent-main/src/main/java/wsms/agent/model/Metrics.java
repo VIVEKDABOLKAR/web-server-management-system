@@ -5,9 +5,17 @@ import java.time.Instant;
 public class Metrics {
     private String serverId;
     private Instant timestamp;
-    private double cpu;
-    private double memory;
-    private double disk;
+    private double cpuUsage;
+    private double loadAvg1m;
+    private double memoryUsage;
+    private double diskUsage;
+    private double diskReadPerSec;
+    private double diskWritePerSec;
+    private double networkTraffic;
+    private int runningProcesses;
+    private int sleepingProcesses;
+    private int blockedProcesses;
+    private int totalProcesses;
 
     public String getServerId() {
         return serverId;
@@ -25,27 +33,91 @@ public class Metrics {
         this.timestamp = timestamp;
     }
 
-    public double getCpu() {
-        return cpu;
+    public double getCpuUsage() {
+        return cpuUsage;
     }
 
-    public void setCpu(double cpu) {
-        this.cpu = cpu;
+    public void setCpuUsage(double cpuUsage) {
+        this.cpuUsage = cpuUsage;
     }
 
-    public double getMemory() {
-        return memory;
+    public double getLoadAvg1m() {
+        return loadAvg1m;
     }
 
-    public void setMemory(double memory) {
-        this.memory = memory;
+    public void setLoadAvg1m(double loadAvg1m) {
+        this.loadAvg1m = loadAvg1m;
     }
 
-    public double getDisk() {
-        return disk;
+    public double getMemoryUsage() {
+        return memoryUsage;
     }
 
-    public void setDisk(double disk) {
-        this.disk = disk;
+    public void setMemoryUsage(double memoryUsage) {
+        this.memoryUsage = memoryUsage;
+    }
+
+    public double getDiskUsage() {
+        return diskUsage;
+    }
+
+    public void setDiskUsage(double diskUsage) {
+        this.diskUsage = diskUsage;
+    }
+
+    public double getDiskReadPerSec() {
+        return diskReadPerSec;
+    }
+
+    public void setDiskReadPerSec(double diskReadPerSec) {
+        this.diskReadPerSec = diskReadPerSec;
+    }
+
+    public double getDiskWritePerSec() {
+        return diskWritePerSec;
+    }
+
+    public void setDiskWritePerSec(double diskWritePerSec) {
+        this.diskWritePerSec = diskWritePerSec;
+    }
+
+    public double getNetworkTraffic() {
+        return networkTraffic;
+    }
+
+    public void setNetworkTraffic(double networkTraffic) {
+        this.networkTraffic = networkTraffic;
+    }
+
+    public int getRunningProcesses() {
+        return runningProcesses;
+    }
+
+    public void setRunningProcesses(int runningProcesses) {
+        this.runningProcesses = runningProcesses;
+    }
+
+    public int getSleepingProcesses() {
+        return sleepingProcesses;
+    }
+
+    public void setSleepingProcesses(int sleepingProcesses) {
+        this.sleepingProcesses = sleepingProcesses;
+    }
+
+    public int getBlockedProcesses() {
+        return blockedProcesses;
+    }
+
+    public void setBlockedProcesses(int blockedProcesses) {
+        this.blockedProcesses = blockedProcesses;
+    }
+
+    public int getTotalProcesses() {
+        return totalProcesses;
+    }
+
+    public void setTotalProcesses(int totalProcesses) {
+        this.totalProcesses = totalProcesses;
     }
 }

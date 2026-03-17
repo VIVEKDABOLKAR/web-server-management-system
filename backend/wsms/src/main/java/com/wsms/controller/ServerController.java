@@ -32,8 +32,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class ServerController {
 
     private final ServerService serverService;
-    //removed user Repository
-    private  final UserService  userService;
+    // removed user Repository
+    private final UserService userService;
 
     @Value("${app.backend.url:http://localhost:8080}")
     private String backendUrl;
@@ -43,7 +43,7 @@ public class ServerController {
      * req :- server request (AddServerRequest DTO)
      * res :- server object
      * desc :- create server object
-     *          take userId from authorization object
+     * take userId from authorization object
      *
      */
     @PostMapping
@@ -57,7 +57,8 @@ public class ServerController {
      * endpoint :- Get /api/servers/
      * req :-
      * res :- List server object
-     * desc :- fetch all the server for the user id - fetch from authorization object
+     * desc :- fetch all the server for the user id - fetch from authorization
+     * object
      */
     @GetMapping
     public ResponseEntity<List<ServerResponse>> getAllServersByLoggedInUser() {
@@ -82,7 +83,7 @@ public class ServerController {
         return ResponseEntity.ok(toResponse(server));
     }
 
-    //ignore the endpoint - need to work on system design first
+    // ignore the endpoint - need to work on system design first
     @GetMapping(value = "/{id}/install-script", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> getInstallScript(@PathVariable("id") Long serverId) {
         Long userId = getLoggedInUserId();
@@ -123,6 +124,7 @@ public class ServerController {
 
     /**
      * return user Id based on the authentication object user email
+     * 
      * @return
      */
     private Long getLoggedInUserId() {
@@ -139,7 +141,7 @@ public class ServerController {
      */
     private ServerResponse toResponse(Server server) {
         ServerStatus effectiveStatus = server.getStatus();
-        //wrong check server status is not depended on blockIps no of rows
+        // wrong check server status is not depended on blockIps no of rows
 
         return ServerResponse.builder()
                 .id(server.getId())
@@ -154,6 +156,7 @@ public class ServerController {
                 .createdAt(server.getCreatedAt())
                 .updatedAt(server.getUpdatedAt())
                 .userId(server.getUser().getId())
+                .lastHeartbeat(server.getLastHeartbeat())
                 .build();
     }
 }

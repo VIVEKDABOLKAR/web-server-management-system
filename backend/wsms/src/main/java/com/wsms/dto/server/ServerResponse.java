@@ -10,6 +10,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ServerResponse {
+    private LocalDateTime lastHeartbeat;
 
     private Long id;
     private String serverName;

@@ -1,9 +1,5 @@
 package wsms.agent.network;
 
-import com.google.gson.Gson;
-import wsms.agent.model.Metrics;
-import wsms.agent.utils.Logger;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -11,6 +7,11 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.google.gson.Gson;
+
+import wsms.agent.model.Metrics;
+import wsms.agent.utils.Logger;
 
 public class MetricSender {
     private final String backendUrl;
@@ -33,14 +34,21 @@ public class MetricSender {
 
     public boolean sendMetrics(Metrics metrics) {
         try {
-            // Create payload
+            // Create payload with only required fields
             Map<String, Object> payload = new HashMap<>();
             payload.put("serverId", serverId);
-            payload.put("cpuUsage", metrics.getCpu());
-            payload.put("memoryUsage", metrics.getMemory());
-            payload.put("diskUsage", metrics.getDisk());
+            payload.put("cpuUsage", metrics.getCpuUsage());
+            payload.put("loadAvg1m", metrics.getLoadAvg1m());
+            payload.put("memoryUsage", metrics.getMemoryUsage());
+            payload.put("diskUsage", metrics.getDiskUsage());
+            payload.put("diskReadPerSec", metrics.getDiskReadPerSec());
+            payload.put("diskWritePerSec", metrics.getDiskWritePerSec());
+            payload.put("networkTraffic", metrics.getNetworkTraffic());
+            payload.put("runningProcesses", metrics.getRunningProcesses());
+            payload.put("sleepingProcesses", metrics.getSleepingProcesses());
+            payload.put("blockedProcesses", metrics.getBlockedProcesses());
+            payload.put("totalProcesses", metrics.getTotalProcesses());
             payload.put("timestamp", metrics.getTimestamp().toString());
-
             String jsonPayload = gson.toJson(payload);
 
             // Build request
