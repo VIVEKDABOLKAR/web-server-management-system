@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-import Sidebar from "../components/sidebar/Sidebar";
-import Navbar from "../components/Navbar";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 
 const AddServer = () => {
@@ -65,13 +63,18 @@ const AddServer = () => {
     setLoading(true);
 
     try {
-      await api.post("/api/servers", formData);
+      const response = await api.post("/api/servers", formData);
 
-      setSuccess("Server added successfully!");
-
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1500);
+      const serverId = response.data.id;
+      navigate(`/server-setup/${serverId}`, {
+        state: {
+          serverName: formData.serverName,
+          ipAddress: formData.ipAddress,
+          osType: formData.osType,
+          webServerType: formData.webServerType,
+          webServerPortNo: formData.webServerPortNo,
+        },
+      });
 
     } catch (err) {
       const responseData = err.response?.data;
@@ -82,6 +85,7 @@ const AddServer = () => {
       }
 
       setError(errorMessage);
+
     } finally {
       setLoading(false);
     }
@@ -92,7 +96,7 @@ const AddServer = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
         <div className="w-full max-w-3xl px-4">
 
-          {/* Page Header */}
+          {/* Header */}
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200">
               Add Server
@@ -104,7 +108,7 @@ const AddServer = () => {
           </div>
 
           {/* Form Card */}
-          <div className="max-w-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-6">
+          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-6">
 
             {error && (
               <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded p-3">
@@ -169,7 +173,7 @@ const AddServer = () => {
                 </select>
               </div>
 
-              {/* Web Server Type*/}
+              {/* Web Server Type */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                   Web Server Type
@@ -187,24 +191,19 @@ const AddServer = () => {
                 </select>
               </div>
 
-              {/* Web Server Port  */}
-              <div className="mb-4">
-                <label
-                  htmlFor="webServerPort"
-                  className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
-                >
-                  Web Server Port *
+              {/* Web Server Port */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  Web Server Port
                 </label>
 
                 <input
                   type="number"
-                  id="webServerPort"
-                  name="webServerPort"
+                  name="webServerPortNo"
                   value={formData.webServerPortNo}
                   onChange={handleChange}
-                  placeholder="e.g., 80, 443"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
-                  required
+                  placeholder="80 or 443"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700"
                 />
               </div>
 
@@ -223,7 +222,7 @@ const AddServer = () => {
                 />
               </div>
 
-              {/* Submit Button */}
+              {/* Buttons */}
               <div className="flex gap-3 pt-2">
 
                 <button

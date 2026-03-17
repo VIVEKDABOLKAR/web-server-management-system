@@ -4,7 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4a1f8e20-5fcb-4dc2-b13f-1b135711e03c" name="Changes" comment="" />
+    <list default="true" id="4a1f8e20-5fcb-4dc2-b13f-1b135711e03c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wsms/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/wsms/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wsms/src/main/java/com/wsms/controller/AlertController.java" beforeDir="false" afterPath="$PROJECT_DIR$/wsms/src/main/java/com/wsms/controller/AlertController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wsms/src/main/java/com/wsms/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/wsms/src/main/java/com/wsms/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wsms/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/wsms/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/wsms/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/wsms/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/wsms/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/wsms/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/wsms/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/wsms/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/wsms/src/pages/AddServer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/wsms/src/pages/AddServer.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server_agent-main/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../server_agent-main/pom.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,9 +32,9 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="3Ajsv8VqAgYxDlgDP48IShXtH0U" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -35,6 +47,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "Spring Boot.WsmsApplication.executor": "Run",
+    "git-widget-placeholder": "refactors-frontend-landing",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/project/web-server-management-system/backend"
   }

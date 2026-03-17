@@ -4,8 +4,6 @@ import com.wsms.dto.alert.AlertResponse;
 import com.wsms.entity.Alert;
 import com.wsms.entity.Server;
 import com.wsms.entity.User;
-import com.wsms.repository.AlertRepository;
-import com.wsms.repository.UserRepository;
 import com.wsms.service.AlertService;
 import com.wsms.service.ServerService;
 import java.util.List;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/alerts")

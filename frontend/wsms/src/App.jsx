@@ -15,6 +15,7 @@ import AddServer from "./pages/AddServer";
 import Profile from "./pages/profile/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
+import ServerSetup from "./pages/ServerSetup";
 
 function App() {
   return (
@@ -57,7 +58,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/server-setup/:serverId"
+          element={
+            <ProtectedRoute>
+              <ServerSetup />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
+      
     </Router>
   );
 }
