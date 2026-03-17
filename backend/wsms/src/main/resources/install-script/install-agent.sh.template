@@ -5,12 +5,12 @@ set -e
 
 SERVICE_NAME="server-agent"
 JAR_NAME="server-agent.jar"
-JAR_INSTALL_PATH="https://drive.google.com/uc?export=download&id=1cDO-Ns1kDsxgRXL-yY7_XnWcm4bjNa8m"
+JAR_INSTALL_PATH="https://drive.google.com/uc?export=download&id=14pVkoKjV-yCL88njaBiCOgmTlj1BMNHi"
 INSTALL_DIR="/opt/server-agent"
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 
 #agrs-setup
-CONFIG_PATH="${INSTALL_DIR}/config"
+CONFIG_PATH="${INSTALL_DIR}/config.json"
 
 #replace the value during genration
 SERVER_ID="__SERVER_ID__"

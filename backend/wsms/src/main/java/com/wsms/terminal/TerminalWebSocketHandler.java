@@ -3,6 +3,7 @@ package com.wsms.terminal;
 import com.pty4j.PtyProcess;
 import com.pty4j.PtyProcessBuilder;
 import com.pty4j.WinSize;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,7 +25,7 @@ public class TerminalWebSocketHandler extends TextWebSocketHandler {
 
     private final Map<String, TerminalSessionState> sessions = new ConcurrentHashMap<>();
 
-    @Value("${app.terminal.shell:}")
+    @Value("${app.terminal.shell}")
     private String configuredShell;
 
     @Override
@@ -115,7 +116,19 @@ public class TerminalWebSocketHandler extends TextWebSocketHandler {
 
         String osName = System.getProperty("os.name", "").toLowerCase();
         if (osName.contains("win")) {
-            return new String[]{"powershell.exe"};
+            // WinPTY does not use the system PATH for process creation, so a bare
+            // "powershell.exe" results in CreateProcess error code 2 (file not found).
+            // Resolve the full path using %WINDIR% (typically C:\Windows).
+            String windir = System.getenv("WINDIR");
+            if (windir == null || windir.isBlank()) {
+                windir = "C:\\Windows";
+            }
+            String powershell = windir + "\\System32\\WindowsPowerShell\\v1.0\\powershell.exe";
+            if (new File(powershell).exists()) {
+                return new String[]{powershell};
+            }
+            // Fall back to cmd.exe if PowerShell is not found
+            return new String[]{windir + "\\System32\\cmd.exe"};
         }
 
         return new String[]{"/bin/bash", "-l"};

@@ -9,16 +9,18 @@ const ServerSetup = () => {
   const { state } = useLocation();
 
   const [scriptUrl, setScriptUrl] = useState(null);
-  const [server, setServer] = useState(null);
+  const [server, setServer] = useState({
+    ipAddress: "",
+  });
+  const [loading, setLoading] = useState(true);
 
   const serverName = state?.serverName || `Server #${serverId}`;
-  const ipAddress = state?.ipAddress || "YOUR_AWS_PUBLIC_IP";
   const terminalControlRef = useRef(null);
 
     useEffect(() => {
     const fetchScriptUrl = async () => {
       try {
-        const res = await api.get(`/api/servers/${serverId}/install-script`);        
+        const res = await api.get(`/api/servers/${serverId}/install-script`);
         setScriptUrl(res.data);
       } catch (err) {
         showToast("Failed to load install script", "error");
@@ -35,7 +37,7 @@ const ServerSetup = () => {
       setServer(response.data);
     } catch (err) {
       setError("Failed to fetch server details");
-    }
+    } 
   };
     
     fetchScriptUrl();
@@ -63,6 +65,11 @@ const ServerSetup = () => {
       title: "Run the installer",
       description: "Execute the script to install and start the agent service",
       command: "./install-script.sh",
+    },
+     {
+      title: "If error occurs, during installation :- cannot execute: required file not found",
+      description: "becaus of the line ending issue, run the below command to fix it and then re-run the installer",
+      command: "sed -i 's/\r$//' install-script.sh  || dos2unix install-script.sh",
     },
   ];
 
