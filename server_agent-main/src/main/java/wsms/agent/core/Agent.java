@@ -1,152 +1,187 @@
 package wsms.agent.core;
 
 import java.time.Instant;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import wsms.agent.collector.CPUCollector;
 import wsms.agent.collector.DiskCollector;
+import wsms.agent.collector.LoadAvgCollector;
 import wsms.agent.collector.MemoryCollector;
+import wsms.agent.collector.NetworkTrafficCollector;
+import wsms.agent.collector.ProcessMetricsCollector;
 import wsms.agent.config.Config;
 import wsms.agent.model.Metrics;
 import wsms.agent.network.MetricSender;
 import wsms.agent.utils.Logger;
 
-// Note: ConnectionMonitor is not yet implemented
-
 public class Agent {
+    private final LoadAvgCollector loadAvgCollector;
+    private final NetworkTrafficCollector networkTrafficCollector;
+    private final ProcessMetricsCollector processMetricsCollector;
+
     private final Config config;
     private final Logger logger;
     private final CPUCollector cpuCollector;
     private final MemoryCollector memoryCollector;
     private final DiskCollector diskCollector;
     private final MetricSender metricSender;
-    private final CountDownLatch stopLatch;
-    private final AtomicBoolean stopped;
-    // private ConnectionMonitor monitor; // Not yet implemented
 
-    private Agent(Config config) {
+    private final AtomicBoolean stopped = new AtomicBoolean(false);
+
+    // Previous values
+    private long prevDiskRead = -1;
+    private long prevDiskWrite = -1;
+    private long prevNetwork = -1;
+    private long prevTime = -1;
+
+    public Agent(Config config) {
         this.config = config;
         this.logger = new Logger(config.getLogFile());
+
         this.cpuCollector = new CPUCollector();
         this.memoryCollector = new MemoryCollector();
         this.diskCollector = new DiskCollector("/");
-        this.stopLatch = new CountDownLatch(1);
-        this.stopped = new AtomicBoolean(false);
 
-        // Initialize metric sender if backend URL and auth token are provided
-        if (config.getBackendUrl() != null && !config.getBackendUrl().isEmpty()
-                && config.getAuthToken() != null && !config.getAuthToken().isEmpty()
-                && config.getServerIdLong() != null) {
-            logger.info("Connecting to backend at " + config.getBackendUrl());
+        this.loadAvgCollector = new LoadAvgCollector();
+        this.networkTrafficCollector = new NetworkTrafficCollector();
+        this.processMetricsCollector = new ProcessMetricsCollector();
+
+        if (config.getBackendUrl() != null &&
+                config.getAuthToken() != null &&
+                config.getServerIdLong() != null) {
+
             this.metricSender = new MetricSender(
                     config.getBackendUrl(),
                     config.getAuthToken(),
                     config.getServerIdLong(),
-                    logger
-            );
-            logger.info("Metric sender initialized with backend: " + config.getBackendUrl());
+                    logger);
         } else {
             this.metricSender = null;
-            logger.info("Metric sender disabled (backend URL or auth token not configured)");
         }
-    }
-
-    public static Agent newAgent(String configPath) {
-        Config config = Config.load(configPath);
-        return new Agent(config);
     }
 
     public void start() {
         logger.info("========================================");
-        logger.info("Web Server Management Agent - Starting");
-        logger.info("========================================");
+        logger.info("WSMS Agent Started");
         logger.infof("Server ID: %s", config.getServerId());
-        logger.infof("Collection Interval: %d seconds", config.getCollectionInterval().getSeconds());
+        logger.infof("Interval: %d sec", config.getCollectionInterval().getSeconds());
         logger.info("========================================");
 
-        // Start collecting metrics (connection monitor feature not yet implemented)
-        collectAndPrintInInterval();
+        while (!stopped.get()) {
+            try {
+                TimeUnit.SECONDS.sleep(config.getCollectionInterval().getSeconds());
+                collectAndSend();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                stop();
+            }
+        }
 
-        awaitStop();
-        logger.info("Received stop signal...");
-        logger.info("Agent stopping...");
+        logger.info("Agent stopped.");
         logger.close();
     }
 
     public void stop() {
-        if (stopped.compareAndSet(false, true)) {
-            stopLatch.countDown();
-        }
+        stopped.set(true);
     }
 
-    private void awaitStop() {
+    private void collectAndSend() {
+
+        Metrics m = new Metrics();
+        m.setServerId(config.getServerId());
+        m.setTimestamp(Instant.now());
+
+        long now = System.currentTimeMillis();
+
+        // CPU
         try {
-            stopLatch.await();
-        } catch (InterruptedException ex) {
+            m.setCpuUsage(cpuCollector.collect());
+        } catch (InterruptedException e) {
+            m.setCpuUsage(0);
             Thread.currentThread().interrupt();
         }
-    }
 
-    private void collectAndPrintInInterval() {
-        while (!stopped.get()) {
-            logger.info("Waiting for next collection cycle...");
-            try {
-                TimeUnit.SECONDS.sleep(config.getCollectionInterval().getSeconds());
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                stop();
-                break;
-            }
+        // Load Avg
+        m.setLoadAvg1m(loadAvgCollector.collect());
 
-            if (stopped.get()) {
-                break;
-            }
+        // Memory
+        m.setMemoryUsage(memoryCollector.collect());
 
-            logger.info("Starting new collection cycle...");
-            collectAndPrint();
-        }
-    }
+        // Disk %
+        m.setDiskUsage(diskCollector.collect());
 
-    private void collectAndPrint() {
-        Metrics metrics = new Metrics();
-        metrics.setServerId(config.getServerId());
-        metrics.setTimestamp(Instant.now());
-
-        try {
-            metrics.setCpu(cpuCollector.collect());
-        } catch (Exception ex) {
-            logger.errorf("Failed to collect CPU: %s", ex.getMessage());
+        // Disk IO
+        long read = 0, write = 0;
+        for (oshi.hardware.HWDiskStore d : new oshi.SystemInfo().getHardware().getDiskStores()) {
+            d.updateAttributes();
+            read += d.getReadBytes();
+            write += d.getWriteBytes();
         }
 
-        try {
-            metrics.setMemory(memoryCollector.collect());
-        } catch (Exception ex) {
-            logger.errorf("Failed to collect Memory: %s", ex.getMessage());
+        // Network
+        long net = networkTrafficCollector.collect();
+
+        // Rate calc
+        if (prevTime > 0) {
+            double t = (now - prevTime) / 1000.0;
+
+            m.setDiskReadPerSec((read - prevDiskRead) / t);
+            m.setDiskWritePerSec((write - prevDiskWrite) / t);
+            m.setNetworkTraffic((net - prevNetwork) / t);
+        } else {
+            m.setDiskReadPerSec(0);
+            m.setDiskWritePerSec(0);
+            m.setNetworkTraffic(0);
         }
 
-        try {
-            metrics.setDisk(diskCollector.collect());
-        } catch (Exception ex) {
-            logger.errorf("Failed to collect Disk: %s", ex.getMessage());
-        }
+        prevDiskRead = read;
+        prevDiskWrite = write;
+        prevNetwork = net;
+        prevTime = now;
 
-        printMetrics(metrics);
+        // Processes
+        wsms.agent.collector.ProcessMetricsCollector.ProcessMetrics procMetrics = processMetricsCollector.collect();
+        m.setRunningProcesses(procMetrics.running);
+        m.setSleepingProcesses(procMetrics.sleeping);
+        m.setBlockedProcesses(procMetrics.blocked);
+        m.setTotalProcesses(procMetrics.total);
 
-        // Send metrics to backend if configured
+        print(m);
+
         if (metricSender != null) {
-            metricSender.sendMetrics(metrics);
+            metricSender.sendMetrics(m);
         }
     }
 
-    private void printMetrics(Metrics metrics) {
+    private void print(Metrics m) {
         logger.info("========================================");
-        logger.infof("Time: %s", metrics.getTimestamp().toString());
-        logger.infof("Server: %s", metrics.getServerId());
-        logger.infof("CPU Usage: %.2f%%", metrics.getCpu());
-        logger.infof("Memory Usage: %.2f%%", metrics.getMemory());
-        logger.infof("Disk Usage: %.2f%%", metrics.getDisk());
+
+        logger.infof("Time: %s", m.getTimestamp());
+        logger.infof("Server: %s", m.getServerId());
+
+        logger.infof("CPU Usage: %.2f %%", m.getCpuUsage());
+        logger.infof("Load Avg (1m): %.2f", m.getLoadAvg1m());
+        logger.infof("Memory Usage: %.2f %%", m.getMemoryUsage());
+        logger.infof("Disk Usage: %.2f %%", m.getDiskUsage());
+
+        logger.infof("Disk Reads/s: %s", human(m.getDiskReadPerSec()));
+        logger.infof("Disk Writes/s: %s", human(m.getDiskWritePerSec()));
+        logger.infof("Network Traffic: %s/s", human(m.getNetworkTraffic()));
+
+        logger.infof("Running Processes: %d", m.getRunningProcesses());
+        logger.infof("Sleeping Processes: %d", m.getSleepingProcesses());
+        logger.infof("Blocked Processes: %d", m.getBlockedProcesses());
+        logger.infof("Total Processes: %d", m.getTotalProcesses());
+
         logger.info("========================================");
+    }
+
+    private String human(double b) {
+        if (b < 1024)
+            return String.format("%.0f B", b);
+        int e = (int) (Math.log(b) / Math.log(1024));
+        String p = "KMGTPE".charAt(e - 1) + "B";
+        return String.format("%.1f %s", b / Math.pow(1024, e), p);
     }
 }

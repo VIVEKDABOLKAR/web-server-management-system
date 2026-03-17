@@ -199,7 +199,7 @@ const AddServer = () => {
                 <input
                   type="number"
                   id="webServerPort"
-                  name="webServerPort"
+                  name="webServerPortNo"
                   value={formData.webServerPortNo}
                   onChange={handleChange}
                   placeholder="e.g., 80, 443"

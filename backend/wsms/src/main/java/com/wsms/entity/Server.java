@@ -45,6 +45,8 @@ import org.hibernate.annotations.UpdateTimestamp;
         }
 )
 public class Server {
+        @Column(nullable = true)
+        private LocalDateTime lastHeartbeat;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

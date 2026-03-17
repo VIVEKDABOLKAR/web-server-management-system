@@ -18,7 +18,6 @@ const MetricsChart = ({ metrics, type = "cpu" }) => {
   // Format metrics data for the chart
   const formatData = () => {
     if (!metrics || metrics.length === 0) return [];
-
     return metrics
       .map((metric) => ({
         timestamp: new Date(metric.createdAt).toLocaleTimeString([], {
@@ -29,6 +28,7 @@ const MetricsChart = ({ metrics, type = "cpu" }) => {
         cpu: parseFloat(metric.cpuUsage?.toFixed(2) || 0),
         memory: parseFloat(metric.memoryUsage?.toFixed(2) || 0),
         disk: parseFloat(metric.diskUsage?.toFixed(2) || 0),
+        networkUsage: metric.networkUsage || 0,
       }))
       .reverse(); // Show oldest to newest
   };
@@ -56,6 +56,13 @@ const MetricsChart = ({ metrics, type = "cpu" }) => {
       color: "#f59e0b",
       darkColor: "#fbbf24",
       unit: "%",
+    },
+    networkUsage: {
+      dataKey: "networkUsage",
+      name: "Network Usage (B/s)",
+      color: "#6366f1",
+      darkColor: "#818cf8",
+      unit: "B/s",
     },
   };
 

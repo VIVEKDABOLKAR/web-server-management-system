@@ -1,5 +1,9 @@
 package com.wsms.entity;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,7 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -19,7 +22,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.CreationTimestamp;
 
 @Getter
 @Setter
@@ -38,18 +40,34 @@ public class Metric {
     private Double cpuUsage;
 
     @Column(nullable = false)
+    private Double loadAvg1m;
+
+    @Column(nullable = false)
     private Double memoryUsage;
 
     @Column(nullable = false)
     private Double diskUsage;
 
-    @Column
-    @Builder.Default
-    private Long requestCount = 0L;
+    @Column(nullable = false)
+    private Double diskReadPerSec;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private ServerStatus serverStatus;
+    @Column(nullable = false)
+    private Double diskWritePerSec;
+
+    @Column(nullable = false)
+    private Double networkTraffic;
+
+    @Column(nullable = false)
+    private Integer runningProcesses;
+
+    @Column(nullable = false)
+    private Integer sleepingProcesses;
+
+    @Column(nullable = false)
+    private Integer blockedProcesses;
+
+    @Column(nullable = false)
+    private Integer totalProcesses;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

@@ -16,7 +16,6 @@ const CombinedMetricsChart = ({ metrics }) => {
   // Format metrics data for the chart
   const formatData = () => {
     if (!metrics || metrics.length === 0) return [];
-
     return metrics
       .map((metric) => ({
         timestamp: new Date(metric.createdAt).toLocaleTimeString([], {
@@ -24,9 +23,7 @@ const CombinedMetricsChart = ({ metrics }) => {
           minute: "2-digit",
         }),
         fullTime: new Date(metric.createdAt).toLocaleString(),
-        cpu: parseFloat(metric.cpuUsage?.toFixed(2) || 0),
-        memory: parseFloat(metric.memoryUsage?.toFixed(2) || 0),
-        disk: parseFloat(metric.diskUsage?.toFixed(2) || 0),
+        networkUsage: metric.networkUsage || 0,
       }))
       .reverse(); // Show oldest to newest
   };
@@ -86,7 +83,10 @@ const CombinedMetricsChart = ({ metrics }) => {
           domain={[0, 100]}
           label={{
             value: "%",
-            angle: -90,
+            cpu: parseFloat(metric.cpuUsage?.toFixed(2) || 0),
+            memory: parseFloat(metric.memoryUsage?.toFixed(2) || 0),
+            disk: parseFloat(metric.diskUsage?.toFixed(2) || 0),
+            networkUsage: metric.networkUsage || 0,
             position: "insideLeft",
             style: { fill: darkMode ? "#94a3b8" : "#6b7280" },
           }}
@@ -121,6 +121,70 @@ const CombinedMetricsChart = ({ metrics }) => {
           stroke={darkMode ? "#fbbf24" : "#f59e0b"}
           strokeWidth={2}
           name="Disk Usage"
+          dot={false}
+        />
+        <Line
+          type="monotone"
+          dataKey="networkSent"
+          stroke={darkMode ? "#818cf8" : "#6366f1"}
+          strokeWidth={2}
+          name="Net Sent (B)"
+          dot={false}
+        />
+        <Line
+          type="monotone"
+          dataKey="networkRecv"
+          stroke={darkMode ? "#22d3ee" : "#06b6d4"}
+          strokeWidth={2}
+          name="Net Recv (B)"
+          dot={false}
+        />
+        <Line
+          type="monotone"
+          dataKey="processCount"
+          stroke={darkMode ? "#fb7185" : "#f43f5e"}
+          strokeWidth={2}
+          name="Process Count"
+          dot={false}
+        />
+        <Line
+          type="monotone"
+          dataKey="threadCount"
+          stroke={darkMode ? "#e879f9" : "#a21caf"}
+          strokeWidth={2}
+          name="Thread Count"
+          dot={false}
+        />
+        <Line
+          type="monotone"
+          dataKey="jvmHeapUsed"
+          stroke={darkMode ? "#fdba74" : "#f97316"}
+          strokeWidth={2}
+          name="JVM Heap Used (B)"
+          dot={false}
+        />
+        <Line
+          type="monotone"
+          dataKey="jvmHeapMax"
+          stroke={darkMode ? "#f87171" : "#b91c1c"}
+          strokeWidth={2}
+          name="JVM Heap Max (B)"
+          dot={false}
+        />
+        <Line
+          type="monotone"
+          dataKey="jvmNonHeapUsed"
+          stroke={darkMode ? "#38bdf8" : "#0e7490"}
+          strokeWidth={2}
+          name="JVM Non-Heap Used (B)"
+          dot={false}
+        />
+        <Line
+          type="monotone"
+          dataKey="jvmNonHeapMax"
+          stroke={darkMode ? "#4ade80" : "#15803d"}
+          strokeWidth={2}
+          name="JVM Non-Heap Max (B)"
           dot={false}
         />
       </LineChart>

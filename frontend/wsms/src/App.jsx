@@ -10,10 +10,12 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Signup from "./pages/Signup";
 import VerifySignup from "./pages/VerifySignup";
 import Dashboard from "./pages/Dashboard";
+import AllServers from "./pages/AllServers";
 import ServerDetails from "./pages/ServerDetails";
 import AddServer from "./pages/AddServer";
 import Profile from "./pages/profile/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Performance from "./pages/Performance";
 import "./App.css";
 
 function App() {
@@ -30,6 +32,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/all-servers"
+          element={
+            <ProtectedRoute>
+              <AllServers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/performance"
+          element={
+            <ProtectedRoute>
+              <Performance />
             </ProtectedRoute>
           }
         />
