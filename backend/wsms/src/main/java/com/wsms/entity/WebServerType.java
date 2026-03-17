@@ -4,5 +4,5 @@ public enum WebServerType {
     APACHE,
     NGINX,
     IIS,
-    Tomcat
+    TOMCAT
 }

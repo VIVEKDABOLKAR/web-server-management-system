@@ -12,18 +12,12 @@ SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 #agrs-setup
 CONFIG_PATH="${INSTALL_DIR}/config"
 
-#change it during genration :- for now hardcoded
-SERVER_ID=
-AGENT_TOKEN= 
-SERVER_NAME=
-BACKEND_URL=
-COLLECTION_INTERVAL=
-
-SERVER_ID="__SERVER_ID__"
-AGENT_TOKEN="__AGENT_TOKEN__"
-SERVER_NAME="__SERVER_NAME__"
-BACKEND_URL="__BACKEND_URL__"
-COLLECTION_INTERVAL="__COLLECTION_INTERVAL__"
+#replace the value during genration
+SERVER_ID="1"
+AGENT_TOKEN="cd7bec72-dc81-4cb3-b8f7-7752801e0e2f"
+SERVER_NAME="server 1"
+BACKEND_URL="http://localhost:8080"
+COLLECTION_INTERVAL="5"
 
 #CREATE ARGS
 AGENT_ARGS=" --configPath=${CONFIG_PATH} --serverId=${SERVER_ID} --agentToken=${AGENT_TOKEN} --serverName=${SERVER_NAME} --backendUrl=${BACKEND_URL} --collectionInterval=${COLLECTION_INTERVAL}"
