@@ -23,7 +23,7 @@ const WebTerminal = forwardRef(({ serverId }, ref) => {
 
   const socketUrl = useMemo(() => {
     const token = localStorage.getItem("token");
-    const backendBaseUrl = import.meta.env.VITE_TERMINAL_WS_URL || api.defaults.baseURL;
+    const backendBaseUrl = "ws://localhost:8080/ws/terminal";
     const parsedUrl = new URL(backendBaseUrl);
     parsedUrl.protocol = parsedUrl.protocol === "https:" ? "wss:" : "ws:";
     parsedUrl.pathname = "/ws/terminal";
