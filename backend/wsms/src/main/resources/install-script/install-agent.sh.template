@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# set env
+set -e
+
+SERVICE_NAME="server-agent"
+JAR_NAME="server-agent.jar"
+JAR_INSTALL_PATH="https://drive.google.com/uc?export=download&id=1cDO-Ns1kDsxgRXL-yY7_XnWcm4bjNa8m"
+INSTALL_DIR="/opt/server-agent"
+SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
+
+#agrs-setup
+CONFIG_PATH="${INSTALL_DIR}/config"
+
+#replace the value during genration
+SERVER_ID="__SERVER_ID__"
+AGENT_TOKEN="__AGENT_TOKEN__"
+SERVER_NAME="__SERVER_NAME__"
+BACKEND_URL="__BACKEND_URL__"
+COLLECTION_INTERVAL="__COLLECTION_INTERVAL__"
+
+#CREATE ARGS
+AGENT_ARGS=" --configPath=${CONFIG_PATH} --serverId=${SERVER_ID} --agentToken=${AGENT_TOKEN} --serverName=${SERVER_NAME} --backendUrl=${BACKEND_URL} --collectionInterval=${COLLECTION_INTERVAL}"
+
+#install server
+echo "===> Installing Java..."
+sudo apt update -y
+sudo apt install -y openjdk-17-jdk
+
+# make install dir - with required permission
+echo "===> Creating install directory..."
+sudo mkdir -p ${INSTALL_DIR}
+sudo chown ubuntu:ubuntu ${INSTALL_DIR}
+
+#install server-agent.jar into install dir
+echo "===> Installing jar file..."
+curl -L ${JAR_INSTALL_PATH} -o ${INSTALL_DIR}/${JAR_NAME}
+
+#Register agent as service
+echo "===> Creating systemd service..."
+sudo bash -c "cat > ${SERVICE_FILE}" <<EOL
+[Unit]
+Description=Server Agent Service
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=${INSTALL_DIR}
+ExecStart=/usr/bin/java -jar ${INSTALL_DIR}/${JAR_NAME} ${AGENT_ARGS}
+SuccessExitStatus=143
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+echo "===> Reloading systemd..."
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+
+echo "===> Enabling service..."
+sudo systemctl enable ${SERVICE_NAME}
+
+echo "===> Starting service..."
+sudo systemctl start ${SERVICE_NAME}
+
+echo "===> Installation complete!"
+echo ""
+echo "Service commands:"
+echo "Start   : sudo systemctl start ${SERVICE_NAME}"
+echo "Stop    : sudo systemctl stop ${SERVICE_NAME}"
+echo "Status  : sudo systemctl status ${SERVICE_NAME}"
+echo "Restart : sudo systemctl restart ${SERVICE_NAME}"
+echo "Logs    : journalctl -u ${SERVICE_NAME} -f"
+echo ""
+echo "To remove ${SERVICE_NAME} "
+echo "sudo systemctl stop ${SERVICE_NAME}"
+echo "sudo systemctl disable ${SERVICE_NAME}"
+echo "sudo rm ${SERVICE_FILE}"
+echo "sudo rm -rf ${INSTALL_DIR}"
+echo "sudo systemctl daemon-reload"

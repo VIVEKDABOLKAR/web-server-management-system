@@ -11,9 +11,12 @@ import wsms.agent.collector.MemoryCollector;
 import wsms.agent.collector.NetworkTrafficCollector;
 import wsms.agent.collector.ProcessMetricsCollector;
 import wsms.agent.config.Config;
+import wsms.agent.config.ConfigUtils;
 import wsms.agent.model.Metrics;
 import wsms.agent.network.MetricSender;
 import wsms.agent.utils.Logger;
+
+// Note: ConnectionMonitor is not yet implemented
 
 public class Agent {
     private final LoadAvgCollector loadAvgCollector;
@@ -37,8 +40,7 @@ public class Agent {
 
     public Agent(Config config) {
         this.config = config;
-        this.logger = new Logger(config.getLogFile());
-
+        this.logger = new Logger(config.getConfigPath());
         this.cpuCollector = new CPUCollector();
         this.memoryCollector = new MemoryCollector();
         this.diskCollector = new DiskCollector("/");
@@ -47,18 +49,26 @@ public class Agent {
         this.networkTrafficCollector = new NetworkTrafficCollector();
         this.processMetricsCollector = new ProcessMetricsCollector();
 
-        if (config.getBackendUrl() != null &&
-                config.getAuthToken() != null &&
-                config.getServerIdLong() != null) {
-
+        // Initialize metric sender if backend URL and auth token are provided
+        if (config.getBackendUrl() != null && !config.getBackendUrl().isEmpty()
+                && config.getAuthToken() != null && !config.getAuthToken().isEmpty()
+                && config.getServerId() != null) {
+            logger.info("Connecting to backend at " + config.getBackendUrl());
             this.metricSender = new MetricSender(
                     config.getBackendUrl(),
                     config.getAuthToken(),
-                    config.getServerIdLong(),
-                    logger);
+                    Long.parseLong(config.getServerId()), //change it to the string , by testing
+                    logger
+            );
+            logger.info("Metric sender initialized with backend: " + config.getBackendUrl());
         } else {
             this.metricSender = null;
         }
+    }
+
+    public static Agent newAgent(String configPath) {
+        Config config = ConfigUtils.loadConfig(configPath);
+        return new Agent(config);
     }
 
     public void start() {

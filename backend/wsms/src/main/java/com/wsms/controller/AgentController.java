@@ -6,9 +6,11 @@ import com.wsms.entity.Server;
 import com.wsms.repository.ServerRepository;
 import com.wsms.service.MetricService;
 import com.wsms.utils.alertSystem.AlertSystem;
+import com.wsms.utils.installScript.InstallScript;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,14 @@ public class AgentController {
         private final MetricService metricService;
         private final ServerRepository serverRepository;
         private final AlertSystem alertSystem;
+        private final InstallScript installScript;
+
+        @GetMapping(value = "/install.sh", produces = MediaType.TEXT_PLAIN_VALUE)
+        public ResponseEntity<String> getInstallScriptTemplate() {
+                return ResponseEntity.ok()
+                                .contentType(MediaType.TEXT_PLAIN)
+                                .body(installScript.generatePublicTemplate());
+        }
 
         /**
          * agent send matrics to this backend using this /api/agent/metrics

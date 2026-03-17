@@ -54,7 +54,7 @@ desktop.ini
 .env
 .env.*
 config.yaml
-config.json
+target/config.json
 
 # =========================
 # Logs

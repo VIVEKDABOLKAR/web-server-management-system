@@ -20,6 +20,7 @@ const AddServer = () => {
   });
 
   const handleChange = (e) => {
+    
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -188,6 +189,7 @@ const AddServer = () => {
                   <option value="APACHE">Apache</option>
                   <option value="NGINX">Nginx</option>
                   <option value="IIS">IIS</option>
+                  <option value="TOMCAT">Tomcat</option>
                 </select>
               </div>
 

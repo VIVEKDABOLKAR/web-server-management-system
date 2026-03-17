@@ -5,9 +5,9 @@ import com.wsms.dto.server.ServerResponse;
 import com.wsms.entity.Server;
 import com.wsms.entity.ServerStatus;
 import com.wsms.entity.User;
-import com.wsms.repository.UserRepository;
 import com.wsms.service.ServerService;
 import com.wsms.service.UserService;
+import com.wsms.utils.installScript.InstallScript;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/servers")
@@ -32,10 +31,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class ServerController {
 
     private final ServerService serverService;
-    // removed user Repository
-    private final UserService userService;
+    //removed user Repository
+    private  final UserService  userService;
+    private final InstallScript installScript;
 
-    @Value("${app.backend.url:http://localhost:8080}")
+    @Value("${app.backend.url}")
     private String backendUrl;
 
     /**
@@ -89,23 +89,9 @@ public class ServerController {
         Long userId = getLoggedInUserId();
         Server server = serverService.getServerByIdForUser(serverId, userId);
 
-        String script = """
-                #!/bin/bash
-                set -e
-
-                SERVER_ID="%s"
-                AGENT_TOKEN="%s"
-                BACKEND_URL="%s"
-
-                echo "Installing WSMS agent for server $SERVER_ID"
-                curl -fsSL "$BACKEND_URL/api/agent/install.sh" -o wsms-agent-install.sh
-                chmod +x wsms-agent-install.sh
-                ./wsms-agent-install.sh "$SERVER_ID" "$AGENT_TOKEN" "$BACKEND_URL"
-                """.formatted(server.getId(), server.getAgentToken(), backendUrl);
-
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_PLAIN)
-                .body(script);
+            .body(installScript.generateScriptAndUpload(server, backendUrl));
     }
 
     /**
@@ -124,13 +110,11 @@ public class ServerController {
 
     /**
      * return user Id based on the authentication object user email
-     * 
+     *
      * @return
      */
     private Long getLoggedInUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
         User user = userService.getCurrentUser();
 
         return user.getId();
