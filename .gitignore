@@ -1,3 +1,6 @@
 .idea/
 .vscode/
 keys/
+
+*.sh text eol=
+*.sh.template text eol=lf
