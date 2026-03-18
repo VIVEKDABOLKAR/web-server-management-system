@@ -34,6 +34,10 @@ const Dashboard = () => {
         : response.data?.data || [];
       setServers(serverData);
       setError("");
+
+      const res = await api.get("/api/admin/is_admin");
+      console.log(res);
+      
     } catch (err) {
       setError("Failed to fetch servers: " + (err?.message || err));
     } finally {

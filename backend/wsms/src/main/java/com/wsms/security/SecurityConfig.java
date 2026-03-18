@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,13 +25,41 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final ClientTypeFilter clientTypeFilter;
-    @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173}")
+    @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
+
+    /**
+     * to access authObject no of way :-
+     * 1> IN Controller use Principal object
+     *          @GetMapping("/profile")
+     *              public String getProfile(Principal principal) {
+     *              return principal.getName(); // email
+     *          }
+     *
+     *  2> Using Authentication
+     *          @GetMapping("/profile")
+     *               public Object getProfile(Authentication authentication) {
+     *                  String username = authentication.getName();
+     *
+     *                  Object principal = authentication.getPrincipal(); // UserDetails
+     *                  Collection<?> roles = authentication.getAuthorities();
+     *
+     *                  return Map.of(
+     *                      "username", username,
+     *                      "roles", roles
+     *                  );
+     *              }
+     *
+     *   3> Access full UserDetails
+     *
+     *   4> Direct access via SecurityContext
+     */
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -40,6 +69,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/auth/**", "/api/agent/**", "/error", "/ws/terminal/**").permitAll()
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(clientTypeFilter, UsernamePasswordAuthenticationFilter.class)

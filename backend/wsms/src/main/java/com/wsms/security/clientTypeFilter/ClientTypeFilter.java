@@ -19,14 +19,15 @@ public class ClientTypeFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String clientType = request.getHeader("X-Client-Type");
+        //for testing blocking - client type
         System.out.println("Client Type : " + clientType);
 
-        System.out.println("Blocked request from IP: " + request.getRemoteAddr());
-
+        //vallidate client type
         if (!"WEB".equals(clientType)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.getWriter().write("Invalid client type");
-            return;
+//            System.out.println("Blocked request from IP: " + request.getRemoteAddr());
+//            return;
         }
 
         filterChain.doFilter(request, response);
