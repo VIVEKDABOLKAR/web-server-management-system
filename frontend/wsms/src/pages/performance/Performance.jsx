@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
-import api from "../services/api";
-import Navbar from "../components/Navbar";
-import MetricCard from "../components/MetricCard";
-import MetricsChart from "../components/MetricsChart";
-import CombinedMetricsChart from "../components/CombinedMetricsChart";
-
+import api from "../../services/api";
+import MetricCard from "../../components/MetricCard";
 const Performance = () => {
   const [servers, setServers] = useState([]);
   const [serverMetrics, setServerMetrics] = useState({}); // { serverId: [metrics] }

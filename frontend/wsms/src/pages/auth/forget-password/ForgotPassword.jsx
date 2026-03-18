@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../services/api";
+import api from "../../../services/api";
 
 const ForgotPassword = () => {
   const [step, setStep] = useState(1); // 1=email, 2=verify otp, 3=reset password

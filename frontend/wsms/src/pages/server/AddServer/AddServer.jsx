@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
-import DashboardLayout from "../components/dashboard/DashboardLayout";
+import api from "../../../services/api";
+import DashboardLayout from "../../../components/dashboard/DashboardLayout";
 
 const AddServer = () => {
   const navigate = useNavigate();

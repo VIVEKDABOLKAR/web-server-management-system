@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../services/api";
-import Navbar from "../components/Navbar";
-import MetricCard from "../components/MetricCard";
-import MetricsChart from "../components/MetricsChart";
-import CombinedMetricsChart from "../components/CombinedMetricsChart";
-import AlertList from "../components/AlertList";
-import BlockedIpList from "../components/BlockedIpList";
-import ConfirmDialog from "../components/ConfirmDialog";
+import api from "../../services/api";
+import Navbar from "../../components/Navbar";
+import MetricCard from "../../components/MetricCard";
+import MetricsChart from "../../components/MetricsChart";
+import CombinedMetricsChart from "../../components/CombinedMetricsChart";
+import AlertList from "../../components/AlertList";
+import BlockedIpList from "../../components/BlockedIpList";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const ServerDetails = () => {
   const { id } = useParams();
