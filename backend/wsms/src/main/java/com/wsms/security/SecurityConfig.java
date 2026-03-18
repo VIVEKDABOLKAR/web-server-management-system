@@ -1,5 +1,6 @@
 package com.wsms.security;
 
+import com.wsms.security.clientTypeFilter.ClientTypeFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final ClientTypeFilter clientTypeFilter;
     @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173}")
     private String allowedOrigins;
 
@@ -40,6 +42,7 @@ public class SecurityConfig {
                     .requestMatchers("/auth/**", "/api/agent/**", "/error", "/ws/terminal/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(clientTypeFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
