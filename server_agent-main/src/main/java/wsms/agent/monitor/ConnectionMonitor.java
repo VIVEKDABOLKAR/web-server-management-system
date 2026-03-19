@@ -13,14 +13,21 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ConnectionMonitor {
-    private final int port;
+    private final int publishPort;
+    private final String webServerHost;
+    private final int webServerPort;
     private final Logger logger;
     private final AtomicBoolean active;
     private final ExecutorService connectionPool;
     private ServerSocket listener;
 
-    public ConnectionMonitor(int port,  Logger logger) {
-        this.port = port;
+    public ConnectionMonitor(int publishPort,
+                             String webServerHost,
+                             int webServerPort,
+                              Logger logger) {
+        this.publishPort = publishPort;
+        this.webServerHost = webServerHost;
+        this.webServerPort = webServerPort;
         this.logger = logger;
         this.active = new AtomicBoolean(false);
         this.connectionPool = Executors.newCachedThreadPool();
@@ -28,12 +35,13 @@ public class ConnectionMonitor {
 
     public void start() throws Exception {
         listener = new ServerSocket();
-        listener.bind(new InetSocketAddress(port));
+        listener.bind(new InetSocketAddress(publishPort));
         active.set(true);
 
-        logger.infof("Connection monitor started on port %d", port);
+        logger.infof("Connection monitor started on port %d", publishPort);
         logger.info("Waiting for incoming connections...");
 
+        //Set acceptConnection method as thread , set it as demon process , start
         Thread acceptThread = new Thread(this::acceptConnections, "connection-monitor-accept");
         acceptThread.setDaemon(true);
         acceptThread.start();
@@ -67,16 +75,15 @@ public class ConnectionMonitor {
 
     private void handleConnection(Socket conn) {
         String remoteAddr = conn.getRemoteSocketAddress().toString();
-        String localAddr = conn.getLocalSocketAddress().toString();
         String clientIp = conn.getInetAddress().getHostAddress();
 
         logger.info("========================================");
         logger.info("INCOMING CONNECTION DETECTED");
         logger.infof("Time: %s", Instant.now().toString());
         logger.infof("Client IP: %s", clientIp);
-        logger.infof("Destination: %s", localAddr);
 
         try (Socket sourceConn = conn;
+             //input output stream for our publishing port
              InputStream sourceIn = sourceConn.getInputStream();
              OutputStream sourceOut = sourceConn.getOutputStream();
              Socket targetConn = new Socket()) {
@@ -95,14 +102,18 @@ public class ConnectionMonitor {
 
             /// Danger :- if hostname is localhost :- then try this addres localhost , 127.0.0.1, ::1, :::1
             /// we can chaekc which localhost connection is accepting by application we can put check at init pass one which we got success
-            targetConn.connect(new InetSocketAddress("::1", 5173), 5000);
+            targetConn.connect(new InetSocketAddress("::1", webServerPort), 5000);
 
+            System.out.println("getting connection :- " + targetConn.getLocalAddress().toString());
+
+            //input output stream for target stream
             InputStream targetIn = targetConn.getInputStream();
             OutputStream targetOut = targetConn.getOutputStream();
 
             targetOut.write(buffer, 0, n);
             targetOut.flush();
 
+            //refistre two thread for sending req to 5173, and getting response to 4017 response stream
             Thread uplink = new Thread(() -> streamCopy(sourceIn, targetOut), "uplink");
             Thread downlink = new Thread(() -> streamCopy(targetIn, sourceOut), "downlink");
 

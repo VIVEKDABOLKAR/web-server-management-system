@@ -32,7 +32,7 @@ public class Config {
     //constructor
     public Config() {
         // default values
-        this.configPath= "config.json";
+        this.configPath = "config.json";
 
         this.backendUrl = "http://localhost:8080";
         this.webServerHost = "::1";
@@ -47,7 +47,6 @@ public class Config {
     }
 
     //getter and setter
-
     public String getServerId() {
         return serverId;
     }

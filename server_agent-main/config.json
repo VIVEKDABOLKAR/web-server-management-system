@@ -9,5 +9,6 @@
   "webServerPort" : 5173,
   "publishPort" : 4017,
   "collectionInterval" : 5.000000000,
-  "blockListRefreshInterval" : 60.000000000
+  "blockListRefreshInterval" : 60.000000000,
+  "webApplicationMonitor" : true
 }

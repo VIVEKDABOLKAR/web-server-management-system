@@ -76,6 +76,8 @@ public class Agent {
                     config.getWebServerHost(),
                     config.getWebServerPort(),
                     logger);
+        } else {
+            this.connectionMonitor = null;
         }
     }
 
@@ -89,6 +91,8 @@ public class Agent {
         logger.info("WSMS Agent Started");
         logger.infof("Server ID: %s", config.getServerId());
         logger.infof("Interval: %d sec", config.getCollectionInterval().getSeconds());
+        //hardcode made it dynamic
+        logger.infof("Web Application Public Url %s ", ("http://localhost" + ":" + config.getWebServerPort()));
         logger.info("========================================");
 
         try {
@@ -103,7 +107,7 @@ public class Agent {
                 TimeUnit.SECONDS.sleep(config.getCollectionInterval().getSeconds());
                 // collectAndSend();
 
-            } catch (   Exception e) {
+            } catch (Exception e) {
                 Thread.currentThread().interrupt();
                 stop();
             }
