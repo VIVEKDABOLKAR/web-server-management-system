@@ -13,6 +13,7 @@ import wsms.agent.collector.ProcessMetricsCollector;
 import wsms.agent.config.Config;
 import wsms.agent.config.ConfigUtils;
 import wsms.agent.model.Metrics;
+import wsms.agent.monitor.ConnectionMonitor;
 import wsms.agent.network.MetricSender;
 import wsms.agent.utils.Logger;
 
@@ -29,6 +30,8 @@ public class Agent {
     private final MemoryCollector memoryCollector;
     private final DiskCollector diskCollector;
     private final MetricSender metricSender;
+
+    private final ConnectionMonitor connectionMonitor;
 
     private final AtomicBoolean stopped = new AtomicBoolean(false);
 
@@ -64,6 +67,16 @@ public class Agent {
         } else {
             this.metricSender = null;
         }
+
+        // Initialize connection monitor , if webApplicationMonitor is true
+        if(config.isWebApplicationMonitor() ) {
+            logger.info("Started ConnectionMonitor");
+            this.connectionMonitor = new ConnectionMonitor(
+                    config.getPublishPort(),
+                    config.getWebServerHost(),
+                    config.getWebServerPort(),
+                    logger);
+        }
     }
 
     public static Agent newAgent(String configPath) {
@@ -78,11 +91,19 @@ public class Agent {
         logger.infof("Interval: %d sec", config.getCollectionInterval().getSeconds());
         logger.info("========================================");
 
+        try {
+            connectionMonitor.start();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+
         while (!stopped.get()) {
             try {
                 TimeUnit.SECONDS.sleep(config.getCollectionInterval().getSeconds());
-                collectAndSend();
-            } catch (InterruptedException e) {
+                // collectAndSend();
+
+            } catch (   Exception e) {
                 Thread.currentThread().interrupt();
                 stop();
             }

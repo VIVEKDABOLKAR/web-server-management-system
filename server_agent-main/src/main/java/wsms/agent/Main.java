@@ -12,6 +12,7 @@ public class Main {
     public static void main(String[] args) {
 
         //parse args :- --configPath= --serverId= --agentToken= --serverName --backendUrl --collectionInterval
+        //                  --webServerHost= --webServerPort= --publishPort=
         Map<String, String> configArgs = parseArgs(args);
 
         //get config file
@@ -20,7 +21,7 @@ public class Main {
         // Load config
         Config config = ConfigUtils.saveConfigArgs(configArgs , configPath);
 
-
+        //init agent
         Agent agent;
         try {
             agent = Agent.newAgent(configPath);
@@ -30,6 +31,7 @@ public class Main {
             return;
         }
 
+        //during runtime shutdoen ctrl + c
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("\nReceived shutdown signal...");
             agent.stop();
