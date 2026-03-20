@@ -9,6 +9,7 @@ import wsms.agent.config.Config;
 import wsms.agent.config.ConfigUtils;
 import wsms.agent.model.Metrics;
 import wsms.agent.monitor.ConnectionMonitor;
+import wsms.agent.monitor.NettyConnectionMonitor;
 import wsms.agent.network.MetricSender;
 import wsms.agent.utils.Logger;
 
@@ -95,7 +96,9 @@ public class Agent {
         logger.info("========================================");
 
         try {
-            connectionMonitor.start();
+//            connectionMonitor.start();
+            NettyConnectionMonitor  nettyConnectionMonitor = new NettyConnectionMonitor(4017, "::1",5173, logger);
+            nettyConnectionMonitor.start();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -104,7 +107,7 @@ public class Agent {
         while (!stopped.get()) {
             try {
                 TimeUnit.SECONDS.sleep(config.getCollectionInterval().getSeconds());
-                 collectAndSend();
+//                 collectAndSend();
 
             } catch (Exception e) {
                 Thread.currentThread().interrupt();
