@@ -29,6 +29,7 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const response = await api.get("/api/servers");
+      console.log(response.data[1]);
       const serverData = Array.isArray(response.data)
         ? response.data
         : response.data?.data || [];
