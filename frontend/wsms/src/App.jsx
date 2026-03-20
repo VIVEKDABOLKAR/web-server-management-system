@@ -20,6 +20,8 @@ import Performance from "./pages/performance/Performance";
   import AdminAddServer from "./pages/admin/AdminAddServer";
 import "./App.css";
 import ServerSetup from "./pages/server/serverSetup/ServerSetup";
+import ServerSetup from "./pages/ServerSetup";
+import AdminAddServer from "./pages/admin/AdminAddServer"
 
 function App() {
   return (
@@ -83,6 +85,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ServerSetup />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+            path="/adminAddServer"
+            element={
+            <ProtectedRoute>
+              <AdminAddServer />
             </ProtectedRoute>
           }
         />

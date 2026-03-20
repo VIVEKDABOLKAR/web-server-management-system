@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 import DashboardLayout from "../../../components/dashboard/DashboardLayout";
+import api from "../services/api";
+import DashboardLayout from "../components/dashboard/DashboardLayout";
+import AddServerForm from "../components/server/AddServerForm";
 
 const AddServer = () => {
   const navigate = useNavigate();
@@ -9,23 +12,80 @@ const AddServer = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [osTypes, setOsTypes] = useState([]);
+  const [webServerTypes, setWebServerTypes] = useState([]);
 
   const [formData, setFormData] = useState({
     serverName: "",
     ipAddress: "",
-    osType: "LINUX",
-    webServerType: "APACHE",
+    osType: null,
+    webServerType: null,
     webServerPortNo: "",
     description: "",
   });
 
   const handleChange = (e) => {
-    
+
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
+  useEffect(() => {
+    fetchOsTypes();
+    fetchWebServerTypes();
+  }, []);
+  useEffect(() => {
+    if (osTypes.length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        osType: osTypes[0]
+      }));
+    }
+  }, [osTypes]);
+
+  useEffect(() => {
+    if (webServerTypes.length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        webServerType: webServerTypes[0]
+      }));
+    }
+  }, [webServerTypes]);
+  const fetchOsTypes = async () => {
+    try {
+      const res = await api.get("/api/ostypes");
+      setOsTypes(res.data);
+    } catch (err) {
+      console.error("Failed to fetch OS types", err);
+    }
+  };
+
+  const fetchWebServerTypes = async () => {
+    try {
+      const response = await api.get("/api/web-server-types");
+      setWebServerTypes(response.data);
+    }
+    catch (err) {
+      console.error("Failed to fetch WebServer Types", err)
+    }
+  }
+  const handleOSType = (e) => {
+
+      const selected = osTypes.find(os => os.id === Number(e.target.value));
+
+    setFormData(prev => ({
+      ...prev,
+      osType: selected
+    }));
+  };
+  const handleWebServerType = (e) => {
+    const selected = webServerTypes.find(web => web.id === Number(e.target.value));
+    setFormData(prev => ({
+      ...prev,
+      webServerType: selected
+    }))
+  }
 
   const validateForm = () => {
     if (!formData.serverName || !formData.ipAddress) {
@@ -65,7 +125,6 @@ const AddServer = () => {
 
     try {
       const response = await api.post("/api/servers", formData);
-
       const serverId = response.data.id;
       navigate(`/server-setup/${serverId}`, {
         state: {
@@ -108,147 +167,20 @@ const AddServer = () => {
             </p>
           </div>
 
-          {/* Form Card */}
-          <div className="max-w-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-6">
-
-            {error && (
-              <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded p-3">
-                {error}
-              </div>
-            )}
-
-            {success && (
-              <div className="mb-4 text-sm text-green-600 bg-green-50 border border-green-200 rounded p-3">
-                {success}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-
-              {/* Server Name */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Server Name
-                </label>
-
-                <input
-                  type="text"
-                  name="serverName"
-                  value={formData.serverName}
-                  onChange={handleChange}
-                  placeholder="Production Web Server"
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700"
-                />
-              </div>
-
-              {/* IP Address */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  IP Address
-                </label>
-
-                <input
-                  type="text"
-                  name="ipAddress"
-                  value={formData.ipAddress}
-                  onChange={handleChange}
-                  placeholder="192.168.1.100"
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700"
-                />
-              </div>
-
-              {/* OS Type */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Operating System
-                </label>
-
-                <select
-                  name="osType"
-                  value={formData.osType}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700"
-                >
-                  <option value="LINUX">Linux</option>
-                  <option value="WINDOWS">Windows</option>
-                </select>
-              </div>
-
-              {/* Web Server Type */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Web Server Type
-                </label>
-
-                <select
-                  name="webServerType"
-                  value={formData.webServerType}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700"
-                >
-                  <option value="APACHE">Apache</option>
-                  <option value="NGINX">Nginx</option>
-                  <option value="IIS">IIS</option>
-                  <option value="TOMCAT">Tomcat</option>
-                </select>
-              </div>
-
-              {/* Web Server Port */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Web Server Port
-                </label>
-
-                <input
-                  type="number"
-                  id="webServerPort"
-                  name="webServerPortNo"
-                  value={formData.webServerPortNo}
-                  onChange={handleChange}
-                  placeholder="e.g., 80, 443"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
-                  required
-                />
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Description
-                </label>
-
-                <textarea
-                  name="description"
-                  rows="3"
-                  value={formData.description}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700"
-                />
-              </div>
-
-              {/* Submit Button */}
-              <div className="flex gap-3 pt-2">
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
-                >
-                  {loading ? "Adding..." : "Add Server"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => navigate("/dashboard")}
-                  className="px-5 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg"
-                >
-                  Cancel
-                </button>
-
-              </div>
-
-            </form>
-          </div>
+          <AddServerForm
+            title="Add Server"
+            formData={formData}
+            osTypes={osTypes}
+            webServerTypes={webServerTypes}
+            loading={loading}
+            error={error}
+            success={success}
+            onChange={handleChange}
+            onSelectOs={handleOSType}
+            onSelectWebServer={handleWebServerType}
+            onSubmit={handleSubmit}
+            onCancel={() => navigate("/dashboard")}
+          />
         </div>
       </div>
     </DashboardLayout>

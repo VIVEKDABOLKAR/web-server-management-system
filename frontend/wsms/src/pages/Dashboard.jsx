@@ -29,15 +29,12 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const response = await api.get("/api/servers");
+      console.log(response.data[1]);
       const serverData = Array.isArray(response.data)
         ? response.data
         : response.data?.data || [];
       setServers(serverData);
       setError("");
-
-      const res = await api.get("/api/admin/is_admin");
-      console.log(res);
-      
     } catch (err) {
       setError("Failed to fetch servers: " + (err?.message || err));
     } finally {
