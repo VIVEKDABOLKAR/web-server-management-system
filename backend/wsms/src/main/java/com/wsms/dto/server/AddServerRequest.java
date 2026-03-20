@@ -2,6 +2,8 @@ package com.wsms.dto.server;
 
 import com.wsms.entity.OSType;
 import com.wsms.entity.WebServerType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -22,10 +24,12 @@ public class AddServerRequest {
     )
     private String ipAddress;
 
-    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "os_type_id")
     private OSType osType;
 
-    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "web_server_type_id")
     private WebServerType webServerType;
 
     @NotNull
