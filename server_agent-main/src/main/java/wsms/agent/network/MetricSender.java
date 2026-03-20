@@ -1,6 +1,7 @@
 package wsms.agent.network;
 
 import wsms.agent.model.Metrics;
+import wsms.agent.monitor.ConnectionMonitor;
 import wsms.agent.utils.JsonUtils;
 import wsms.agent.utils.Logger;
 
@@ -32,6 +33,7 @@ public class MetricSender {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
+
     }
 
     public boolean sendMetrics(Metrics metrics) {
@@ -51,6 +53,7 @@ public class MetricSender {
             payload.put("blockedProcesses", metrics.getBlockedProcesses());
             payload.put("totalProcesses", metrics.getTotalProcesses());
             payload.put("timestamp", metrics.getTimestamp().toString());
+            payload.put("requestCount", metrics.getRequestCount());
 
             String jsonPayload = JsonUtils.toJson(payload);
 

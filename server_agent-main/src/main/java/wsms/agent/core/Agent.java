@@ -4,12 +4,7 @@ import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import wsms.agent.collector.CPUCollector;
-import wsms.agent.collector.DiskCollector;
-import wsms.agent.collector.LoadAvgCollector;
-import wsms.agent.collector.MemoryCollector;
-import wsms.agent.collector.NetworkTrafficCollector;
-import wsms.agent.collector.ProcessMetricsCollector;
+import wsms.agent.collector.*;
 import wsms.agent.config.Config;
 import wsms.agent.config.ConfigUtils;
 import wsms.agent.model.Metrics;
@@ -29,6 +24,7 @@ public class Agent {
     private final CPUCollector cpuCollector;
     private final MemoryCollector memoryCollector;
     private final DiskCollector diskCollector;
+    private final RequestCollector  requestCollector;
     private final MetricSender metricSender;
 
     private final ConnectionMonitor connectionMonitor;
@@ -40,6 +36,7 @@ public class Agent {
     private long prevDiskWrite = -1;
     private long prevNetwork = -1;
     private long prevTime = -1;
+    private Integer prevReqCount = 0;
 
     public Agent(Config config) {
         this.config = config;
@@ -76,8 +73,10 @@ public class Agent {
                     config.getWebServerHost(),
                     config.getWebServerPort(),
                     logger);
+            this.requestCollector = new RequestCollector(connectionMonitor);
         } else {
             this.connectionMonitor = null;
+            this.requestCollector = null;
         }
     }
 
@@ -105,7 +104,7 @@ public class Agent {
         while (!stopped.get()) {
             try {
                 TimeUnit.SECONDS.sleep(config.getCollectionInterval().getSeconds());
-                // collectAndSend();
+                 collectAndSend();
 
             } catch (Exception e) {
                 Thread.currentThread().interrupt();
@@ -182,6 +181,9 @@ public class Agent {
         m.setBlockedProcesses(procMetrics.blocked);
         m.setTotalProcesses(procMetrics.total);
 
+        //request collector
+        m.setRequestCount(requestCollector.collect() - prevReqCount);
+        prevReqCount = requestCollector.collect();
         print(m);
 
         if (metricSender != null) {
@@ -208,6 +210,8 @@ public class Agent {
         logger.infof("Sleeping Processes: %d", m.getSleepingProcesses());
         logger.infof("Blocked Processes: %d", m.getBlockedProcesses());
         logger.infof("Total Processes: %d", m.getTotalProcesses());
+
+        logger.infof("Requests Count: %d", m.getRequestCount());
 
         logger.info("========================================");
     }

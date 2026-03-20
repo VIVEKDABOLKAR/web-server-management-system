@@ -78,8 +78,9 @@ public class AgentController {
                                         "Invalid agent token");
                 }
 
+                //save hertbeat in db
                 server.setLastHeartbeat(LocalDateTime.now());
-                serverRepository.save(server);
+                serverRepository.save(server); // change it into serverService.updateLastHeartBeat
 
                 // Submit metric
                 MetricResponse response = metricService.submitMetric(request);

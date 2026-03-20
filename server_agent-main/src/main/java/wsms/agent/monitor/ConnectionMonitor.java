@@ -19,18 +19,24 @@ public class ConnectionMonitor {
     private final Logger logger;
     private final AtomicBoolean active;
     private final ExecutorService connectionPool;
+
     private ServerSocket listener;
+
+    //static
+    private Integer reqCount = 0;
+
 
     public ConnectionMonitor(int publishPort,
                              String webServerHost,
                              int webServerPort,
                               Logger logger) {
         this.publishPort = publishPort;
-        this.webServerHost = webServerHost;
         this.webServerPort = webServerPort;
         this.logger = logger;
         this.active = new AtomicBoolean(false);
-        this.connectionPool = Executors.newCachedThreadPool();
+        this.connectionPool = Executors.newFixedThreadPool(50);
+
+        this.webServerHost = validateHost(webServerHost, webServerPort);
     }
 
     public void start() throws Exception {
@@ -64,6 +70,9 @@ public class ConnectionMonitor {
         while (active.get()) {
             try {
                 Socket conn = listener.accept();
+                conn.setSoTimeout(30000);
+                //increass request count
+                reqCount++;
                 connectionPool.submit(() -> handleConnection(conn));
             } catch (Exception ex) {
                 if (active.get()) {
@@ -78,9 +87,9 @@ public class ConnectionMonitor {
         String clientIp = conn.getInetAddress().getHostAddress();
 
         logger.info("========================================");
-        logger.info("INCOMING CONNECTION DETECTED");
-        logger.infof("Time: %s", Instant.now().toString());
-        logger.infof("Client IP: %s", clientIp);
+//        logger.info("INCOMING CONNECTION DETECTED");
+        logger.info("Connection received from " + conn.getInetAddress().getHostAddress() + ":" + conn.getPort());
+
 
         try (Socket sourceConn = conn;
              //input output stream for our publishing port
@@ -102,9 +111,10 @@ public class ConnectionMonitor {
 
             /// Danger :- if hostname is localhost :- then try this addres localhost , 127.0.0.1, ::1, :::1
             /// we can chaekc which localhost connection is accepting by application we can put check at init pass one which we got success
-            targetConn.connect(new InetSocketAddress("::1", webServerPort), 5000);
+            targetConn.connect(new InetSocketAddress(webServerHost, webServerPort), 5000);
+            targetConn.setSoTimeout(30000);
 
-            System.out.println("getting connection :- " + targetConn.getLocalAddress().toString());
+//            System.out.println("getting connection :- " + targetConn.getLocalAddress().toString());
 
             //input output stream for target stream
             InputStream targetIn = targetConn.getInputStream();
@@ -113,7 +123,7 @@ public class ConnectionMonitor {
             targetOut.write(buffer, 0, n);
             targetOut.flush();
 
-            //refistre two thread for sending req to 5173, and getting response to 4017 response stream
+            //two thread for sending req to 5173, and getting response to 4017 response stream
             Thread uplink = new Thread(() -> streamCopy(sourceIn, targetOut), "uplink");
             Thread downlink = new Thread(() -> streamCopy(targetIn, sourceOut), "downlink");
 
@@ -134,7 +144,7 @@ public class ConnectionMonitor {
         byte[] data = new byte[8192];
         int read;
         try {
-            while ((read = in.read(data)) != -1) {
+            while (!Thread.currentThread().isInterrupted() && (read = in.read(data)) != -1) {
                 out.write(data, 0, read);
                 out.flush();
             }
@@ -142,29 +152,33 @@ public class ConnectionMonitor {
         }
     }
 
-//    private void connectToTargetWithFallback(Socket targetConn) throws Exception {
-//        String[] candidates;
-//        if ("localhost".equalsIgnoreCase(targetHost)) {
-//            candidates = new String[] { "localhost", "127.0.0.1", "::1" };
-//        } else {
-//            candidates = new String[] { targetHost };
-//        }
-//
-//        Exception last = null;
-//        for (String host : candidates) {
-//            try {
-//                targetConn.connect(new InetSocketAddress(host, targetPort), 5000);
-//                logger.infof("Proxy target selected: %s:%d", host, targetPort);
-//                return;
-//            } catch (Exception ex) {
-//                last = ex;
-//                logger.errorf("Proxy target connect failed %s:%d - %s", host, targetPort, ex.getMessage());
-//            }
-//        }
-//
-//        if (last != null) {
-//            throw last;
-//        }
-//        throw new IllegalStateException("No target host candidate available");
-//    }
+    private String validateHost(String host, int port) {
+        String[] candidates; // InetAddress.getAllByName(host) <- we can use this to remove hardcoded things
+        if ("localhost".equalsIgnoreCase(host)) {
+            candidates = new String[] { "localhost", "127.0.0.1", "::1" };
+        } else {
+            candidates = new String[] { host };
+        }
+
+        for (String tempHost : candidates) {
+            try (Socket testSocket = new Socket();) {
+                System.out.println("Proxy target selected: " + tempHost + ":" + port);
+                testSocket.connect(new InetSocketAddress(tempHost, port), 1000);
+                System.out.println("Proxy connection established" +  tempHost + ":" + port);
+                return tempHost;
+            } catch (Exception ex) {
+                System.out.println("Proxy target connect failed" + host + port + ex.getMessage());
+            }
+        }
+        return host;
+    }
+
+    //setter RequestCounter
+    public void setReqCount(Integer reqCount) {
+        this.reqCount = reqCount;
+    }
+
+    public Integer getReqCount() {
+        return reqCount;
+    }
 }
