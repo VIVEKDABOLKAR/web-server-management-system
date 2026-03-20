@@ -27,11 +27,13 @@ public class AlertService {
 
         //build alert object
         Alert alert = Alert.builder()
-                .server(server)
-                .alertType(alertType)
-                .message(message)
-                .status(AlertStatus.ACTIVE)
-                .build();
+            .server(server)
+            .alertType(alertType)
+            .message(message)
+            .status(AlertStatus.ACTIVE)
+            .value(value)
+            .threshold(threshold)
+            .build();
 
         //save alert object in db
         alertRepository.save(alert);

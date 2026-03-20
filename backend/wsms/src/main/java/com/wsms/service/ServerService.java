@@ -1,19 +1,22 @@
 package com.wsms.service;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.wsms.dto.server.AddServerRequest;
 import com.wsms.entity.*;
 import com.wsms.repository.OSTypeRepo;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
-import java.util.List;
-import java.util.UUID;
+
 
 import com.wsms.repository.WebServerTypeRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class ServerService {
 
     /**
      * add server to the db
+     * 
      * @param dto
      * @param userId
      * @return
@@ -53,7 +57,8 @@ public class ServerService {
                 .webServerType(webServerType)
                 .webServerPortNo(dto.getWebServerPortNo())
                 .description(dto.getDescription())
-                .status(ServerStatus.INACTIVE) //we add machnisim to make it active :- based on agent installation and agen heartbeat response
+                .status(ServerStatus.INACTIVE) // we add machnisim to make it active :- based on agent installation and
+                                               // agen heartbeat response
                 .agentToken(UUID.randomUUID().toString())
                 .user(user)
                 .build();
@@ -63,16 +68,18 @@ public class ServerService {
 
     /**
      * get all server based on the userId
+     * 
      * @param userId
      * @return
      */
     @Transactional(readOnly = true)
     public List<Server> getAllServersByUser(Long userId) {
-        return serverRepository.findAllByUserId(userId);
+        return serverRepository.findAllByUser_Id(userId);
     }
 
     /**
      * get single server based on serverId
+     * 
      * @param serverId
      * @return
      */
@@ -83,19 +90,22 @@ public class ServerService {
     }
 
     /**
-     * get server object based on serverId and userId (it use to resolve duplicted serverId but unique userId)
+     * get server object based on serverId and userId (it use to resolve duplicted
+     * serverId but unique userId)
+     * 
      * @param serverId
      * @param userId
      * @return Server
      */
     @Transactional(readOnly = true)
     public Server getServerByIdForUser(Long serverId, Long userId) {
-        return serverRepository.findByIdAndUserId(serverId, userId)
+        return serverRepository.findByIdAndUser_Id(serverId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Server not found"));
     }
 
     /**
      * delete server from db
+     * 
      * @param serverId
      * @param userId
      */

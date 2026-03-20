@@ -42,13 +42,13 @@ const AddServerAdmin = () => {
 
   useEffect(() => {
     if (osTypes.length > 0 && !formData.osType) {
-      setFormData(prev => ({ ...prev, osType: osTypes[0] }));
+      setFormData((prev) => ({ ...prev, osType: osTypes[0] }));
     }
   }, [osTypes]);
 
   useEffect(() => {
     if (webServerTypes.length > 0 && !formData.webServerType) {
-      setFormData(prev => ({ ...prev, webServerType: webServerTypes[0] }));
+      setFormData((prev) => ({ ...prev, webServerType: webServerTypes[0] }));
     }
   }, [webServerTypes]);
 
@@ -79,13 +79,15 @@ const AddServerAdmin = () => {
   };
 
   const handleOSType = (e) => {
-    const selected = osTypes.find(os => os.id === Number(e.target.value));
-    setFormData(prev => ({ ...prev, osType: selected }));
+    const selected = osTypes.find((os) => os.id === Number(e.target.value));
+    setFormData((prev) => ({ ...prev, osType: selected }));
   };
 
   const handleWebServerType = (e) => {
-    const selected = webServerTypes.find(web => web.id === Number(e.target.value));
-    setFormData(prev => ({ ...prev, webServerType: selected }));
+    const selected = webServerTypes.find(
+      (web) => web.id === Number(e.target.value),
+    );
+    setFormData((prev) => ({ ...prev, webServerType: selected }));
   };
 
   const validateForm = () => {
@@ -166,13 +168,12 @@ const AddServerAdmin = () => {
 
       await api.post("/api/ostypes", {
         name: osName,
-        active: true
+        active: true,
       });
 
       setOsName("");
       fetchOsTypes();
       setOsSuccess("OS Type added successfully");
-
     } catch (err) {
       setOsSuccess("");
       setOsError(err.response?.data?.message || "Failed to add OS type");
@@ -197,70 +198,65 @@ const AddServerAdmin = () => {
 
       await api.post("/api/web-server-types", {
         name: webServerName,
-        active: true
+        active: true,
       });
 
       setWebServerName("");
       fetchWebServerTypes();
       setWebSuccess("Web Server Type added successfully");
-
     } catch (err) {
       setWebSuccess("");
-      setWebError(err.response?.data?.message || "Failed to add Web Server type");
+      setWebError(
+        err.response?.data?.message || "Failed to add Web Server type",
+      );
     } finally {
       setManagerLoading(false);
     }
   };
 
- const handleToggleOsStatus = async (id) => {
-  try {
-    const selected = osTypes.find(os => os.id === id);
+  const handleToggleOsStatus = async (id) => {
+    try {
+      const selected = osTypes.find((os) => os.id === id);
 
-    const updatedOs = {
-      ...selected,
-      active: !selected.active
-    };
+      const updatedOs = {
+        ...selected,
+        active: !selected.active,
+      };
 
-    await api.put(`/api/ostypes/${id}`, updatedOs);
+      await api.put(`/api/ostypes/${id}`, updatedOs);
 
-    // update UI
-    setOsTypes(prev =>
-      prev.map(item =>
-        item.id === id ? updatedOs : item
-      )
-    );
+      // update UI
+      setOsTypes((prev) =>
+        prev.map((item) => (item.id === id ? updatedOs : item)),
+      );
+    } catch (err) {
+      console.error("Toggle failed", err);
+    }
+  };
 
-  } catch (err) {
-    console.error("Toggle failed", err);
-  }
-};
+  const handleToggleWebStatus = async (id) => {
+    try {
+      const selected = webServerTypes.find((web) => web.id === id);
 
-  const handleToggleWebStatus =async (id) => {
-    try{
-   const selected = webServerTypes.find(web => web.id === id);
+      const updatedweb = {
+        ...selected,
+        active: !selected.active,
+      };
 
-    const updatedweb = {
-      ...selected,
-      active: !selected.active
-    };
+      await api.put(`/api/webtypes/${id}`, updatedweb);
 
-    await api.put(`/api/webtypes/${id}`, updatedweb);
-
-     setWebServerTypes(prev =>
-      prev.map(item =>
-        item.id === id ? updatedweb : item
-      )
-    );
-   } catch (err) {
-    console.error("Toggle failed", err);
-  }
+      setWebServerTypes((prev) =>
+        prev.map((item) => (item.id === id ? updatedweb : item)),
+      );
+    } catch (err) {
+      console.error("Toggle failed", err);
+    }
   };
 
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-gray-50 dark:bg-slate-900 p-6">
         <div className="max-w-7xl mx-auto">
-
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-200">
@@ -273,13 +269,12 @@ const AddServerAdmin = () => {
 
           {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
             {/* LEFT COLUMN: Add Server Form */}
             <AddServerForm
               title="Add New Server"
               formData={formData}
-              osTypes={osTypes}
-              webServerTypes={webServerTypes}
+              osTypes={osTypes.filter((os) => os.active)}
+              webServerTypes={webServerTypes.filter((web) => web.active)}
               loading={serverLoading}
               error={serverError}
               success={serverSuccess}
@@ -293,7 +288,6 @@ const AddServerAdmin = () => {
 
             {/* RIGHT COLUMN: Type Management */}
             <div className="space-y-6">
-
               {/* Add OS Type */}
               <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-6">
                 <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-4">
@@ -328,7 +322,7 @@ const AddServerAdmin = () => {
                   <button
                     type="submit"
                     disabled={managerLoading}
-                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 font-medium"
+                    className="w-full px-4 py-2 rounded-lg bg-sky-600 text-white hover:bg-sky-700 transition font-medium"
                   >
                     {managerLoading ? "Adding..." : "Add OS Type"}
                   </button>
@@ -374,7 +368,7 @@ const AddServerAdmin = () => {
                   <button
                     type="submit"
                     disabled={managerLoading}
-                    className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50 font-medium"
+                    className="w-full px-4 py-2 rounded-lg bg-sky-600 text-white hover:bg-sky-700 transition font-medium"
                   >
                     {managerLoading ? "Adding..." : "Add Web Server Type"}
                   </button>
@@ -385,11 +379,8 @@ const AddServerAdmin = () => {
                 rows={webServerTypes}
                 onToggleStatus={handleToggleWebStatus}
               />
-
             </div>
-
           </div>
-
         </div>
       </div>
     </DashboardLayout>

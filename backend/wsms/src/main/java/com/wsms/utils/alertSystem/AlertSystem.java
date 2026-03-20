@@ -54,9 +54,11 @@ public class AlertSystem {
         //for Disk usage
         if (metricSubmitRequest.getDiskUsage() > 80) {
             alertService.createAlert(
-                    server,
-                    AlertType.DISK_HIGH,
-                    "Disk usage exceeded 80%. Current: " + metricSubmitRequest.getDiskUsage()
+                server,
+                AlertType.DISK_HIGH,
+                metricSubmitRequest.getDiskUsage(),
+                80.0,
+                "Disk usage exceeded 80%. Current: " + metricSubmitRequest.getDiskUsage()
             );
             alertFlag = true;
         }

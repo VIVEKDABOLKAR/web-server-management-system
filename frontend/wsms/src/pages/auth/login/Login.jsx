@@ -21,8 +21,11 @@ const Login = () => {
     if (data?.token) {
       localStorage.setItem("token", data.token);
       setSuccessMessage("Login successful. Redirecting...");
-      //navigate(isAdminToken(data.token) ? "/admin/dashboard" : "/dashboard");
-      navigate("/admin/dashboard")
+      if (isAdminToken(data.token)) {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
       return;
     }
 

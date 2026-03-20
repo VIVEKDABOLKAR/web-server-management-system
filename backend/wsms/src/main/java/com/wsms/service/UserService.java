@@ -1,5 +1,15 @@
 package com.wsms.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.wsms.dto.user.ChangePasswordRequest;
 import com.wsms.dto.user.UpdateProfileRequest;
 import com.wsms.dto.user.UserProfileResponse;
@@ -8,22 +18,14 @@ import com.wsms.entity.User;
 import com.wsms.repository.AlertRepository;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
 
-import java.util.HashMap;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-    //DI
+    // DI
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;
     private final AlertRepository alertRepository;
@@ -31,6 +33,7 @@ public class UserService {
 
     /**
      * fetch user profile and server details base on user email
+     * 
      * @return
      */
     public UserProfileResponse getProfile() {
@@ -38,11 +41,11 @@ public class UserService {
         User user = getCurrentUser();
 
         // fetch server and details of the user
-        int totalServers = serverRepository.countByUserId(user.getId());
-        int activeServers = serverRepository.countByUserIdAndStatus(user.getId(), ServerStatus.ACTIVE);
+        int totalServers = serverRepository.countByUser_Id(user.getId());
+        int activeServers = serverRepository.countByUser_IdAndStatus(user.getId(), ServerStatus.ACTIVE);
         int totalAlerts = alertRepository.countByServer_UserId(user.getId());
 
-        //create and send response
+        // create and send response
         return UserProfileResponse.builder()
                 .id(user.getId())
                 .fullName(user.getFullName())
@@ -108,13 +111,15 @@ public class UserService {
         return response;
     }
 
-     //NEXT TASK :- Refactor code to implement this
+    // NEXT TASK :- Refactor code to implement this
     /**
-     * take email from the authentication object and use it fetch user or throw error
-     * insted of this can we add seecurity filter to fetch user cred from jwt token and store it in authentication
+     * take email from the authentication object and use it fetch user or throw
+     * error
+     * insted of this can we add seecurity filter to fetch user cred from jwt token
+     * and store it in authentication
      *
      */
-    public User getCurrentUser() { //made it public so other contoller can also get current user
+    public User getCurrentUser() { // made it public so other contoller can also get current user
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();

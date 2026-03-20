@@ -1,154 +1,68 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../../services/api";
+
 import DashboardLayout from "../../../components/dashboard/DashboardLayout";
-import api from "../services/api";
-import DashboardLayout from "../components/dashboard/DashboardLayout";
-import AddServerForm from "../components/server/AddServerForm";
+import AddServerForm from "../../../components/server/AddServerForm";
+
+import useServerForm from "../../../hooks/useServerForm";
+import useServerTypes from "../../../hooks/useServerTypes";
 
 const AddServer = () => {
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [osTypes, setOsTypes] = useState([]);
-  const [webServerTypes, setWebServerTypes] = useState([]);
+  // 🔹 Custom hooks
+  const { osTypes, webServerTypes } = useServerTypes();
 
-  const [formData, setFormData] = useState({
-    serverName: "",
-    ipAddress: "",
-    osType: null,
-    webServerType: null,
-    webServerPortNo: "",
-    description: "",
-  });
+  const {
+    formData,
+    setFormData,
+    handleChange,
+    submit,
+    loading,
+    error,
+  } = useServerForm(navigate);
 
-  const handleChange = (e) => {
-
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  // ✅ Set default OS
   useEffect(() => {
-    fetchOsTypes();
-    fetchWebServerTypes();
-  }, []);
-  useEffect(() => {
-    if (osTypes.length > 0) {
-      setFormData(prev => ({
+    if (osTypes.length > 0 && !formData.osType) {
+      setFormData((prev) => ({
         ...prev,
-        osType: osTypes[0]
+        osType: osTypes[0],
       }));
     }
   }, [osTypes]);
 
+  // ✅ Set default Web Server
   useEffect(() => {
-    if (webServerTypes.length > 0) {
-      setFormData(prev => ({
+    if (webServerTypes.length > 0 && !formData.webServerType) {
+      setFormData((prev) => ({
         ...prev,
-        webServerType: webServerTypes[0]
+        webServerType: webServerTypes[0],
       }));
     }
   }, [webServerTypes]);
-  const fetchOsTypes = async () => {
-    try {
-      const res = await api.get("/api/ostypes");
-      setOsTypes(res.data);
-    } catch (err) {
-      console.error("Failed to fetch OS types", err);
-    }
-  };
 
-  const fetchWebServerTypes = async () => {
-    try {
-      const response = await api.get("/api/web-server-types");
-      setWebServerTypes(response.data);
-    }
-    catch (err) {
-      console.error("Failed to fetch WebServer Types", err)
-    }
-  }
+  // ✅ Handle dropdown changes
   const handleOSType = (e) => {
+    const selected = osTypes.find(
+      (os) => os.id === Number(e.target.value)
+    );
 
-      const selected = osTypes.find(os => os.id === Number(e.target.value));
-
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      osType: selected
+      osType: selected,
     }));
   };
+
   const handleWebServerType = (e) => {
-    const selected = webServerTypes.find(web => web.id === Number(e.target.value));
-    setFormData(prev => ({
+    const selected = webServerTypes.find(
+      (web) => web.id === Number(e.target.value)
+    );
+
+    setFormData((prev) => ({
       ...prev,
-      webServerType: selected
-    }))
-  }
-
-  const validateForm = () => {
-    if (!formData.serverName || !formData.ipAddress) {
-      setError("Server name and IP address are required");
-      return false;
-    }
-
-    const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
-
-    if (!ipPattern.test(formData.ipAddress)) {
-      setError("Please enter a valid IP address");
-      return false;
-    }
-
-    if (!formData.webServerPortNo) {
-      setError("Web server port number is required");
-      return false;
-    }
-
-    if (isNaN(formData.webServerPortNo)) {
-      setError("Port number must be numeric");
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setError("");
-    setSuccess("");
-
-    if (!validateForm()) return;
-
-    setLoading(true);
-
-    try {
-      const response = await api.post("/api/servers", formData);
-      const serverId = response.data.id;
-      navigate(`/server-setup/${serverId}`, {
-        state: {
-          serverName: formData.serverName,
-          ipAddress: formData.ipAddress,
-          osType: formData.osType,
-          webServerType: formData.webServerType,
-          webServerPortNo: formData.webServerPortNo,
-        },
-      });
-
-    } catch (err) {
-      const responseData = err.response?.data;
-      let errorMessage = "Failed to add server.";
-
-      if (responseData?.message) {
-        errorMessage = responseData.message;
-      }
-
-      setError(errorMessage);
-
-    } finally {
-      setLoading(false);
-    }
+      webServerType: selected,
+    }));
   };
 
   return (
@@ -167,20 +81,25 @@ const AddServer = () => {
             </p>
           </div>
 
+          {/* Form */}
           <AddServerForm
             title="Add Server"
             formData={formData}
-            osTypes={osTypes}
-            webServerTypes={webServerTypes}
+            osTypes={osTypes.filter(os => os.active)}  // ✅ only active
+            webServerTypes={webServerTypes.filter(web => web.active)} // ✅ only active
             loading={loading}
             error={error}
-            success={success}
+            success=""
             onChange={handleChange}
             onSelectOs={handleOSType}
             onSelectWebServer={handleWebServerType}
-            onSubmit={handleSubmit}
+            onSubmit={(e) => {
+              e.preventDefault();
+              submit();
+            }}
             onCancel={() => navigate("/dashboard")}
           />
+
         </div>
       </div>
     </DashboardLayout>

@@ -1,7 +1,18 @@
-import React from "react";
-
-// Simple SVG icons following Heroicons-like style
-// All icons accept className prop for sizing/color.
+export const FormIcon = ({ className = "w-5 h-5" }) => (
+  <svg
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 5h6M9 9h6M9 13h6M5 5h.01M5 9h.01M5 13h.01M7 17h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"
+    />
+  </svg>
+);
 
 export const DashboardIcon = ({ className = "w-5 h-5" }) => (
   <svg
