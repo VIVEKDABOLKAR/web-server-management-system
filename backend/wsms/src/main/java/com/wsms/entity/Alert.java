@@ -55,4 +55,10 @@ public class Alert {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private Double value;
+
+    @Column(nullable = false)
+    private Double threshold;
 }

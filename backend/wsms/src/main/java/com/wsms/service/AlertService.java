@@ -23,7 +23,7 @@ public class AlertService {
      * @param alertType
      * @param message
      */
-    public void createAlert(Server server, AlertType alertType, String message) {
+    public void createAlert(Server server,AlertType alertType,Double value,Double threshold,String message) {
 
         //build alert object
         Alert alert = Alert.builder()
