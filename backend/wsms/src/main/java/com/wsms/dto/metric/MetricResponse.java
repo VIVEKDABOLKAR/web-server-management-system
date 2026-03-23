@@ -24,6 +24,7 @@ public class MetricResponse {
     private Integer sleepingProcesses;
     private Integer blockedProcesses;
     private Integer totalProcesses;
+    private Integer requestCount;
     private LocalDateTime createdAt;
     private Long serverId;
     private String serverName;

@@ -1,5 +1,7 @@
 package wsms.agent.monitor;
 
+import wsms.agent.model.RequestLog;
+import wsms.agent.network.RequestLogsSender;
 import wsms.agent.utils.Logger;
 
 import java.io.InputStream;
@@ -11,6 +13,7 @@ import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConnectionMonitor {
     private final int publishPort;
@@ -19,22 +22,34 @@ public class ConnectionMonitor {
     private final Logger logger;
     private final AtomicBoolean active;
     private final ExecutorService connectionPool;
+    private final String serverId;
+    private final RequestLogsSender requestLogsSender;
 
     private ServerSocket listener;
 
-    //static
-    private Integer reqCount = 0;
+    private final AtomicInteger reqCount = new AtomicInteger(0);
 
 
     public ConnectionMonitor(int publishPort,
                              String webServerHost,
                              int webServerPort,
                               Logger logger) {
+        this(publishPort, webServerHost, webServerPort, logger, null, null);
+    }
+
+    public ConnectionMonitor(int publishPort,
+                             String webServerHost,
+                             int webServerPort,
+                             Logger logger,
+                             String serverId,
+                             RequestLogsSender requestLogsSender) {
         this.publishPort = publishPort;
         this.webServerPort = webServerPort;
         this.logger = logger;
         this.active = new AtomicBoolean(false);
         this.connectionPool = Executors.newFixedThreadPool(50);
+        this.serverId = serverId;
+        this.requestLogsSender = requestLogsSender;
 
         this.webServerHost = validateHost(webServerHost, webServerPort);
     }
@@ -71,8 +86,7 @@ public class ConnectionMonitor {
             try {
                 Socket conn = listener.accept();
                 conn.setSoTimeout(30000);
-                //increass request count
-                reqCount++;
+                reqCount.incrementAndGet();
                 connectionPool.submit(() -> handleConnection(conn));
             } catch (Exception ex) {
                 if (active.get()) {
@@ -85,11 +99,10 @@ public class ConnectionMonitor {
     private void handleConnection(Socket conn) {
         String remoteAddr = conn.getRemoteSocketAddress().toString();
         String clientIp = conn.getInetAddress().getHostAddress();
+        String method = "UNKNOWN";
+        String url = "/";
 
         logger.info("========================================");
-//        logger.info("INCOMING CONNECTION DETECTED");
-        logger.info("Connection received from " + conn.getInetAddress().getHostAddress() + ":" + conn.getPort());
-
 
         try (Socket sourceConn = conn;
              //input output stream for our publishing port
@@ -106,8 +119,18 @@ public class ConnectionMonitor {
             String requestData = new String(buffer, 0, n);
             String[] lines = requestData.split("\\n");
             if (lines.length > 0) {
-                logger.infof("HTTP Request: %s", lines[0].trim());
+                String requestLine = lines[0].trim();
+                logger.infof("HTTP Request: %s", requestLine);
+
+                String[] requestParts = requestLine.split("\\s+");
+                if (requestParts.length >= 2) {
+                    method = requestParts[0];
+                    url = requestParts[1];
+                }
             }
+
+            logger.infoWebof("Incoming Request - IP: %s, Method: %s, URL: %s", clientIp, method, url);
+            sendRequestLog(clientIp, method, url, conn.getPort());
 
             /// Danger :- if hostname is localhost :- then try this addres localhost , 127.0.0.1, ::1, :::1
             /// we can chaekc which localhost connection is accepting by application we can put check at init pass one which we got success
@@ -138,6 +161,22 @@ public class ConnectionMonitor {
             logger.infof("Connection closed for %s", remoteAddr);
             logger.info("========================================");
         }
+    }
+
+    private void sendRequestLog(String clientIp, String method, String url, int port) {
+        if (requestLogsSender == null || serverId == null || serverId.isBlank()) {
+            return;
+        }
+
+        RequestLog requestLog = new RequestLog();
+        requestLog.setTimestamp(Instant.now());
+        requestLog.setServerId(serverId);
+        requestLog.setClientIP(clientIp);
+        requestLog.setMethod(method);
+        requestLog.setUrl(url);
+        requestLog.setPort(port);
+
+        requestLogsSender.sendRequestLog(requestLog);
     }
 
     private void streamCopy(InputStream in, OutputStream out) {
@@ -175,10 +214,10 @@ public class ConnectionMonitor {
 
     //setter RequestCounter
     public void setReqCount(Integer reqCount) {
-        this.reqCount = reqCount;
+        this.reqCount.set(reqCount == null ? 0 : reqCount);
     }
 
     public Integer getReqCount() {
-        return reqCount;
+        return reqCount.get();
     }
 }

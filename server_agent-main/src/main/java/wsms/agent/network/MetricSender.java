@@ -1,7 +1,6 @@
 package wsms.agent.network;
 
 import wsms.agent.model.Metrics;
-import wsms.agent.monitor.ConnectionMonitor;
 import wsms.agent.utils.JsonUtils;
 import wsms.agent.utils.Logger;
 
@@ -12,11 +11,6 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.gson.Gson;
-
-import wsms.agent.model.Metrics;
-import wsms.agent.utils.Logger;
 
 public class MetricSender {
     private final String backendUrl;

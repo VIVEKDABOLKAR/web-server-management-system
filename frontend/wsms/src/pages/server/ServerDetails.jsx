@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import Navbar from "../../components/Navbar";
-import MetricCard from "../../components/MetricCard";
-import MetricsChart from "../../components/MetricsChart";
-import CombinedMetricsChart from "../../components/CombinedMetricsChart";
 import AlertList from "../../components/AlertList";
 import BlockedIpList from "../../components/BlockedIpList";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import ServerInfoCard from "../../components/server/server_details/ServerInfoCard";
+import AgentStatusCard from "../../components/server/server_details/AgentStatusCard";
+import MetricsOverview from "../../components/server/MetricsOverview";
+import PerformanceTrends from "../../components/server/PerformanceTrends";
+import MetricsHistoryTable from "../../components/server/server_details/MetricsHistoryTable";
 
 const ServerDetails = () => {
   const { id } = useParams();
@@ -16,9 +17,31 @@ const ServerDetails = () => {
   const [metrics, setMetrics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [metricsTimeRange, setMetricsTimeRange] = useState(24); // hours
-  const [chartView, setChartView] = useState("individual"); // 'individual' or 'combined'
+  const metricsTimeRange = 24; // fixed history window in hours
   const [deleteDialog, setDeleteDialog] = useState({ isOpen: false });
+
+  const fetchServerDetails = useCallback(async () => {
+    try {
+      const response = await api.get(`/api/servers/${id}`);
+      setServer(response.data);
+    } catch {
+      setError("Failed to fetch server details");
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  const fetchMetrics = useCallback(async () => {
+    try {
+      const response = await api.get(
+        `/api/metrics/server/${id}/recent?hours=${metricsTimeRange}`
+      );
+      setMetrics(response.data);
+
+    } catch {
+      // Don't set error state to avoid disrupting the UI
+    }
+  }, [id, metricsTimeRange]);
 
   useEffect(() => {
     fetchServerDetails();
@@ -26,29 +49,7 @@ const ServerDetails = () => {
     // Refresh metrics every 30 seconds
     const interval = setInterval(fetchMetrics, 30000);
     return () => clearInterval(interval);
-  }, [id, metricsTimeRange]);
-
-  const fetchServerDetails = async () => {
-    try {
-      const response = await api.get(`/api/servers/${id}`);
-      setServer(response.data);
-    } catch (err) {
-      setError("Failed to fetch server details");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchMetrics = async () => {
-    try {
-      const response = await api.get(
-        `/api/metrics/server/${id}/recent?hours=${metricsTimeRange}`
-      );
-      setMetrics(response.data);
-    } catch (err) {
-      // Don't set error state to avoid disrupting the UI
-    }
-  };
+  }, [fetchServerDetails, fetchMetrics]);
 
   // Get latest metrics from the metrics array
   const latestMetrics = metrics.length > 0 ? metrics[0] : null;
@@ -97,6 +98,7 @@ const ServerDetails = () => {
     <>
       <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
               {server.serverName}
@@ -111,325 +113,20 @@ const ServerDetails = () => {
 
           {/* Server Info Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {/* Server Information */}
-            <div className="bg-white dark:bg-slate-800 p-5 rounded shadow border border-gray-200 dark:border-slate-700">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-slate-700">
-                Server Information
-              </h2>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400 font-medium">
-                    IP Address:
-                  </span>
-                  <span className="font-mono text-sm bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded">
-                    {server.ipAddress}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400 font-medium">
-                    Status:
-                  </span>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      server.status === "active"
-                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                        : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
-                    }`}
-                  >
-                    {server.status}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400 font-medium">
-                    OS Type:
-                  </span>
-                  <span className="text-gray-800 dark:text-gray-200">
-                    {server.osType}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400 font-medium">
-                    Web Server:
-                  </span>
-                  <span className="text-gray-800 dark:text-gray-200">
-                    {server.webServerType}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400 font-medium">
-                    Created At:
-                  </span>
-                  <span className="text-gray-800 dark:text-gray-200">
-                    {new Date(server.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-                {server.description && (
-                  <div className="pt-2 border-t border-gray-200 dark:border-slate-700">
-                    <span className="text-gray-600 dark:text-gray-400 font-medium block mb-1">
-                      Description:
-                    </span>
-                    <span className="text-gray-800 dark:text-gray-200">
-                      {server.description}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Agent Status */}
-            <div className="bg-white dark:bg-slate-800 p-5 rounded shadow border border-gray-200 dark:border-slate-700">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-slate-700">
-                Agent Status
-              </h2>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400 font-medium">
-                    Agent Installed:
-                  </span>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      server.agentInstalled
-                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                        : "bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-400"
-                    }`}
-                  >
-                    {server.agentInstalled ? "✓ Installed" : "Not Installed"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400 font-medium">
-                    Last Heartbeat:
-                  </span>
-                  <span className="text-gray-800 dark:text-gray-200">
-                    {server.lastHeartbeat
-                      ? new Date(server.lastHeartbeat).toLocaleString()
-                      : "N/A"}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <ServerInfoCard server={server} />
+            <AgentStatusCard server={server} />
           </div>
 
-          {/* Metrics */}
-          <div className="mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                Latest Metrics
-              </h2>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setMetricsTimeRange(1)}
-                  className={`px-3 py-1 rounded text-sm ${
-                    metricsTimeRange === 1
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600"
-                  }`}
-                >
-                  1h
-                </button>
-                <button
-                  onClick={() => setMetricsTimeRange(6)}
-                  className={`px-3 py-1 rounded text-sm ${
-                    metricsTimeRange === 6
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600"
-                  }`}
-                >
-                  6h
-                </button>
-                <button
-                  onClick={() => setMetricsTimeRange(24)}
-                  className={`px-3 py-1 rounded text-sm ${
-                    metricsTimeRange === 24
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600"
-                  }`}
-                >
-                  24h
-                </button>
-                <button
-                  onClick={() => setMetricsTimeRange(168)}
-                  className={`px-3 py-1 rounded text-sm ${
-                    metricsTimeRange === 168
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600"
-                  }`}
-                >
-                  7d
-                </button>
-              </div>
-            </div>
-            {latestMetrics ? (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-4">
-                  <MetricCard
-                    title="CPU Usage"
-                    value={latestMetrics.cpuUsage || 0}
-                    unit="%"
-                    max={100}
-                  />
-                  <MetricCard
-                    title="Memory Usage"
-                    value={latestMetrics.memoryUsage || 0}
-                    unit="%"
-                    max={100}
-                  />
-                  <MetricCard
-                    title="Disk Usage"
-                    value={latestMetrics.diskUsage || 0}
-                    unit="%"
-                    max={100}
-                  />
-                  <MetricCard
-                    title="Request Count"
-                    value={latestMetrics.requestCount || 0}
-                    unit=""
-                    max={latestMetrics.requestCount || 100}
-                  />
-                </div>
+          {/* Latest Metrics Overview */}
+          <MetricsOverview latestMetrics={latestMetrics} />
 
-                {/* Charts Section */}
-                <div className="mb-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
-                      Performance Trends
-                    </h3>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setChartView("individual")}
-                        className={`px-3 py-2 rounded text-sm font-medium transition ${
-                          chartView === "individual"
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600"
-                        }`}
-                      >
-                        Individual
-                      </button>
-                      <button
-                        onClick={() => setChartView("combined")}
-                        className={`px-3 py-2 rounded text-sm font-medium transition ${
-                          chartView === "combined"
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600"
-                        }`}
-                      >
-                        Combined
-                      </button>
-                    </div>
-                  </div>
-
-                  {chartView === "individual" ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      {/* CPU Chart */}
-                      <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-5 rounded shadow">
-                        <h3 className="text-lg font-bold text-blue-600 dark:text-blue-400 mb-4">
-                          CPU Usage
-                        </h3>
-                        <MetricsChart metrics={metrics} type="cpu" />
-                      </div>
-
-                      {/* Memory Chart */}
-                      <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-5 rounded shadow">
-                        <h3 className="text-lg font-bold text-green-600 dark:text-green-400 mb-4">
-                          Memory Usage
-                        </h3>
-                        <MetricsChart metrics={metrics} type="memory" />
-                      </div>
-
-                      {/* Disk Chart */}
-                      <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-5 rounded shadow">
-                        <h3 className="text-lg font-bold text-amber-600 dark:text-amber-400 mb-4">
-                          Disk Usage
-                        </h3>
-                        <MetricsChart metrics={metrics} type="disk" />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-5 rounded shadow">
-                      <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">
-                        All Metrics Combined
-                      </h3>
-                      <CombinedMetricsChart metrics={metrics} />
-                    </div>
-                  )}
-                </div>
-
-                <div className="bg-white dark:bg-slate-800 p-4 rounded shadow border border-gray-200 dark:border-slate-700">
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                    Metrics History ({metrics.length} records)
-                  </h3>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Last updated:{" "}
-                    {new Date(latestMetrics.createdAt).toLocaleString()}
-                  </div>
-                  <div className="mt-4 max-h-64 overflow-y-auto">
-                    <table className="w-full text-sm">
-                      <thead className="bg-gray-50 dark:bg-slate-700 sticky top-0">
-                        <tr>
-                          <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-300">
-                            Time
-                          </th>
-                          <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-300">
-                            CPU %
-                          </th>
-                          <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-300">
-                            Memory %
-                          </th>
-                          <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-300">
-                            Disk %
-                          </th>
-                          <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-300">
-                            Status
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {metrics.map((metric) => (
-                          <tr
-                            key={metric.id}
-                            className="border-b border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700"
-                          >
-                            <td className="px-4 py-2 text-gray-800 dark:text-gray-200">
-                              {new Date(metric.createdAt).toLocaleTimeString()}
-                            </td>
-                            <td className="px-4 py-2 text-gray-800 dark:text-gray-200">
-                              {metric.cpuUsage.toFixed(1)}%
-                            </td>
-                            <td className="px-4 py-2 text-gray-800 dark:text-gray-200">
-                              {metric.memoryUsage.toFixed(1)}%
-                            </td>
-                            <td className="px-4 py-2 text-gray-800 dark:text-gray-200">
-                              {metric.diskUsage
-                                ? metric.diskUsage.toFixed(1) + "%"
-                                : "N/A"}
-                            </td>
-                            <td className="px-4 py-2">
-                              <span
-                                className={`px-2 py-1 rounded text-xs ${
-                                  metric.serverStatus === "ACTIVE"
-                                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                    : metric.serverStatus === "WARNING"
-                                      ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
-                                      : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
-                                }`}
-                              >
-                                {metric.serverStatus}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-lg dark:shadow-slate-900/30 text-center text-gray-500 dark:text-gray-400">
-                No metrics available yet. Make sure the agent is running and
-                configured properly.
-              </div>
-            )}
-          </div>
+          {/* Performance Trends Charts */}
+          {latestMetrics && (
+            <>
+              <PerformanceTrends metrics={metrics} />
+              <MetricsHistoryTable metrics={metrics} latestMetrics={latestMetrics} />
+            </>
+          )}
 
           {/* Alerts and Blocked IPs */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

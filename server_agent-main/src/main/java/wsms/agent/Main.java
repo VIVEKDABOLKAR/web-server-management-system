@@ -19,7 +19,7 @@ public class Main {
         String configPath = configArgs.getOrDefault("configPath", "config.json");
 
         // Load config
-        Config config = ConfigUtils.saveConfigArgs(configArgs , configPath);
+        ConfigUtils.saveConfigArgs(configArgs , configPath);
 
         //init agent
         Agent agent;

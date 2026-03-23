@@ -1,4 +1,4 @@
-package wsms.agent.monitor;
+package wsms.agent.monitor.netty;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;

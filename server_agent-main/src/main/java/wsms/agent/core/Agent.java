@@ -9,8 +9,8 @@ import wsms.agent.config.Config;
 import wsms.agent.config.ConfigUtils;
 import wsms.agent.model.Metrics;
 import wsms.agent.monitor.ConnectionMonitor;
-import wsms.agent.monitor.NettyConnectionMonitor;
 import wsms.agent.network.MetricSender;
+import wsms.agent.network.RequestLogsSender;
 import wsms.agent.utils.Logger;
 
 // Note: ConnectionMonitor is not yet implemented
@@ -27,6 +27,7 @@ public class Agent {
     private final DiskCollector diskCollector;
     private final RequestCollector  requestCollector;
     private final MetricSender metricSender;
+    private final RequestLogsSender requestLogsSender;
 
     private final ConnectionMonitor connectionMonitor;
 
@@ -61,9 +62,15 @@ public class Agent {
                     Long.parseLong(config.getServerId()), //change it to the string , by testing
                     logger
             );
-            logger.info("Metric sender initialized with backend: " + config.getBackendUrl());
+                this.requestLogsSender = new RequestLogsSender(
+                    config.getBackendUrl(),
+                    config.getAuthToken(),
+                    logger
+                );
+            logger.info("Metric sender and request sender initialized with backend: " + config.getBackendUrl());
         } else {
             this.metricSender = null;
+                this.requestLogsSender = null;
         }
 
         // Initialize connection monitor , if webApplicationMonitor is true
@@ -73,7 +80,9 @@ public class Agent {
                     config.getPublishPort(),
                     config.getWebServerHost(),
                     config.getWebServerPort(),
-                    logger);
+                    logger,
+                    config.getServerId(),
+                    requestLogsSender);
             this.requestCollector = new RequestCollector(connectionMonitor);
         } else {
             this.connectionMonitor = null;
@@ -96,9 +105,12 @@ public class Agent {
         logger.info("========================================");
 
         try {
-//            connectionMonitor.start();
-            NettyConnectionMonitor  nettyConnectionMonitor = new NettyConnectionMonitor(4017, "::1",5173, logger);
-            nettyConnectionMonitor.start();
+            if (connectionMonitor != null) {
+                connectionMonitor.start();
+            }
+            //we are testing new connectionMonitor
+//            NettyConnectionMonitor  nettyConnectionMonitor = new NettyConnectionMonitor(4017, "::1",5173, logger);
+//            nettyConnectionMonitor.start();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -107,8 +119,7 @@ public class Agent {
         while (!stopped.get()) {
             try {
                 TimeUnit.SECONDS.sleep(config.getCollectionInterval().getSeconds());
-//                 collectAndSend();
-
+                 collectAndSend();
             } catch (Exception e) {
                 Thread.currentThread().interrupt();
                 stop();
@@ -185,13 +196,23 @@ public class Agent {
         m.setTotalProcesses(procMetrics.total);
 
         //request collector
-        m.setRequestCount(requestCollector.collect() - prevReqCount);
-        prevReqCount = requestCollector.collect();
+        if (requestCollector != null) {
+            int currentReqCount = requestCollector.collect();
+            m.setRequestCount(currentReqCount - prevReqCount);
+            prevReqCount = currentReqCount;
+        } else {
+            m.setRequestCount(0);
+        }
         print(m);
+
+        //server status
+        m.setServerStatus("ACTIVE");
 
         if (metricSender != null) {
             metricSender.sendMetrics(m);
         }
+
+
     }
 
     private void print(Metrics m) {
