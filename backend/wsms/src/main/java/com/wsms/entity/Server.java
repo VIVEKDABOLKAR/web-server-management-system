@@ -58,12 +58,16 @@ public class Server {
     @Column(name = "ip_address", nullable = false, length = 45)
     private String ipAddress;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private OSType osType;
+        @ManyToOne(fetch = FetchType.LAZY, optional = false)
+        @JoinColumn(name = "os_type_id", nullable = false)
+        @ToString.Exclude
+        @EqualsAndHashCode.Exclude
+        private OSType osType;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+        @ManyToOne(fetch = FetchType.LAZY, optional = false)
+        @JoinColumn(name = "web_server_type_id", nullable = false)
+        @ToString.Exclude
+        @EqualsAndHashCode.Exclude
     private WebServerType webServerType;
 
     //web server port - we need this field so e can tell server agent on which it has to perform network monitoring and port forwarding

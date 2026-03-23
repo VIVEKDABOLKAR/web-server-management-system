@@ -23,7 +23,7 @@ public class AlertService {
      * @param alertType
      * @param message
      */
-    public void createAlert(Server server, AlertType alertType, String message) {
+    public void createAlert(Server server,AlertType alertType,Double value,Double threshold,String message) {
 
         //build alert object
         Alert alert = Alert.builder()
@@ -31,6 +31,8 @@ public class AlertService {
                 .alertType(alertType)
                 .message(message)
                 .status(AlertStatus.ACTIVE)
+                .threshold(threshold)
+                .value(value)
                 .build();
 
         //save alert object in db

@@ -2,15 +2,14 @@ package com.wsms.controller;
 
 import com.wsms.dto.server.AddServerRequest;
 import com.wsms.dto.server.ServerResponse;
-import com.wsms.entity.Server;
-import com.wsms.entity.ServerStatus;
-import com.wsms.entity.User;
+import com.wsms.entity.*;
 import com.wsms.service.ServerService;
 import com.wsms.service.UserService;
 import com.wsms.utils.installScript.InstallScript;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -143,4 +142,6 @@ public class ServerController {
                 .lastHeartbeat(server.getLastHeartbeat())
                 .build();
     }
+
+
 }

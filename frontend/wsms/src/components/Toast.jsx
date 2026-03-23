@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const Toast = ({ message, type = "success", onClose }) => {
+const Toast = ({ message, type = "success", onClose, onClick }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
@@ -21,18 +21,35 @@ const Toast = ({ message, type = "success", onClose }) => {
   };
 
   const { bg, icon } = styles[type] || styles.success;
+  const isClickable = typeof onClick === "function";
 
   return (
     <div className="fixed top-6 right-6 z-50 animate-slide-in">
       <div
-        className={`${bg} text-white px-5 py-4 rounded shadow flex items-center gap-4 min-w-[320px]`}
+        className={`${bg} text-white px-5 py-4 rounded shadow flex items-center gap-4 min-w-[320px] ${isClickable ? "cursor-pointer" : ""}`}
+        onClick={isClickable ? onClick : undefined}
+        role={isClickable ? "button" : undefined}
+        tabIndex={isClickable ? 0 : undefined}
+        onKeyDown={
+          isClickable
+            ? (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onClick();
+                }
+              }
+            : undefined
+        }
       >
         <div className="flex-shrink-0 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold text-lg">
           {icon}
         </div>
         <div className="flex-1 font-medium">{message}</div>
         <button
-          onClick={onClose}
+          onClick={(event) => {
+            event.stopPropagation();
+            onClose();
+          }}
           className="flex-shrink-0 text-white/80 hover:text-white hover:bg-white/10 rounded-full w-6 h-6 flex items-center justify-center text-xl font-bold transition-all"
         >
           ×

@@ -11,8 +11,11 @@ import lombok.Getter;
 public class AlertResponse {
     private Long id;
     private Long serverId;
+    private String serverName;
     private AlertType alertType;
     private String message;
     private AlertStatus status;
     private LocalDateTime createdAt;
+    private Double value;
+    private Double threshold;
 }

@@ -15,7 +15,7 @@ const ServerTable = ({
   onAdd,
 }) => {
   console.log(servers);
-  
+
   return (
     <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden">
       <div className="p-5 border-b border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-900">
@@ -32,13 +32,13 @@ const ServerTable = ({
             />
             {/* add server :- replace it with add servr button */}
             <AddButton
-                title="New Server"
-                onClick={onAdd}
-                variant="primary"
-                size="md"
-                icon="+"
-                className=""
-              />
+              title="New Server"
+              onClick={onAdd}
+              variant="primary"
+              size="md"
+              icon="+"
+              className=""
+            />
           </div>
         </div>
       </div>
@@ -106,14 +106,14 @@ const ServerTable = ({
                       </span>
                     </td>
 
-                    {/* osType */}
-                    <td className="px-5 py-3 text-slate-700 dark:text-slate-200">
-                      {server.osType || "-"}
+                  {/* os type */}
+                    <td>
+                      {server.osType?.name || "-"}
                     </td>
 
                     {/* webServerType */}
                     <td className="px-5 py-3 text-slate-700 dark:text-slate-200">
-                      {server.webServerType || "-"}
+                      {server.webServerType?.name || "-"}
                     </td>
 
                     {/* webServerPortNo */}

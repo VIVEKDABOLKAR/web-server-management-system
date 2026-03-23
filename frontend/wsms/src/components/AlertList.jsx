@@ -13,6 +13,8 @@ const AlertList = ({ serverId }) => {
   const fetchAlerts = async () => {
     try {
       const response = await api.get(`/api/alerts/server/${serverId}`);
+      console.log(response);
+      
       setAlerts(response.data);
     } catch (err) {
       setError("Failed to fetch alerts");
@@ -70,7 +72,7 @@ const AlertList = ({ serverId }) => {
                 </span>
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
-                {alert.message}
+                {alert.message +" "+ alert.value}
               </p>
               <p className="text-xs text-gray-400 dark:text-gray-500">
                 {new Date(alert.createdAt).toLocaleString()}

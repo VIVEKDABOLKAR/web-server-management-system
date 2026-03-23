@@ -1,13 +1,14 @@
 package com.wsms.service;
 
 import com.wsms.dto.server.AddServerRequest;
-import com.wsms.entity.Server;
-import com.wsms.entity.ServerStatus;
-import com.wsms.entity.User;
+import com.wsms.entity.*;
+import com.wsms.repository.OSTypeRepo;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
 import java.util.List;
 import java.util.UUID;
+
+import com.wsms.repository.WebServerTypeRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ public class ServerService {
 
     private final ServerRepository serverRepository;
     private final UserRepository userRepository;
+    private final OSTypeRepo osTypeRepo;
+    private final WebServerTypeRepo webServerTypeRepo;
 
     /**
      * add server to the db
@@ -35,12 +38,19 @@ public class ServerService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        OSType osType = osTypeRepo.findById(dto.getOsType().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OS Type not found"));
+
+
+        WebServerType webServerType = webServerTypeRepo.findById(dto.getWebServerType().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Web Server Type not found"));
+
 
         Server server = Server.builder()
                 .serverName(dto.getServerName())
                 .ipAddress(dto.getIpAddress())
-                .osType(dto.getOsType())
-                .webServerType(dto.getWebServerType())
+                .osType(osType)
+                .webServerType(webServerType)
                 .webServerPortNo(dto.getWebServerPortNo())
                 .description(dto.getDescription())
                 .status(ServerStatus.INACTIVE) //we add machnisim to make it active :- based on agent installation and agen heartbeat response
@@ -94,4 +104,6 @@ public class ServerService {
         Server server = getServerByIdForUser(serverId, userId);
         serverRepository.delete(server);
     }
+
+
 }

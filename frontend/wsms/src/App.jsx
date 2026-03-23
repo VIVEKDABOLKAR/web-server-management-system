@@ -4,6 +4,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Landing from "./pages/Landing/Landing";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -18,6 +20,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Performance from "./pages/Performance";
 import "./App.css";
 import ServerSetup from "./pages/ServerSetup";
+import AdminAddServer from "./pages/admin/AdminAddServer"
+import AlertsPage from "./AlertsPage";
 
 function App() {
   return (
@@ -52,6 +56,11 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/alerts" element={
+          <ProtectedRoute>
+            <AlertsPage />
+          </ProtectedRoute>
+        } />
         <Route
           path="/add-server"
           element={
@@ -84,8 +93,22 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/adminAddServer"
+          element={
+            <ProtectedRoute>
+              <AdminAddServer />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-      
+      <ToastContainer
+        position="top-right"
+        newestOnTop
+        pauseOnFocusLoss={false}
+        theme="colored"
+      />
+
     </Router>
   );
 }
