@@ -63,7 +63,7 @@ const AddServerAdmin = () => {
 
   const fetchWebServerTypes = async () => {
     try {
-      const response = await api.get("/api/web-server-types");
+      const response = await api.get("/api/web-server-types");      
       setWebServerTypes(response.data);
     } catch (err) {
       console.error("Failed to fetch WebServer Types", err);

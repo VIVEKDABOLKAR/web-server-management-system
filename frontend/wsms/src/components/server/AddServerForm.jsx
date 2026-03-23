@@ -14,6 +14,8 @@ const AddServerForm = ({
   disabledSubmit,
   spacious = false,
 }) => {
+  console.log(webServerTypes);
+  
   const cardPadding = spacious ? "p-8" : "p-6";
   const titleClass = spacious ? "text-2xl mb-8" : "text-xl mb-6";
   const formSpacing = spacious ? "space-y-8" : "space-y-5";
@@ -83,9 +85,10 @@ const AddServerForm = ({
             className={`w-full ${fieldPadding} border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500`}
           >
             {osTypes.map((os) => (
+              os.active && (
               <option key={os.id} value={os.id}>
                 {os.name}
-              </option>
+              </option>)
             ))}
           </select>
         </div>
@@ -101,6 +104,7 @@ const AddServerForm = ({
             className={`w-full ${fieldPadding} border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500`}
           >
             {webServerTypes.map((web) => (
+              web.active &&
               <option key={web.id} value={web.id}>
                 {web.name}
               </option>
