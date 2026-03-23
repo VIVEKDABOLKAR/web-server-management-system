@@ -31,6 +31,8 @@ public class AlertService {
                 .alertType(alertType)
                 .message(message)
                 .status(AlertStatus.ACTIVE)
+                .threshold(threshold)
+                .value(value)
                 .build();
 
         //save alert object in db

@@ -6,10 +6,13 @@ import com.wsms.entity.Server;
 import com.wsms.entity.User;
 import com.wsms.service.AlertService;
 import com.wsms.service.ServerService;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import com.wsms.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -50,11 +53,13 @@ public class AlertController {
         }
 
         //fetch all alert based in serverId
-        List<AlertResponse> alerts = alertService.findAllByServerIdOrderByCreatedAtDesc(server)
-                .stream()
+        List<Alert> alerts = alertService.findAllByServerIdOrderByCreatedAtDesc(server);
+        System.out.println(alerts.toString());
+          List<AlertResponse> alertResponses =alerts.stream()
                 .map(this::toResponse)
                 .toList();
-        return ResponseEntity.ok(alerts);
+        System.out.println(alerts.toString());
+        return ResponseEntity.ok(alertResponses);
     }
 
     //get current userId
@@ -74,11 +79,34 @@ public class AlertController {
     private AlertResponse toResponse(Alert alert) {
         return AlertResponse.builder()
                 .id(alert.getId())
-                .serverId(alert.getServer().getId())
                 .alertType(alert.getAlertType())
+                .serverId(alert.getServer().getId())
+                .serverName(alert.getServer().getServerName())
                 .message(alert.getMessage())
                 .status(alert.getStatus())
                 .createdAt(alert.getCreatedAt())
+                .value(alert.getValue())
+                .threshold(alert.getThreshold())
                 .build();
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<AlertResponse>> fetchAllAlerts() {
+        User user = userService.getCurrentUser();
+        List<Server> servers = serverService.getAllServersByUser(user.getId());
+        if (servers == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        List<AlertResponse> allAlerts = new ArrayList<>();
+        for (Server server : servers) {
+            List<Alert> alerts = alertService.findAllByServerIdOrderByCreatedAtDesc(server);
+            System.out.println(alerts.toString());
+            if (alerts != null) {
+                allAlerts.addAll(
+                        alerts.stream()
+                                .map(this::toResponse)
+                                .toList()
+                );
+            }
+        }
+        return ResponseEntity.ok(allAlerts);
     }
 }

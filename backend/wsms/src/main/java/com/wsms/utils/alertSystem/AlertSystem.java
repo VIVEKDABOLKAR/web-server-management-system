@@ -46,7 +46,7 @@ public class AlertSystem {
                     AlertType.MEMORY_HIGH,
                     metricSubmitRequest.getMemoryUsage(),
                     80.0,
-                    ""
+                    "MEMORY exceeds the limit"
             );
             alertFlag = true;
         }
@@ -56,7 +56,9 @@ public class AlertSystem {
             alertService.createAlert(
                     server,
                     AlertType.DISK_HIGH,
-                    "Disk usage exceeded 80%. Current: " + metricSubmitRequest.getDiskUsage()
+                    metricSubmitRequest.getDiskUsage(),
+                    80.0,
+                    "DISK exceeds the limit"
             );
             alertFlag = true;
         }

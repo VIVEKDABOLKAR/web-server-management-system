@@ -34,7 +34,7 @@ const menuItems = [
     icon: <MonitoringIcon className="w-5 h-5" />,
     submenu: [
       { label: "Performance", path: "/performance" },
-      { label: "Alerts", path: "#" },
+      { label: "Alerts", path: `/alerts` },
       { label: "Logs", path: "#" },
     ],
     badge: "3",

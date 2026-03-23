@@ -11,6 +11,7 @@ import {
 import { useDarkMode } from "../context/DarkModeContext";
 
 const CombinedMetricsChart = ({ metrics }) => {
+  console.log(metrics);
   const { darkMode } = useDarkMode();
 
   // Format metrics data for the chart
@@ -83,10 +84,10 @@ const CombinedMetricsChart = ({ metrics }) => {
           domain={[0, 100]}
           label={{
             value: "%",
-            cpu: parseFloat(metric.cpuUsage?.toFixed(2) || 0),
-            memory: parseFloat(metric.memoryUsage?.toFixed(2) || 0),
-            disk: parseFloat(metric.diskUsage?.toFixed(2) || 0),
-            networkUsage: metric.networkUsage || 0,
+            cpu: parseFloat(metrics.cpuUsage?.toFixed(2) || 0),
+            memory: parseFloat(metrics.memoryUsage?.toFixed(2) || 0),
+            disk: parseFloat(metrics.diskUsage?.toFixed(2) || 0),
+            networkUsage: metrics.networkUsage || 0,
             position: "insideLeft",
             style: { fill: darkMode ? "#94a3b8" : "#6b7280" },
           }}

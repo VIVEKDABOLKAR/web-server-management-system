@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import api from "../services/api";
 import AddButton from "../components/AddButton"
 import ConfirmDialog from "../components/ConfirmDialog";
@@ -17,19 +18,72 @@ const Dashboard = () => {
     serverId: null,
     serverName: "",
   });
+  const seenAlertKeys = useRef(new Set());
+  const initializedAlerts = useRef(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchServers();
-    const interval = setInterval(fetchServers, 30000);
-    return () => clearInterval(interval);
+    fetchServers({ showLoader: true });
+    fetchAlerts({ initialize: true });
+    const interval = setInterval(() => fetchServers(), 3000);
+    const alertInterval = setInterval(() => fetchAlerts(), 1500);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(alertInterval);
+    };
   }, []);
 
-  const fetchServers = async () => {
-    setLoading(true);
+  const getAlertKey = (alert) => {
+    if (alert?.id !== undefined && alert?.id !== null) return `id-${alert.id}`;
+    if (alert?.alertId !== undefined && alert?.alertId !== null) return `alert-${alert.alertId}`;
+
+    return [
+      alert?.serverId ?? alert?.serverName ?? "unknown-server",
+      alert?.alertType ?? "unknown-type",
+      alert?.createdAt ?? "unknown-time",
+      alert?.message ?? "",
+    ].join("|");
+  };
+
+  const fetchAlerts = async ({ initialize = false } = {}) => {
+    try {
+      const response = await api.get("/api/alerts");
+      const alerts = Array.isArray(response.data) ? response.data : [];
+      const keysInResponse = alerts.map(getAlertKey);
+
+      if (initialize || !initializedAlerts.current) {
+        seenAlertKeys.current = new Set(keysInResponse);
+        initializedAlerts.current = true;
+        return;
+      }
+
+      const newAlerts = alerts.filter((alert) => !seenAlertKeys.current.has(getAlertKey(alert)));
+      if (newAlerts.length > 0) {
+        newAlerts.forEach((alert) => seenAlertKeys.current.add(getAlertKey(alert)));
+
+        const latestAlert = newAlerts[newAlerts.length - 1];
+        const alertKey = getAlertKey(latestAlert);
+        toast.error(`New ${latestAlert?.alertType || "Alert"} on ${latestAlert?.serverName || "server"}. Click to view alerts.`, {
+          toastId: alertKey,
+          autoClose: 5000,
+          closeOnClick: true,
+          onClick: () => navigate("/alerts"),
+        });
+        return;
+      }
+
+      keysInResponse.forEach((key) => seenAlertKeys.current.add(key));
+    } catch {
+      // Toast for alerts should not block dashboard usage if alert polling fails.
+    }
+  };
+
+  const fetchServers = async ({ showLoader = false } = {}) => {
+    if (showLoader) setLoading(true);
+
     try {
       const response = await api.get("/api/servers");
-      console.log(response.data[1]);
       const serverData = Array.isArray(response.data)
         ? response.data
         : response.data?.data || [];
@@ -38,7 +92,7 @@ const Dashboard = () => {
     } catch (err) {
       setError("Failed to fetch servers: " + (err?.message || err));
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
     }
   };
 
