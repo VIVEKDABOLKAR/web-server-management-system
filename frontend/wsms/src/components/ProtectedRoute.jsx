@@ -2,14 +2,19 @@ import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import Sidebar from "./sidebar/Sidebar";
 import NavbarDashboard from "./NavbarDashboard";
+import { isAdminToken } from "../utils/auth";
 
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, requireAdmin = false }) => {
   const token = localStorage.getItem("token");
       const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (!token) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (requireAdmin && !isAdminToken(token)) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   // return children;

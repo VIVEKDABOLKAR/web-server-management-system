@@ -12,7 +12,7 @@ public class CPUCollector {
     }
 
     public double collect() throws InterruptedException {
-        Thread.sleep(1000);
+//        Thread.sleep(1000);
         double cpuLoad = osBean.getCpuLoad();
         if (cpuLoad < 0) {
             return 0;

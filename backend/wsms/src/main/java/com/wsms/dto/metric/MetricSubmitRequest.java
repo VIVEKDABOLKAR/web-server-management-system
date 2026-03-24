@@ -48,6 +48,9 @@ public class MetricSubmitRequest {
     @NotNull(message = "Total Processes is required")
     private Integer totalProcesses;
 
+    @NotNull(message = "Request Count is required")
+    private Integer requestCount;
+
     @NotNull(message = "Timestamp is required")
     private String timestamp;
 }

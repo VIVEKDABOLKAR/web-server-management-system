@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import ServerTable from "../components/server/ServerTable";
-import ConfirmDialog from "../components/ConfirmDialog";
-import DashboardLayout from "../components/dashboard/DashboardLayout";
-import api from "../services/api";
+import ServerTable from "../../../components/server/ServerTable";
+import ConfirmDialog from "../../../components/ConfirmDialog";
+import DashboardLayout from "../../../components/dashboard/DashboardLayout";
+import api from "../../../services/api";
 
 const AllServers = () => {
   const location = useLocation();

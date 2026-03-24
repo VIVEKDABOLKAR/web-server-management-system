@@ -4,16 +4,13 @@ import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import wsms.agent.collector.CPUCollector;
-import wsms.agent.collector.DiskCollector;
-import wsms.agent.collector.LoadAvgCollector;
-import wsms.agent.collector.MemoryCollector;
-import wsms.agent.collector.NetworkTrafficCollector;
-import wsms.agent.collector.ProcessMetricsCollector;
+import wsms.agent.collector.*;
 import wsms.agent.config.Config;
 import wsms.agent.config.ConfigUtils;
 import wsms.agent.model.Metrics;
+import wsms.agent.monitor.ConnectionMonitor;
 import wsms.agent.network.MetricSender;
+import wsms.agent.network.RequestLogsSender;
 import wsms.agent.utils.Logger;
 
 // Note: ConnectionMonitor is not yet implemented
@@ -28,7 +25,11 @@ public class Agent {
     private final CPUCollector cpuCollector;
     private final MemoryCollector memoryCollector;
     private final DiskCollector diskCollector;
+    private final RequestCollector  requestCollector;
     private final MetricSender metricSender;
+    private final RequestLogsSender requestLogsSender;
+
+    private final ConnectionMonitor connectionMonitor;
 
     private final AtomicBoolean stopped = new AtomicBoolean(false);
 
@@ -37,6 +38,7 @@ public class Agent {
     private long prevDiskWrite = -1;
     private long prevNetwork = -1;
     private long prevTime = -1;
+    private Integer prevReqCount = 0;
 
     public Agent(Config config) {
         this.config = config;
@@ -60,9 +62,31 @@ public class Agent {
                     Long.parseLong(config.getServerId()), //change it to the string , by testing
                     logger
             );
-            logger.info("Metric sender initialized with backend: " + config.getBackendUrl());
+                this.requestLogsSender = new RequestLogsSender(
+                    config.getBackendUrl(),
+                    config.getAuthToken(),
+                    logger
+                );
+            logger.info("Metric sender and request sender initialized with backend: " + config.getBackendUrl());
         } else {
             this.metricSender = null;
+                this.requestLogsSender = null;
+        }
+
+        // Initialize connection monitor , if webApplicationMonitor is true
+        if(config.isWebApplicationMonitor() ) {
+            logger.info("Started ConnectionMonitor");
+            this.connectionMonitor = new ConnectionMonitor(
+                    config.getPublishPort(),
+                    config.getWebServerHost(),
+                    config.getWebServerPort(),
+                    logger,
+                    config.getServerId(),
+                    requestLogsSender);
+            this.requestCollector = new RequestCollector(connectionMonitor);
+        } else {
+            this.connectionMonitor = null;
+            this.requestCollector = null;
         }
     }
 
@@ -76,13 +100,27 @@ public class Agent {
         logger.info("WSMS Agent Started");
         logger.infof("Server ID: %s", config.getServerId());
         logger.infof("Interval: %d sec", config.getCollectionInterval().getSeconds());
+        //hardcode made it dynamic
+        logger.infof("Web Application Public Url %s ", ("http://localhost" + ":" + config.getWebServerPort()));
         logger.info("========================================");
+
+        try {
+            if (connectionMonitor != null) {
+                connectionMonitor.start();
+            }
+            //we are testing new connectionMonitor
+//            NettyConnectionMonitor  nettyConnectionMonitor = new NettyConnectionMonitor(4017, "::1",5173, logger);
+//            nettyConnectionMonitor.start();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
 
         while (!stopped.get()) {
             try {
                 TimeUnit.SECONDS.sleep(config.getCollectionInterval().getSeconds());
-                collectAndSend();
-            } catch (InterruptedException e) {
+                 collectAndSend();
+            } catch (Exception e) {
                 Thread.currentThread().interrupt();
                 stop();
             }
@@ -157,11 +195,24 @@ public class Agent {
         m.setBlockedProcesses(procMetrics.blocked);
         m.setTotalProcesses(procMetrics.total);
 
+        //request collector
+        if (requestCollector != null) {
+            int currentReqCount = requestCollector.collect();
+            m.setRequestCount(currentReqCount - prevReqCount);
+            prevReqCount = currentReqCount;
+        } else {
+            m.setRequestCount(0);
+        }
         print(m);
+
+        //server status
+        m.setServerStatus("ACTIVE");
 
         if (metricSender != null) {
             metricSender.sendMetrics(m);
         }
+
+
     }
 
     private void print(Metrics m) {
@@ -183,6 +234,8 @@ public class Agent {
         logger.infof("Sleeping Processes: %d", m.getSleepingProcesses());
         logger.infof("Blocked Processes: %d", m.getBlockedProcesses());
         logger.infof("Total Processes: %d", m.getTotalProcesses());
+
+        logger.infof("Requests Count: %d", m.getRequestCount());
 
         logger.info("========================================");
     }

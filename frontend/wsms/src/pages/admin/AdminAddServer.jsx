@@ -63,7 +63,7 @@ const AddServerAdmin = () => {
 
   const fetchWebServerTypes = async () => {
     try {
-      const response = await api.get("/api/web-server-types");      
+      const response = await api.get("/api/web-server-types");
       setWebServerTypes(response.data);
     } catch (err) {
       console.error("Failed to fetch WebServer Types", err);
@@ -215,7 +215,7 @@ const AddServerAdmin = () => {
  const handleToggleOsStatus = async (id) => {
   try {
     const selected = osTypes.find(os => os.id === id);
-    
+
     const updatedOs = {
       ...selected,
       active: !selected.active
@@ -238,14 +238,14 @@ const AddServerAdmin = () => {
   const handleToggleWebStatus =async (id) => {
     try{
    const selected = webServerTypes.find(web => web.id === id);
-    
+
     const updatedweb = {
       ...selected,
       active: !selected.active
     };
 
     await api.put(`/api/webtypes/${id}`, updatedweb);
-    
+
      setWebServerTypes(prev =>
       prev.map(item =>
         item.id === id ? updatedweb : item
@@ -395,5 +395,6 @@ const AddServerAdmin = () => {
     </DashboardLayout>
   );
 };
+
 
 export default AddServerAdmin;

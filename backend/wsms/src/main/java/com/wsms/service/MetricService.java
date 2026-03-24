@@ -67,6 +67,8 @@ public class MetricService {
                 .sleepingProcesses(request.getSleepingProcesses())
                 .blockedProcesses(request.getBlockedProcesses())
                 .totalProcesses(request.getTotalProcesses())
+                .requestCount(request.getRequestCount())
+
                 .build();
 
         // 4. Save metric
@@ -151,9 +153,11 @@ public class MetricService {
                 .sleepingProcesses(metric.getSleepingProcesses())
                 .blockedProcesses(metric.getBlockedProcesses())
                 .totalProcesses(metric.getTotalProcesses())
+                .requestCount(metric.getRequestCount())
                 .createdAt(metric.getCreatedAt())
                 .serverId(metric.getServer().getId())
                 .serverName(metric.getServer().getServerName())
+                .serverStatus("ACTIVE")
                 .build();
     }
 }

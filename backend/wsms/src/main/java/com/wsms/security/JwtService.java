@@ -21,10 +21,11 @@ public class JwtService {
     @Value("${app.jwt.expiration-ms}")
     private long jwtExpirationMs;
 
-    public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
+    /**
+     * Generates a JWT token for the given email and extra claims.
+      * @param email the email to include in the token's subject
+     * @param extraClaims additional claims to include in the token
+     */
     public String generateToken(String email, Map<String, Object> extraClaims) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtExpirationMs);
@@ -38,6 +39,17 @@ public class JwtService {
                 .compact();
     }
 
+    public String extractEmail(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    /**
+     * Validates the given JWT token against the provided user details.
+     * Checks if the email in the token matches the user's email and if the token is not expired.
+     * @param token
+     * @param userDetails
+     * @return
+     */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         String email = extractEmail(token);
         return email.equals(userDetails.getUsername()) && !isTokenExpired(token);

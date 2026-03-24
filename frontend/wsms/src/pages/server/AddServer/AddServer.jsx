@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
-import DashboardLayout from "../components/dashboard/DashboardLayout";
+import api from "../../../services/api";
+import DashboardLayout from "../../../components/dashboard/DashboardLayout";
 import AddServerForm from "../components/server/AddServerForm";
 
 const AddServer = () => {
@@ -69,10 +69,10 @@ const AddServer = () => {
     }
   }
   const handleOSType = (e) => {
-    
+
       const selected = osTypes.find(os => os.id === Number(e.target.value));
-  
-    setFormData(prev => ({  
+
+    setFormData(prev => ({
       ...prev,
       osType: selected
     }));

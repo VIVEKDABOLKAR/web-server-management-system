@@ -69,6 +69,9 @@ public class Metric {
     @Column(nullable = false)
     private Integer totalProcesses;
 
+    @Column(nullable = false)
+    private Integer requestCount;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

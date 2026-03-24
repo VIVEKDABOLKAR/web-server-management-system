@@ -4,11 +4,16 @@ import SidebarHeader from "./SidebarHeader.jsx";
 import SidebarMenu from "./SidebarMenu.jsx";
 import SidebarFooter from "./SidebarFooter.jsx";
 import menuItems from "./menuItems.jsx";
+import { isAdminToken } from "../../utils/auth";
 
 /** Dashboard sidebar */
 const Sidebar = ({ isOpen, toggleOpen }) => {
     const location = useLocation();
     const [expandedMenu, setExpandedMenu] = useState(null);
+    const token = localStorage.getItem("token");
+    const isAdmin = isAdminToken(token);
+
+    const filteredMenuItems = menuItems.filter((item) => !item.adminOnly || isAdmin);
 
     const isActive = (path) => {
         if (path === "#") return false;
@@ -39,7 +44,7 @@ const Sidebar = ({ isOpen, toggleOpen }) => {
                 <div
                     className={`
                         fixed md:relative left-0 top-0 h-screen w-64 z-50 md:z-0
-                        bg-gradient-to-b from-slate-500 to-slate-300 dark:from-slate-900 dark:to-slate-950 bg-fixed
+                        bg-linear-to-b from-slate-500 to-slate-300 dark:from-slate-900 dark:to-slate-950 bg-fixed
                         border-r border-slate-200 dark:border-slate-700
                         shadow-2xl md:shadow-none
                         rounded-r-xl
@@ -51,7 +56,7 @@ const Sidebar = ({ isOpen, toggleOpen }) => {
                     <SidebarHeader toggleOpen={toggleOpen} />
 
                     <SidebarMenu
-                        menuItems={menuItems}
+                        menuItems={filteredMenuItems}
                         expandedMenu={expandedMenu}
                         toggleSubmenu={toggleSubmenu}
                         isActive={isActive}

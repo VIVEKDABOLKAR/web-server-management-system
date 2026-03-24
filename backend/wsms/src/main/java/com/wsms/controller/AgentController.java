@@ -55,11 +55,12 @@ public class AgentController {
                         @Valid @RequestBody MetricSubmitRequest request) {
 
                 // log server matrics
-                log.info("Received metrics from agent. Server ID: {}, CPU: {}%, Memory: {}%, Disk: {}%",
+                log.info("Received metrics from agent. Server ID: {}, CPU: {}%, Memory: {}%, Disk: {}%, Request: {}%",
                                 request.getServerId(),
                                 request.getCpuUsage(),
                                 request.getMemoryUsage(),
-                                request.getDiskUsage());
+                                request.getDiskUsage(),
+                                request.getRequestCount());
 
                 // Extract token from "Bearer <token>" format
                 String token = authHeader.replace("Bearer ", "");
@@ -78,8 +79,9 @@ public class AgentController {
                                         "Invalid agent token");
                 }
 
+                //save hertbeat in db
                 server.setLastHeartbeat(LocalDateTime.now());
-                serverRepository.save(server);
+                serverRepository.save(server); // change it into serverService.updateLastHeartBeat
 
                 // Submit metric
                 MetricResponse response = metricService.submitMetric(request);

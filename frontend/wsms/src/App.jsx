@@ -7,21 +7,22 @@ import {
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Landing from "./pages/Landing/Landing";
-import Login from "./pages/Login";
-import ForgotPassword from "./pages/ForgotPassword";
-import Signup from "./pages/Signup";
-import VerifySignup from "./pages/VerifySignup";
+import Login from "./pages/auth/login/Login"
+import ForgotPassword from "./pages/auth/forget-password/ForgotPassword";
+import Signup from "./pages/auth/signUp/Signup";
+import VerifySignup from "./pages/auth/signUp/VerifySignup";
 import Dashboard from "./pages/Dashboard";
-import AllServers from "./pages/AllServers";
-import ServerDetails from "./pages/ServerDetails";
-import AddServer from "./pages/AddServer";
+import AllServers from "./pages/server/AllServers/AllServers";
+  import ServerDetails from "./pages/server/ServerDetails";
+  import AddServer from "./pages/server/AddServer/AddServer";
 import Profile from "./pages/profile/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Performance from "./pages/Performance";
+import Performance from "./pages/performance/Performance";
+  import AdminDashboard from "./pages/admin/AdminDashboard";
+  import AdminAddServer from "./pages/admin/AdminAddServer";
 import "./App.css";
-import ServerSetup from "./pages/ServerSetup";
-import AdminAddServer from "./pages/admin/AdminAddServer"
 import AlertsPage from "./AlertsPage";
+import ServerSetup from "./pages/server/serverSetup/ServerSetup";
 
 function App() {
   return (

@@ -1,5 +1,6 @@
 package wsms.agent.collector;
 
+
 import oshi.SystemInfo;
 
 public class LoadAvgCollector {

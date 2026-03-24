@@ -17,6 +17,9 @@ public class Metrics {
     private int blockedProcesses;
     private int totalProcesses;
 
+    private int requestCount;
+    private String serverStatus;
+
     public String getServerId() {
         return serverId;
     }
@@ -119,5 +122,21 @@ public class Metrics {
 
     public void setTotalProcesses(int totalProcesses) {
         this.totalProcesses = totalProcesses;
+    }
+
+    public int getRequestCount() {
+        return requestCount;
+    }
+
+    public void setRequestCount(int requestCount) {
+        this.requestCount = requestCount;
+    }
+
+    public String getServerStatus() {
+        return serverStatus;
+    }
+
+    public void setServerStatus(String serverStatus) {
+        this.serverStatus = serverStatus;
     }
 }

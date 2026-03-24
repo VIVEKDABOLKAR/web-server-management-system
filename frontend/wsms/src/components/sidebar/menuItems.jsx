@@ -51,6 +51,17 @@ const menuItems = [
     ],
   },
   {
+    id: "admin",
+    label: "Admin",
+    path: "#",
+    icon: <SettingsIcon className="w-5 h-5" />,
+    adminOnly: true,
+    submenu: [
+      { label: "Admin Dashboard", path: "/admin/dashboard" },
+      { label: "Admin Add Server", path: "/admin/add-server" },
+    ],
+  },
+  {
     id: "settings",
     label: "Settings",
     path: "#",
