@@ -8,7 +8,6 @@ public class RequestLog {
     private String clientIP;
     private String method;
     private String url;
-    private int port;
     private int statusCode;
 
     public Instant getTimestamp() {
@@ -49,14 +48,6 @@ public class RequestLog {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
     }
 
     public int getStatusCode() {

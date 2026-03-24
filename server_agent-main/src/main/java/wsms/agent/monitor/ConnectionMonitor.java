@@ -154,7 +154,7 @@ public class ConnectionMonitor {
                 sourceOut.flush();
             }
 
-            sendRequestLog(clientIp, method, url, conn.getPort(), statusCode);
+            sendRequestLog(clientIp, method, url, statusCode);
 
             //two thread for sending req to 5173, and getting response to 4017 response stream
             Thread uplink = new Thread(() -> streamCopy(sourceIn, targetOut), "uplink");
@@ -192,7 +192,7 @@ public class ConnectionMonitor {
         return 0;
     }
 
-    private void sendRequestLog(String clientIp, String method, String url, int port, int statusCode) {
+    private void sendRequestLog(String clientIp, String method, String url, int statusCode) {
         if (requestLogsSender == null || serverId == null || serverId.isBlank()) {
             return;
         }
@@ -203,7 +203,6 @@ public class ConnectionMonitor {
         requestLog.setClientIP(clientIp);
         requestLog.setMethod(method);
         requestLog.setUrl(url);
-        requestLog.setPort(port);
         requestLog.setStatusCode(statusCode);
 
         requestLogsSender.sendRequestLog(requestLog);

@@ -35,13 +35,12 @@ public class RequestLogsSender {
             payload.put("clientIP", requestLog.getClientIP());
             payload.put("method", requestLog.getMethod());
             payload.put("url", requestLog.getUrl());
-            payload.put("port", requestLog.getPort());
             payload.put("statusCode", requestLog.getStatusCode());
 
             String jsonPayload = JsonUtils.toJson(payload);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(backendUrl + "/api/agent/submitRequest"))
+                    .uri(URI.create(backendUrl + "/api/agent/request"))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + authToken)
                     .timeout(Duration.ofSeconds(10))
