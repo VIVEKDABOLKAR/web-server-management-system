@@ -29,26 +29,22 @@ const AddServerForm = ({
       className={`bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm ${cardPadding}`}
     >
       {error && (
-        <div
-          className={`${messagePadding} text-sm text-red-600 bg-red-50 border border-red-200 rounded`}
-        >
+
+        <div className={`${messagePadding} text-sm text-red-600 bg-red-50 border border-red-200 rounded`}>
           {error}
         </div>
       )}
 
       {success && (
-        <div
-          className={`${messagePadding} text-sm text-green-600 bg-green-50 border border-green-200 rounded`}
-        >
+
+        <div className={`${messagePadding} text-sm text-green-600 bg-green-50 border border-green-200 rounded`}>
           {success}
         </div>
       )}
 
       <form onSubmit={onSubmit} className={formSpacing}>
         <div>
-          <label
-            className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}
-          >
+          <label className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}>
             Server Name
           </label>
           <input
@@ -62,9 +58,7 @@ const AddServerForm = ({
         </div>
 
         <div>
-          <label
-            className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}
-          >
+          <label className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}>
             IP Address
           </label>
           <input
@@ -78,9 +72,7 @@ const AddServerForm = ({
         </div>
 
         <div>
-          <label
-            className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}
-          >
+          <label className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}>
             Operating System
           </label>
           <select
@@ -90,17 +82,16 @@ const AddServerForm = ({
             className={`w-full ${fieldPadding} border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500`}
           >
             {osTypes.map((os) => (
+              os.active && (
               <option key={os.id} value={os.id}>
                 {os.name}
-              </option>
+              </option>)
             ))}
           </select>
         </div>
 
         <div>
-          <label
-            className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}
-          >
+          <label className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}>
             Web Server Type
           </label>
           <select
@@ -110,6 +101,7 @@ const AddServerForm = ({
             className={`w-full ${fieldPadding} border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500`}
           >
             {webServerTypes.map((web) => (
+              web.active &&
               <option key={web.id} value={web.id}>
                 {web.name}
               </option>
@@ -118,9 +110,7 @@ const AddServerForm = ({
         </div>
 
         <div>
-          <label
-            className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}
-          >
+          <label className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}>
             Web Server Port
           </label>
           <input
@@ -135,9 +125,7 @@ const AddServerForm = ({
         </div>
 
         <div>
-          <label
-            className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}
-          >
+          <label className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}>
             Description
           </label>
           <textarea

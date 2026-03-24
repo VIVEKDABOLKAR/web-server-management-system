@@ -12,11 +12,6 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.Gson;
-
-import wsms.agent.model.Metrics;
-import wsms.agent.utils.Logger;
-
 public class MetricSender {
     private final String backendUrl;
     private final String authToken;
@@ -32,6 +27,7 @@ public class MetricSender {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
+
     }
 
     public boolean sendMetrics(Metrics metrics) {
@@ -51,6 +47,7 @@ public class MetricSender {
             payload.put("blockedProcesses", metrics.getBlockedProcesses());
             payload.put("totalProcesses", metrics.getTotalProcesses());
             payload.put("timestamp", metrics.getTimestamp().toString());
+            payload.put("requestCount", metrics.getRequestCount());
 
             String jsonPayload = JsonUtils.toJson(payload);
 

@@ -26,7 +26,13 @@ public class MetricController {
     public ResponseEntity<List<MetricResponse>> getMetricsByServer(
             @PathVariable("serverId") Long serverId) {
         Long userId = getLoggedInUserId();
-        List<MetricResponse> metrics = metricService.getMetricsByServer(serverId, userId);
+        String role = getLoggedInUserRole();
+        List<MetricResponse> metrics;
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            metrics = metricService.getMetricsByServer(serverId, null); // null or special handling for admin
+        } else {
+            metrics = metricService.getMetricsByServer(serverId, userId);
+        }
         return ResponseEntity.ok(metrics);
     }
 
@@ -35,8 +41,27 @@ public class MetricController {
             @PathVariable("serverId") Long serverId,
             @RequestParam(value = "hours", defaultValue = "24") int hours) {
         Long userId = getLoggedInUserId();
-        List<MetricResponse> metrics = metricService.getRecentMetricsByServer(serverId, hours, userId);
+        String role = getLoggedInUserRole();
+        List<MetricResponse> metrics;
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            metrics = metricService.getRecentMetricsByServer(serverId, hours, null); // null or special handling for admin
+        } else {
+            metrics = metricService.getRecentMetricsByServer(serverId, hours, userId);
+        }
         return ResponseEntity.ok(metrics);
+    }
+    //get current user role
+    public String getLoggedInUserRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities() != null) {
+            return authentication.getAuthorities().stream()
+                .map(auth -> auth.getAuthority())
+                .filter(role -> role.startsWith("ROLE_"))
+                .map(role -> role.substring(5)) // Remove "ROLE_" prefix
+                .findFirst()
+                .orElse("USER");
+        }
+        return "USER";
     }
 
     private Long getLoggedInUserId() {

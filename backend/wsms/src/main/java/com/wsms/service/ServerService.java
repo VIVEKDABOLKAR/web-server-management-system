@@ -32,7 +32,7 @@ public class ServerService {
 
     /**
      * add server to the db
-     * 
+     *
      * @param dto
      * @param userId
      * @return
@@ -97,6 +97,7 @@ public class ServerService {
 
     /**
      * get all server based on the userId
+     *
      * @param userId
      * @return
      */
@@ -107,7 +108,7 @@ public class ServerService {
 
     /**
      * get single server based on serverId
-     * 
+     *
      * @param serverId
      * @return
      */
@@ -118,7 +119,9 @@ public class ServerService {
     }
 
     /**
-     * get server object based on serverId and userId (it use to resolve duplicted serverId but unique userId)
+     * get server object based on serverId and userId (it use to resolve duplicted
+     * serverId but unique userId)
+     *
      * @param serverId
      * @param userId
      * @return Server
@@ -131,6 +134,7 @@ public class ServerService {
 
     /**
      * delete server from db
+     *
      * @param serverId
      * @param userId
      */
@@ -139,4 +143,5 @@ public class ServerService {
         Server server = getServerByIdForUser(serverId, userId);
         serverRepository.delete(server);
     }
+
 }

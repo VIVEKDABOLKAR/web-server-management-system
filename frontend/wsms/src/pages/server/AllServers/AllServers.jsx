@@ -1,20 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import ServerTable from "../components/server/ServerTable";
-import ConfirmDialog from "../components/ConfirmDialog";
-import DashboardLayout from "../components/dashboard/DashboardLayout";
-import api from "../services/api";
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+
+import DashboardLayout from "../../../components/dashboard/DashboardLayout";
+import ServerTable from "../../../components/server/ServerTable";
+import ConfirmDialog from "../../../components/ConfirmDialog";
+
+import useServers from "../../../hooks/useServers";
 
 const AllServers = () => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const params = new URLSearchParams(location.search);
   const statusFilter = params.get("status");
 
-  const [servers, setServers] = useState([]);
+  const { servers, loading, deleteServer } = useServers();
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
 
   const [deleteDialog, setDeleteDialog] = useState({
     isOpen: false,
@@ -22,37 +24,20 @@ const AllServers = () => {
     serverName: "",
   });
 
-  // ✅ Fetch servers
-  useEffect(() => {
-    fetchServers();
-  }, []);
-
-  const fetchServers = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get("/api/servers");
-      const data = Array.isArray(response.data)
-        ? response.data
-        : response.data?.data || [];
-      setServers(data);
-    } catch (err) {
-      console.error("Failed to fetch servers", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ✅ Handlers
+ 
   const handleSearchChange = (term) => setSearchTerm(term);
+
 
   const handleView = (id) => {
     navigate(`/servers/${id}`);
   };
 
+
   const handleAdd = () => {
     navigate("/add-server");
   };
 
+ 
   const handleDelete = (id, name) => {
     setDeleteDialog({
       isOpen: true,
@@ -61,16 +46,10 @@ const AllServers = () => {
     });
   };
 
+
   const confirmDelete = async () => {
     try {
-      await api.delete(`/api/servers/${deleteDialog.serverId}`);
-
-      setServers((prev) =>
-        prev.filter(
-          (s) =>
-            (s.id || s._id || s.serverId) !== deleteDialog.serverId
-        )
-      );
+      await deleteServer(deleteDialog.serverId);
 
       setDeleteDialog({
         isOpen: false,
@@ -78,20 +57,20 @@ const AllServers = () => {
         serverName: "",
       });
     } catch (err) {
-      alert("Failed to delete server. Please try again.");
+      alert("Failed to delete server");
     }
   };
 
-  // ✅ Filtering (search + status)
+
   const filteredServers = servers.filter((server) => {
     const term = searchTerm.toLowerCase();
 
     const matchesSearch =
       server.serverName?.toLowerCase().includes(term) ||
       server.ipAddress?.toLowerCase().includes(term) ||
-      server.osType?.toLowerCase().includes(term) ||
-      server.webServerType?.toLowerCase().includes(term) ||
-      server.webServerPortNo?.toLowerCase().includes(term);
+      server.osType?.name?.toLowerCase().includes(term) ||
+      server.webServerType?.name?.toLowerCase().includes(term) ||
+      String(server.webServerPortNo)?.toLowerCase().includes(term);
 
     if (statusFilter === "active") {
       return matchesSearch && server.status?.toLowerCase() === "active";
@@ -107,7 +86,7 @@ const AllServers = () => {
   return (
     <DashboardLayout>
       <div className="p-6 bg-slate-100 dark:bg-slate-950 min-h-screen">
-        {/* Page Title */}
+        {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
             All Servers
@@ -124,7 +103,7 @@ const AllServers = () => {
           </div>
         ) : (
           <>
-            {/* Server Table */}
+            {/* Table */}
             <ServerTable
               servers={filteredServers}
               searchTerm={searchTerm}
@@ -134,7 +113,7 @@ const AllServers = () => {
               onAdd={handleAdd}
             />
 
-            {/* Confirm Delete Dialog */}
+            {/* Confirm Dialog */}
             <ConfirmDialog
               isOpen={deleteDialog.isOpen}
               onClose={() =>

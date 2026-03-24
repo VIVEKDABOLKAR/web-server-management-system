@@ -7,13 +7,12 @@ import {
 } from "./SidebarIcons";
 
 /** Sidebar menu config */
-const menuItems = [
+const UserMenuItems = [
   {
     id: "dashboard",
     label: "Dashboard",
     path: "/dashboard",
     icon: <DashboardIcon className="w-5 h-5" />,
-    badge: null,
   },
   {
     id: "servers",
@@ -34,10 +33,9 @@ const menuItems = [
     icon: <MonitoringIcon className="w-5 h-5" />,
     submenu: [
       { label: "Performance", path: "/performance" },
-      { label: "Alerts", path: "#" },
+      { label: "Alerts", path: `/alerts` },
       { label: "Logs", path: "#" },
     ],
-    badge: "3",
   },
   {
     id: "security",
@@ -62,4 +60,4 @@ const menuItems = [
   },
 ];
 
-export default menuItems;
+export default UserMenuItems;

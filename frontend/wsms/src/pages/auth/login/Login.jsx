@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useLoginMutation } from "../store/authApi";
+import { useLoginMutation } from "../../../store/authApi";
+import { isAdminToken } from "../../../utils/auth";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -20,7 +21,11 @@ const Login = () => {
     if (data?.token) {
       localStorage.setItem("token", data.token);
       setSuccessMessage("Login successful. Redirecting...");
-      navigate("/dashboard");
+      if (isAdminToken(data.token)) {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
       return;
     }
 
@@ -90,7 +95,7 @@ const Login = () => {
   const errorMessage = formError || apiErrorMessage;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 dark:bg-slate-900 transition-colors flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100 dark:bg-slate-900 transition-colors flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md rounded-2xl border border-slate-200/80 bg-white/90 p-8 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.35)] backdrop-blur-sm dark:bg-slate-800 dark:border-slate-700">
         <h2 className="text-4xl font-bold text-gray-800 dark:text-white text-center mb-2">
           Login to WSMS
@@ -160,7 +165,7 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 py-3 text-white font-semibold shadow-lg shadow-cyan-500/25 transition hover:from-cyan-700 hover:to-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-xl bg-linear-to-r from-cyan-600 to-blue-700 py-3 text-white font-semibold shadow-lg shadow-cyan-500/25 transition hover:from-cyan-700 hover:to-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isLoading}
           >
             {isLoading ? "Logging in..." : "Login"}

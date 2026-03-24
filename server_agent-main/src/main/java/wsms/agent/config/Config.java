@@ -15,11 +15,15 @@ public class Config {
     //url
     private String backendUrl;
     private String webSocketUrl; //did not implement
+    private String webServerHost; //by default host is ::1 , localhost, 127.0.0.1, :::1
+    private int webServerPort;
+    private int publishPort;
 
     private Duration collectionInterval;
     private Duration blockListRefreshInterval;
 
-    //matrics-flag
+    //flag
+    private boolean webApplicationMonitor;
 
     //threshold value
 
@@ -28,13 +32,21 @@ public class Config {
     //constructor
     public Config() {
         // default values
+        this.configPath = "config.json";
+
+        this.backendUrl = "http://localhost:8080";
+        this.webServerHost = "::1";
+        this.webServerPort = 5173;
+        this.publishPort = 4017;
+
         this.collectionInterval = Duration.ofSeconds(5);
         this.blockListRefreshInterval = Duration.ofSeconds(60);
-        this.backendUrl = "http://localhost:8080";
+
+        //flag
+        this.webApplicationMonitor = true;
     }
 
     //getter and setter
-
     public String getServerId() {
         return serverId;
     }
@@ -83,6 +95,30 @@ public class Config {
         this.webSocketUrl = webSocketUrl;
     }
 
+    public String getWebServerHost() {
+        return webServerHost;
+    }
+
+    public void setWebServerHost(String webServerHost) {
+        this.webServerHost = webServerHost;
+    }
+
+    public int getWebServerPort() {
+        return webServerPort;
+    }
+
+    public void setWebServerPort(int webServerPort) {
+        this.webServerPort = webServerPort;
+    }
+
+    public int getPublishPort() {
+        return publishPort;
+    }
+
+    public void setPublishPort(int publishPort) {
+        this.publishPort = publishPort;
+    }
+
     public Duration getCollectionInterval() {
         return collectionInterval;
     }
@@ -99,6 +135,14 @@ public class Config {
         this.blockListRefreshInterval = blockListRefreshInterval;
     }
 
+    public boolean isWebApplicationMonitor() {
+        return webApplicationMonitor;
+    }
+
+    public void setWebApplicationMonitor(boolean webApplicationMonitor) {
+        this.webApplicationMonitor = webApplicationMonitor;
+    }
+
     //to string method
 
     @Override
@@ -110,8 +154,12 @@ public class Config {
                 ", configPath='" + configPath + '\'' +
                 ", backendUrl='" + backendUrl + '\'' +
                 ", webSocketUrl='" + webSocketUrl + '\'' +
+                ", webServerHost='" + webServerHost + '\'' +
+                ", webServerPort=" + webServerPort +
+                ", publishPort=" + publishPort +
                 ", collectionInterval=" + collectionInterval +
                 ", blockListRefreshInterval=" + blockListRefreshInterval +
+                ", webApplicationMonitor=" + webApplicationMonitor +
                 '}';
     }
 }

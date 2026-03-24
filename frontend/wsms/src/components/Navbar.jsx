@@ -17,7 +17,9 @@ const Navbar = ({ hideDashboard = false }) => {
     if (token) {
       fetchUserProfile();
     }
-  }, [token]);
+    console.log(userProfile);
+    
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

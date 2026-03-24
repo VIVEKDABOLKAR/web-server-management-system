@@ -37,86 +37,98 @@ import org.hibernate.annotations.UpdateTimestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(
-        name = "servers",
-        uniqueConstraints = {
+@Table(name = "servers", uniqueConstraints = {
                 @UniqueConstraint(name = "uk_servers_ip_address", columnNames = "ip_address"),
                 @UniqueConstraint(name = "uk_servers_agent_token", columnNames = "agent_token")
-        }
-)
+})
 public class Server {
+        @com.fasterxml.jackson.annotation.JsonProperty("userId")
+        public Long getUserId() {
+                return user != null ? user.getId() : null;
+        }
+
         @Column(nullable = true)
         private LocalDateTime lastHeartbeat;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String serverName;
+        @Column(nullable = false, length = 100)
+        private String serverName;
 
-    @Column(name = "ip_address", nullable = false, length = 45)
-    private String ipAddress;
+        @Column(name = "ip_address", nullable = false, length = 45)
+        private String ipAddress;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private OSType osType;
+        @ManyToOne(fetch = FetchType.LAZY, optional = false)
+        @JoinColumn(name = "os_type_id", nullable = false)
+        @ToString.Exclude
+        @EqualsAndHashCode.Exclude
+        private OSType osType;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private WebServerType webServerType;
+        @ManyToOne(fetch = FetchType.LAZY, optional = false)
+        @JoinColumn(name = "web_server_type_id", nullable = false)
+        @ToString.Exclude
+        @EqualsAndHashCode.Exclude
+        private WebServerType webServerType;
 
-    //web server port - we need this field so e can tell server agent on which it has to perform network monitoring and port forwarding
-    @Column(nullable = true)
-    @Min(value = 1, message = "Port number must be >= 1")
-    @Max(value = 65535, message = "Port number must be <= 65535")
-    private Integer webServerPortNo=4017;
+        // web server port - we need this field so e can tell server agent on which it
+        // has to perform network monitoring and port forwarding
+        @Column(nullable = true)
+        @Min(value = 1, message = "Port number must be >= 1")
+        @Max(value = 65535, message = "Port number must be <= 65535")
+        private Integer webServerPortNo = 4017;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    @Builder.Default
-    private ServerStatus status = ServerStatus.INACTIVE;
+        @Enumerated(EnumType.STRING)
+        @Column(nullable = false, length = 20)
+        @Builder.Default
+        private ServerStatus status = ServerStatus.INACTIVE;
 
-    @Column(name = "agent_token", nullable = false, length = 255)
-    private String agentToken;
+        @Column(name = "agent_token", nullable = false, length = 255)
+        private String agentToken;
 
-    @Column(columnDefinition = "TEXT")
-    private String description;
+        @Column(columnDefinition = "TEXT")
+        private String description;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+        @CreationTimestamp
+        @Column(nullable = false, updatable = false)
+        private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+        @UpdateTimestamp
+        @Column(nullable = false)
+        private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private User user;
+        @ManyToOne(fetch = FetchType.LAZY, optional = false)
+        @JoinColumn(name = "user_id", nullable = false)
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        @ToString.Exclude
+        @EqualsAndHashCode.Exclude
+        private User user;
 
-    @OneToOne(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private Agent agent;
+        @OneToOne(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        @ToString.Exclude
+        @EqualsAndHashCode.Exclude
+        private Agent agent;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private List<Metric> metrics = new ArrayList<>();
+        @Builder.Default
+        @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        @ToString.Exclude
+        @EqualsAndHashCode.Exclude
+        private List<Metric> metrics = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private List<BlockedIp> blockedIps = new ArrayList<>();
+        @Builder.Default
+        @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        @ToString.Exclude
+        @EqualsAndHashCode.Exclude
+        private List<BlockedIp> blockedIps = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private List<Alert> alerts = new ArrayList<>();
+        @Builder.Default
+        @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        @ToString.Exclude
+        @EqualsAndHashCode.Exclude
+        private List<Alert> alerts = new ArrayList<>();
 }

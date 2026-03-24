@@ -59,6 +59,18 @@ public class ConfigUtils {
             config.setBackendUrl(args.get("backendUrl"));
         }
 
+        if (args.containsKey("webServerHost")) {
+            config.setWebServerHost(args.get("webServerHost"));
+        }
+
+        if (args.containsKey("webServerPort")) {
+            config.setWebServerPort(Integer.parseInt(args.get("webServerPort")));
+        }
+
+        if (args.containsKey("publishPort")) {
+            config.setPublishPort(Integer.parseInt(args.get("publishPort")));
+        }
+
         if (args.containsKey("collectionInterval")) {
             config.setCollectionInterval(
                     Duration.ofSeconds(Long.parseLong(args.get("collectionInterval")))

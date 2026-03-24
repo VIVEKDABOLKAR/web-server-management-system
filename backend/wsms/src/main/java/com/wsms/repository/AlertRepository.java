@@ -8,5 +8,5 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
 
     List<Alert> findAllByServerIdOrderByCreatedAtDesc(Long serverId);
     
-    int countByServer_UserId(Long userId);
+    int countByServer_User_Id(Long userId);
 }

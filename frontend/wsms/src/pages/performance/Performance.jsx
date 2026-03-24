@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
-import api from "../services/api";
-import Navbar from "../components/Navbar";
-import MetricCard from "../components/MetricCard";
-import MetricsChart from "../components/MetricsChart";
-import CombinedMetricsChart from "../components/CombinedMetricsChart";
-
+import api from "../../services/api";
+import MetricCard from "../../components/MetricCard";
+import GaugeMetricCard from "../../components/server/GaugeMetricCard";
 const Performance = () => {
   const [servers, setServers] = useState([]);
   const [serverMetrics, setServerMetrics] = useState({}); // { serverId: [metrics] }
@@ -170,6 +167,7 @@ const Performance = () => {
                     unit=""
                     max={latestMetrics.totalProcesses || 100}
                   />
+                  <GaugeMetricCard title="BandWidth" value={(latestMetrics.networkTraffic * 8) / (1024.0 * 1024.0) || 0} unit="Mb/s" maxValue={100} />
                 </div>
               )}
             </div>

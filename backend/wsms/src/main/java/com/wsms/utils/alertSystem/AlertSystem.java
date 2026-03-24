@@ -30,9 +30,11 @@ public class AlertSystem {
         //for cpu usage
         if (metricSubmitRequest.getCpuUsage() > 90) {
             alertService.createAlert(
-                    server,
+                   server,
                     AlertType.CPU_HIGH,
-                    "CPU usage exceeded 80%. Current: " + metricSubmitRequest.getCpuUsage()
+                    metricSubmitRequest.getCpuUsage(),
+                    90.0,
+                    "CPU exceeds the limit"
             );
             alertFlag = true;
         }
@@ -42,7 +44,9 @@ public class AlertSystem {
             alertService.createAlert(
                     server,
                     AlertType.MEMORY_HIGH,
-                    "Memory usage exceeded 80%. Current: " + metricSubmitRequest.getMemoryUsage()
+                    metricSubmitRequest.getMemoryUsage(),
+                    80.0,
+                    "MEMORY exceeds the limit"
             );
             alertFlag = true;
         }
@@ -52,7 +56,9 @@ public class AlertSystem {
             alertService.createAlert(
                     server,
                     AlertType.DISK_HIGH,
-                    "Disk usage exceeded 80%. Current: " + metricSubmitRequest.getDiskUsage()
+                    metricSubmitRequest.getDiskUsage(),
+                    80.0,
+                    "DISK exceeds the limit"
             );
             alertFlag = true;
         }

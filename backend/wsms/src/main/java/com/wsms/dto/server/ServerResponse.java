@@ -2,8 +2,10 @@ package com.wsms.dto.server;
 
 import com.wsms.entity.OSType;
 import com.wsms.entity.ServerStatus;
-import com.wsms.entity.WebServerType;
+
 import java.time.LocalDateTime;
+
+import com.wsms.entity.WebServerType;
 import lombok.Builder;
 import lombok.Getter;
 
