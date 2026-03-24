@@ -14,7 +14,6 @@ import com.wsms.repository.OSTypeRepo;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
 
-
 import com.wsms.repository.WebServerTypeRepo;
 import lombok.RequiredArgsConstructor;
 
@@ -45,10 +44,8 @@ public class ServerService {
         OSType osType = osTypeRepo.findById(dto.getOsType().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OS Type not found"));
 
-
         WebServerType webServerType = webServerTypeRepo.findById(dto.getWebServerType().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Web Server Type not found"));
-
 
         Server server = Server.builder()
                 .serverName(dto.getServerName())
@@ -62,6 +59,35 @@ public class ServerService {
                 .agentToken(UUID.randomUUID().toString())
                 .user(user)
                 .build();
+
+        return serverRepository.save(server);
+    }
+
+    @Transactional
+    public Server updateServer(Long id, AddServerRequest dto) {
+
+        Server server = serverRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Server not found"));
+
+        // optional: prevent duplicate IP
+        if (!server.getIpAddress().equals(dto.getIpAddress()) &&
+                serverRepository.existsByIpAddress(dto.getIpAddress())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Server with this IP already exists");
+        }
+
+        OSType osType = osTypeRepo.findById(dto.getOsType().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OS Type not found"));
+
+        WebServerType webServerType = webServerTypeRepo.findById(dto.getWebServerType().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Web Server Type not found"));
+
+        // ✅ update fields
+        server.setServerName(dto.getServerName());
+        server.setIpAddress(dto.getIpAddress());
+        server.setDescription(dto.getDescription());
+        server.setWebServerPortNo(dto.getWebServerPortNo());
+        server.setOsType(osType);
+        server.setWebServerType(webServerType);
 
         return serverRepository.save(server);
     }
@@ -114,6 +140,5 @@ public class ServerService {
         Server server = getServerByIdForUser(serverId, userId);
         serverRepository.delete(server);
     }
-
 
 }

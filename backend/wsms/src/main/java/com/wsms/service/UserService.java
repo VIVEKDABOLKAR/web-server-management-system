@@ -43,7 +43,7 @@ public class UserService {
         // fetch server and details of the user
         int totalServers = serverRepository.countByUser_Id(user.getId());
         int activeServers = serverRepository.countByUser_IdAndStatus(user.getId(), ServerStatus.ACTIVE);
-        int totalAlerts = alertRepository.countByServer_UserId(user.getId());
+        int totalAlerts = alertRepository.countByServer_User_Id(user.getId());
 
         // create and send response
         return UserProfileResponse.builder()

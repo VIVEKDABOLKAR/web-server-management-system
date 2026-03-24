@@ -1,7 +1,7 @@
 {
-  "serverId" : "1",
+  "serverId" : "2",
   "serverName" : "server",
-  "authToken" : "hii",
+  "authToken" : "331d8ed3-ef24-4ed1-bd43-bc8a680fc626",
   "configPath" : null,
   "backendUrl" : "http://localhost:8080",
   "webSocketUrl" : null,

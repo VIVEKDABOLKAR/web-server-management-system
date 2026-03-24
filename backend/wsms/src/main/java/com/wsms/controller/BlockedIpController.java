@@ -36,7 +36,17 @@ public class BlockedIpController {
     @PostMapping
     public ResponseEntity<BlockedIpResponse> blockIp(@Valid @RequestBody AddBlockedIpRequest request) {
         Long userId = getLoggedInUserId();
-        Server server = serverService.getServerByIdForUser(request.getServerId(), userId);
+        String role = getLoggedInUserRole();
+        Server server;
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            server = serverService.getServerById(request.getServerId());
+        } else {
+            server = serverService.getServerByIdForUser(request.getServerId(), userId);
+        }
+
+        if (server == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Server not found");
+        }
 
         if (blockedIpRepository.existsByServerIdAndIpAddress(request.getServerId(), request.getIpAddress())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "IP already blocked for this server");
@@ -55,7 +65,17 @@ public class BlockedIpController {
     @GetMapping("/server/{id}")
     public ResponseEntity<List<BlockedIpResponse>> getBlockedIpsByServer(@PathVariable("id") Long serverId) {
         Long userId = getLoggedInUserId();
-        serverService.getServerByIdForUser(serverId, userId);
+        String role = getLoggedInUserRole();
+        Server server;
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            server = serverService.getServerById(serverId);
+        } else {
+            server = serverService.getServerByIdForUser(serverId, userId);
+        }
+
+        if (server == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Server not found");
+        }
 
         List<BlockedIpResponse> blockedIps = blockedIpRepository.findAllByServerIdOrderByCreatedAtDesc(serverId)
                 .stream()
@@ -67,12 +87,31 @@ public class BlockedIpController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> unblockIp(@PathVariable("id") Long blockedIpId) {
         Long userId = getLoggedInUserId();
-
-        BlockedIp blockedIp = blockedIpRepository.findByIdAndServerUserId(blockedIpId, userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blocked IP not found"));
+        String role = getLoggedInUserRole();
+        BlockedIp blockedIp;
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            blockedIp = blockedIpRepository.findById(blockedIpId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blocked IP not found"));
+        } else {
+            blockedIp = blockedIpRepository.findByIdAndServerUserId(blockedIpId, userId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blocked IP not found"));
+        }
 
         blockedIpRepository.delete(blockedIp);
         return ResponseEntity.noContent().build();
+    }
+    //get current user role
+    public String getLoggedInUserRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities() != null) {
+            return authentication.getAuthorities().stream()
+                .map(auth -> auth.getAuthority())
+                .filter(role -> role.startsWith("ROLE_"))
+                .map(role -> role.substring(5)) // Remove "ROLE_" prefix
+                .findFirst()
+                .orElse("USER");
+        }
+        return "USER";
     }
 
     private Long getLoggedInUserId() {

@@ -66,8 +66,8 @@ const Dashboard = () => {
       (server) =>
         server.serverName?.toLowerCase().includes(term) ||
         server.ipAddress?.toLowerCase().includes(term) ||
-        server.osType?.toLowerCase().includes(term) ||
-        server.webServerType?.toLowerCase().includes(term) ||
+        server.osType?.name?.toLowerCase().includes(term) ||
+        server.webServerType?.name?.toLowerCase().includes(term) ||
         server.webServerPortNo?.toLowerCase().includes(term),
     );
   }, [servers, searchTerm]);

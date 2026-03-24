@@ -47,7 +47,7 @@ public class MetricService {
 
         if (server.getStatus() != status) {
             server.setStatus(status);
-            server.setLastHeartbeat(LocalDateTime.now()); // IMPORTANT
+            server.setLastHeartbeat(LocalDateTime.now()); 
             serverRepository.save(server);
 
             log.info("Server {} status updated to {}", server.getServerName(), status);
@@ -83,15 +83,14 @@ public class MetricService {
      */
     @Transactional(readOnly = true)
     public List<MetricResponse> getMetricsByServer(Long serverId, Long userId) {
-
         Server server = serverRepository.findById(serverId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Server not found"
                 ));
 
-        // Security check
-        if (!server.getUser().getId().equals(userId)) {
+        // Security check: only for non-admins
+        if (userId != null && !server.getUser().getId().equals(userId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         }
 
@@ -108,15 +107,14 @@ public class MetricService {
      */
     @Transactional(readOnly = true)
     public List<MetricResponse> getRecentMetricsByServer(Long serverId, int hours, Long userId) {
-
         Server server = serverRepository.findById(serverId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Server not found"
                 ));
 
-        // Security check
-        if (!server.getUser().getId().equals(userId)) {
+        // Security check: only for non-admins
+        if (userId != null && !server.getUser().getId().equals(userId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         }
 

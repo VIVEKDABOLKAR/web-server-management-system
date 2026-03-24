@@ -21,6 +21,7 @@ import ServerSetup from "./pages/server/serverSetup/ServerSetup";
 import AdminAddServer from "./pages/admin/AdminAddServer";
 import UserManagement from "./pages/admin/UserManagement";
 import ServerManagement from "./pages/admin/ServerManagement";
+import EditServer from "./pages/server/EditServer/EditServer";
 
 function App() {
   return (
@@ -117,6 +118,14 @@ function App() {
           element={
             <ProtectedRoute requireAdmin>
               <AdminAddServer />
+            </ProtectedRoute>
+          }
+        />
+          <Route
+          path="/admin/servers/:id"
+          element={
+            <ProtectedRoute requireAdmin>
+              <EditServer  />
             </ProtectedRoute>
           }
         />

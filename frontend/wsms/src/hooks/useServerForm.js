@@ -1,4 +1,3 @@
-// hooks/useServerForm.js
 import { useState } from "react";
 import api from "../services/api";
 
@@ -14,32 +13,46 @@ const useServerForm = (navigate) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
 
-  const validate = () => {
-    if (!formData.serverName || !formData.ipAddress) {
-      setError("Server name & IP required");
-      return false;
-    }
-    return true;
-  };
-
-  const submit = async () => {
-    if (!validate()) return;
-
+  const submit = async (id = null) => {
     try {
       setLoading(true);
-      const res = await api.post("/api/servers", formData);
+      setError("");
 
-      navigate(`/server-setup/${res.data.id}`);
+      const payload = {
+        serverName: formData.serverName,
+        ipAddress: formData.ipAddress,
+        description: formData.description,
+        webServerPortNo: Number(formData.webServerPortNo),
+
+        osType: {
+          id: formData.osType?.id,
+        },
+        webServerType: {
+          id: formData.webServerType?.id,
+        },
+      };
+
+      if (isEditMode && id) {
+        await api.put(`/api/servers/${id}`, payload);
+      } else {
+        await api.post("/api/servers", payload);
+      }
+
+      navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || "Failed");
+      console.error("API ERROR:", err.response?.data || err.message);
+      setError(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -52,6 +65,7 @@ const useServerForm = (navigate) => {
     submit,
     loading,
     error,
+    setIsEditMode,
   };
 };
 

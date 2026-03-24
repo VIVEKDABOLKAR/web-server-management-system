@@ -1,23 +1,26 @@
 package com.wsms.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.wsms.dto.alert.AlertResponse;
 import com.wsms.entity.Alert;
 import com.wsms.entity.Server;
 import com.wsms.entity.User;
 import com.wsms.service.AlertService;
 import com.wsms.service.ServerService;
-import java.util.List;
-
 import com.wsms.service.UserService;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/alerts")
@@ -38,24 +41,39 @@ public class AlertController {
      */
     @GetMapping("/server/{id}")
     public ResponseEntity<List<AlertResponse>> getAlertsByServer(@PathVariable("id") Long serverId) {
-        //get current user id
         Long userId = getLoggedInUserId();
+        String role = getLoggedInUserRole();
 
-        //get the server object
-        Server server = serverService.getServerByIdForUser(serverId, userId);
+        Server server;
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            server = serverService.getServerById(serverId); // Admin can access any server
+        } else {
+            server = serverService.getServerByIdForUser(serverId, userId); // User can access only their own
+        }
 
-        //valid if server exists
-        if(server == null){
+        if (server == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        //fetch all alert based in serverId
         List<AlertResponse> alerts = alertService.findAllByServerIdOrderByCreatedAtDesc(server)
                 .stream()
                 .map(this::toResponse)
                 .toList();
         return ResponseEntity.ok(alerts);
     }
+    //get current user role
+    public String getLoggedInUserRole() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.getAuthorities() != null) {
+        return authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .filter(role -> role.startsWith("ROLE_"))
+            .map(role -> role.substring(5)) // Remove "ROLE_" prefix
+            .findFirst()
+            .orElse("USER");
+    }
+    return "USER";
+}
 
     //get current userId
     private Long getLoggedInUserId() {

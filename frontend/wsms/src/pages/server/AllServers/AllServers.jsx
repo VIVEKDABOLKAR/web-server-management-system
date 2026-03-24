@@ -24,20 +24,20 @@ const AllServers = () => {
     serverName: "",
   });
 
-  // 🔍 Search handler
+ 
   const handleSearchChange = (term) => setSearchTerm(term);
 
-  // 👁 View
+
   const handleView = (id) => {
     navigate(`/servers/${id}`);
   };
 
-  // ➕ Add
+
   const handleAdd = () => {
     navigate("/add-server");
   };
 
-  // ❌ Open delete dialog
+ 
   const handleDelete = (id, name) => {
     setDeleteDialog({
       isOpen: true,
@@ -46,7 +46,7 @@ const AllServers = () => {
     });
   };
 
-  // ✅ Confirm delete
+
   const confirmDelete = async () => {
     try {
       await deleteServer(deleteDialog.serverId);
@@ -61,7 +61,7 @@ const AllServers = () => {
     }
   };
 
-  // 🔍 Filter logic
+
   const filteredServers = servers.filter((server) => {
     const term = searchTerm.toLowerCase();
 

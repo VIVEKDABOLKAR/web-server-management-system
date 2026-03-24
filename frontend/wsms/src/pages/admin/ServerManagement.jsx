@@ -4,7 +4,7 @@ import Table from "../../components/Table";
 import SectionCard from "../../components/SectionCard";
 import useAdminDashboard from "../../hooks/useAdminDashboard";
 
-const serverColumns = [
+const serverColumns = (navigate) =>  [
   { header: "Server ID", accessor: "id" },
   { header: "Name", accessor: "serverName" },
   { header: "IP", accessor: "ipAddress", className: "font-mono" },
@@ -16,13 +16,13 @@ const serverColumns = [
     render: (server) => (
       <div className="flex gap-2 justify-center">
         <button
-          onClick={() => navigate(`/admin/servers/${server.id}`)}
+          onClick={() => navigate(`/servers/${server.id}`)}
           className="px-3 py-1 rounded border border-sky-400 text-sky-600 bg-white hover:bg-sky-50 transition font-medium"
         >
           View
         </button>
         <button
-          onClick={() => navigate(`/admin/servers/edit/${server.id}`)}
+          onClick={() => navigate(`/admin/servers/${server.id}`)}
           className="px-3 py-1 rounded border border-green-400 text-green-600 bg-white hover:bg-green-50 transition font-medium"
         >
           Edit
@@ -72,7 +72,7 @@ const ServerManagement = () => {
                 </button>
               }
             >
-              <Table columns={serverColumns} data={servers} />
+              <Table columns={serverColumns(navigate)} data={servers} />
             </SectionCard>
           </>
         )}
