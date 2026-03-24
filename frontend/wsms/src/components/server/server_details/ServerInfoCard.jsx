@@ -32,7 +32,7 @@ const ServerInfoCard = ({ server }) => {
             OS Type:
           </span>
           <span className="text-gray-800 dark:text-gray-200">
-            {server.osType}
+            {server.osType.name}
           </span>
         </div>
         <div className="flex justify-between">
@@ -40,7 +40,7 @@ const ServerInfoCard = ({ server }) => {
             Web Server:
           </span>
           <span className="text-gray-800 dark:text-gray-200">
-            {server.webServerType}
+            {server.webServerType.name}
           </span>
         </div>
         <div className="flex justify-between">

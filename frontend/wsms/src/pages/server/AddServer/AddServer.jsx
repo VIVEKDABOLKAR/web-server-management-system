@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 import DashboardLayout from "../../../components/dashboard/DashboardLayout";
-import AddServerForm from "../components/server/AddServerForm";
+import AddServerForm from "../../../components/server/AddServerForm";
 
 const AddServer = () => {
   const navigate = useNavigate();

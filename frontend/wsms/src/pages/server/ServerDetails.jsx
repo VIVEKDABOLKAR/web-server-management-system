@@ -24,6 +24,8 @@ const ServerDetails = () => {
     try {
       const response = await api.get(`/api/servers/${id}`);
       setServer(response.data);
+      console.log(response.data);
+      
     } catch {
       setError("Failed to fetch server details");
     } finally {
