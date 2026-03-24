@@ -58,7 +58,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private UserRole role = UserRole.USER; //change by default user.role - ADMIN -> USER
+    private UserRole role = UserRole.USER; // change by default user.role - ADMIN -> USER
 
     @Column(nullable = false)
     @Builder.Default
@@ -78,6 +78,7 @@ public class User {
     @Builder.Default
     @Lazy
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Server> servers = new ArrayList<>();

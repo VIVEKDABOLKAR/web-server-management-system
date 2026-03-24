@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import AlertList from "../../components/AlertList";
@@ -20,38 +20,35 @@ const ServerDetails = () => {
   const metricsTimeRange = 24; // fixed history window in hours
   const [deleteDialog, setDeleteDialog] = useState({ isOpen: false });
 
-  const fetchServerDetails = useCallback(async () => {
-    try {
-      const response = await api.get(`/api/servers/${id}`);
-      setServer(response.data);
-      console.log(response.data);
-      
-    } catch {
-      setError("Failed to fetch server details");
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
-
-  const fetchMetrics = useCallback(async () => {
-    try {
-      const response = await api.get(
-        `/api/metrics/server/${id}/recent?hours=${metricsTimeRange}`
-      );
-      setMetrics(response.data);
-
-    } catch {
-      // Don't set error state to avoid disrupting the UI
-    }
-  }, [id, metricsTimeRange]);
-
   useEffect(() => {
     fetchServerDetails();
     fetchMetrics();
     // Refresh metrics every 30 seconds
     const interval = setInterval(fetchMetrics, 30000);
     return () => clearInterval(interval);
-  }, [fetchServerDetails, fetchMetrics]);
+  }, [id, metricsTimeRange]);
+
+  const fetchServerDetails = async () => {
+    try {
+      const response = await api.get(`/api/servers/${id}`);
+      setServer(response.data);
+    } catch (err) {
+      setError("Failed to fetch server details");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchMetrics = async () => {
+    try {
+      const response = await api.get(
+        `/api/metrics/server/${id}/recent?hours=${metricsTimeRange}`,
+      );
+      setMetrics(response.data);
+    } catch (err) {
+      // Don't set error state to avoid disrupting the UI
+    }
+  };
 
   // Get latest metrics from the metrics array
   const latestMetrics = metrics.length > 0 ? metrics[0] : null;
@@ -67,7 +64,7 @@ const ServerDetails = () => {
     } catch (err) {
       alert(
         err.response?.data?.message ||
-          "Failed to delete server. Please try again."
+          "Failed to delete server. Please try again.",
       );
     }
   };

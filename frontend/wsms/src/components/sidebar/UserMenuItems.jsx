@@ -7,13 +7,12 @@ import {
 } from "./SidebarIcons";
 
 /** Sidebar menu config */
-const menuItems = [
+const UserMenuItems = [
   {
     id: "dashboard",
     label: "Dashboard",
     path: "/dashboard",
     icon: <DashboardIcon className="w-5 h-5" />,
-    badge: null,
   },
   {
     id: "servers",
@@ -37,7 +36,6 @@ const menuItems = [
       { label: "Alerts", path: `/alerts` },
       { label: "Logs", path: "#" },
     ],
-    badge: "3",
   },
   {
     id: "security",
@@ -48,17 +46,6 @@ const menuItems = [
       { label: "Blocked IPs", path: "#" },
       { label: "Access Control", path: "#" },
       { label: "Firewall Rules", path: "#" },
-    ],
-  },
-  {
-    id: "admin",
-    label: "Admin",
-    path: "#",
-    icon: <SettingsIcon className="w-5 h-5" />,
-    adminOnly: true,
-    submenu: [
-      { label: "Admin Dashboard", path: "/admin/dashboard" },
-      { label: "Admin Add Server", path: "/admin/add-server" },
     ],
   },
   {
@@ -73,4 +60,4 @@ const menuItems = [
   },
 ];
 
-export default menuItems;
+export default UserMenuItems;

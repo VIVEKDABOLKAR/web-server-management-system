@@ -1,14 +1,10 @@
 {
-  "serverId" : "1",
+  "serverId" : "2",
   "serverName" : "server",
-  "authToken" : "d1d038cd-8f75-4c8e-9521-731df87a59b4",
+  "authToken" : "331d8ed3-ef24-4ed1-bd43-bc8a680fc626",
   "configPath" : null,
   "backendUrl" : "http://localhost:8080",
   "webSocketUrl" : null,
-  "webServerHost" : "localhost",
-  "webServerPort" : 5173,
-  "publishPort" : 4017,
   "collectionInterval" : 5.000000000,
-  "blockListRefreshInterval" : 60.000000000,
-  "webApplicationMonitor" : true
+  "blockListRefreshInterval" : 60.000000000
 }

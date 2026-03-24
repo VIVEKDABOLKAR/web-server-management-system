@@ -1,15 +1,16 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import DashboardLayout from "../../../components/dashboard/DashboardLayout";
 import AddServerForm from "../../../components/server/AddServerForm";
 
 import useServerForm from "../../../hooks/useServerForm";
 import useServerTypes from "../../../hooks/useServerTypes";
+import api from "../../../services/api";
 
-const AddServer = () => {
+const EditServer = () => {
   const navigate = useNavigate();
-
+  const { id } = useParams();
 
   const { osTypes, webServerTypes } = useServerTypes();
 
@@ -20,32 +21,38 @@ const AddServer = () => {
     submit,
     loading,
     error,
+    setIsEditMode,
   } = useServerForm(navigate);
 
   useEffect(() => {
-    if (osTypes.length > 0 && !formData.osType) {
-      setFormData((prev) => ({
-        ...prev,
-        osType: osTypes[0],
-      }));
-    }
-  }, [osTypes]);
-
+    setIsEditMode(true);
+  }, []);
 
   useEffect(() => {
-    if (webServerTypes.length > 0 && !formData.webServerType) {
-      setFormData((prev) => ({
-        ...prev,
-        webServerType: webServerTypes[0],
-      }));
-    }
-  }, [webServerTypes]);
+    const fetchServer = async () => {
+      try {
+        const res = await api.get(`/api/servers/${id}`);
 
+        const server = res.data;
+
+        setFormData({
+          serverName: server.serverName,
+          ipAddress: server.ipAddress,
+          osType: server.osType,
+          webServerType: server.webServerType,
+          webServerPortNo: server.webServerPortNo,
+          description: server.description, 
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchServer();
+  }, [id]);
 
   const handleOSType = (e) => {
-    const selected = osTypes.find(
-      (os) => os.id === Number(e.target.value)
-    );
+    const selected = osTypes.find((os) => os.id === Number(e.target.value));
 
     setFormData((prev) => ({
       ...prev,
@@ -55,7 +62,7 @@ const AddServer = () => {
 
   const handleWebServerType = (e) => {
     const selected = webServerTypes.find(
-      (web) => web.id === Number(e.target.value)
+      (web) => web.id === Number(e.target.value),
     );
 
     setFormData((prev) => ({
@@ -68,24 +75,17 @@ const AddServer = () => {
     <DashboardLayout>
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
         <div className="w-full max-w-3xl px-4">
-
-          {/* Header */}
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200">
-              Add Server
+              Edit Server
             </h1>
-
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Register a new server for monitoring and management.
-            </p>
           </div>
 
-          {/* Form */}
           <AddServerForm
-            title="Add Server"
+            title="Edit Server"
             formData={formData}
-            osTypes={osTypes.filter(os => os.active)}
-            webServerTypes={webServerTypes.filter(web => web.active)}
+            osTypes={osTypes.filter((os) => os.active)}
+            webServerTypes={webServerTypes.filter((web) => web.active)}
             loading={loading}
             error={error}
             success=""
@@ -94,15 +94,14 @@ const AddServer = () => {
             onSelectWebServer={handleWebServerType}
             onSubmit={(e) => {
               e.preventDefault();
-              submit();
+              submit(id); 
             }}
             onCancel={() => navigate("/dashboard")}
           />
-
         </div>
       </div>
     </DashboardLayout>
   );
 };
 
-export default AddServer;
+export default EditServer;

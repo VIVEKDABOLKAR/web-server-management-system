@@ -1,11 +1,5 @@
-import React from "react";
 import AddButton from "../AddButton";
 
-/**
- * it create server table :- 
- * @param {} param0 
- * @returns 
- */
 const ServerTable = ({
   servers,
   searchTerm,
