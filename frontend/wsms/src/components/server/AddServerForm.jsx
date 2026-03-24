@@ -26,9 +26,7 @@ const AddServerForm = ({
 
   return (
     <div className={`bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm ${cardPadding}`}>
-      <h2 className={`${titleClass} font-bold text-slate-800 dark:text-slate-200`}>
-        {title}
-      </h2>
+   
 
       {error && (
         <div className={`${messagePadding} text-sm text-red-600 bg-red-50 border border-red-200 rounded`}>

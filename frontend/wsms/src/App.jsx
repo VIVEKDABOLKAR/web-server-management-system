@@ -25,7 +25,7 @@ import UserManagement from "./pages/admin/UserManagement";
 import ServerManagement from "./pages/admin/ServerManagement";
 import EditServer from "./pages/server/EditServer/EditServer";
 import AlertsPage from "./AlertsPage";
-import ServerSetup from "./pages/server/serverSetup/ServerSetup";
+
 
 function App() {
   return (
