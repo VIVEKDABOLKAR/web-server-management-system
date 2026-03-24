@@ -2,9 +2,12 @@ package com.wsms.controller;
 
 import com.wsms.dto.metric.MetricResponse;
 import com.wsms.dto.metric.MetricSubmitRequest;
+import com.wsms.dto.requestlog.RequestLogResponse;
+import com.wsms.dto.requestlog.RequestLogSubmitRequest;
 import com.wsms.entity.Server;
 import com.wsms.repository.ServerRepository;
 import com.wsms.service.MetricService;
+import com.wsms.service.RequestLogService;
 import com.wsms.utils.alertSystem.AlertSystem;
 import com.wsms.utils.installScript.InstallScript;
 import jakarta.validation.Valid;
@@ -31,6 +34,7 @@ public class AgentController {
         private final ServerRepository serverRepository;
         private final AlertSystem alertSystem;
         private final InstallScript installScript;
+        private final RequestLogService requestLogService;
 
         @GetMapping(value = "/install.sh", produces = MediaType.TEXT_PLAIN_VALUE)
         public ResponseEntity<String> getInstallScriptTemplate() {
@@ -137,4 +141,49 @@ public class AgentController {
 
                 return ResponseEntity.ok(result);
         }
-}
+
+        /**
+         * Receive request logs from agent
+         * Stores client IP, HTTP method, URL, port, and status code
+         * Used for request analysis and IP blocking features
+         *
+         * @param authHeader
+         * @param request
+         * @return
+         */
+        @PostMapping("/submitRequest")
+        public ResponseEntity<Map<String, Object>> submitRequestLog(
+                        @RequestHeader("Authorization") String authHeader,
+                        @Valid @RequestBody RequestLogSubmitRequest request) {
+
+                log.info("Received request log from agent. Server ID: {}, Client IP: {}, Method: {}, URL: {}",
+                                request.getServerId(), request.getClientIP(), request.getMethod(), request.getUrl());
+
+                // Extract token from "Bearer <token>" format
+                String token = authHeader.replace("Bearer ", "");
+
+                // Verify server exists and token matches
+                Server server = serverRepository.findById(request.getServerId())
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND,
+                                                "Server not found"));
+
+                // Validate agent token
+                if (!server.getAgentToken().equals(token)) {
+                        log.warn("Invalid agent token for server ID: {}", request.getServerId());
+                        throw new ResponseStatusException(
+                                        HttpStatus.UNAUTHORIZED,
+                                        "Invalid agent token");
+                }
+
+                // Submit request log
+                RequestLogResponse response = requestLogService.submitRequestLog(request);
+
+                Map<String, Object> result = new HashMap<>();
+                result.put("success", true);
+                result.put("message", "Request log received successfully");
+                result.put("requestLogId", response.getId());
+
+                return ResponseEntity.ok(result);
+        }
+

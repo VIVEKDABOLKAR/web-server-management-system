@@ -71,37 +71,4 @@ public class AdminController {
         System.out.println(authentication.getAuthorities());
         return "You are admin";
     }
-
-    @GetMapping("/ostypes")
-    public ResponseEntity<List<OSType>> getAllOSType(){
-        List<OSType> allOSType= osTypeService.getAllOSType();
-        return ResponseEntity.ok(allOSType);
-    }
-    @GetMapping("/web-server-types")
-    public ResponseEntity<List<WebServerType>> getAllWebServerType(){
-        List<WebServerType> allWebServerType = webServerTypeService.getAllWebServerType();
-        return ResponseEntity.ok(allWebServerType);
-    }
-    @PostMapping("/ostypes")
-    public ResponseEntity<OSType> createOSType(@RequestBody OSType osType) {
-        OSType saved = osTypeService.createOSType(osType);
-        return ResponseEntity.ok(saved);
-    }
-    @PostMapping("/web-server-types")
-    public ResponseEntity<WebServerType> createWebServerType(@RequestBody WebServerType webServerType){
-        WebServerType saved = webServerTypeService.createWebServerType(webServerType);
-        return ResponseEntity.ok(saved);
-    }
-
-    @PutMapping("/ostypes/{id}")
-    public ResponseEntity<OSType> updateOSType(@PathVariable Long id , @RequestBody OSType osType){
-        OSType updated = osTypeService.updateOSType(id,osType);
-        return ResponseEntity.ok(updated);
-    }
-
-    @PutMapping("/webtypes/{id}")
-    public ResponseEntity<WebServerType> updateWebServerType(@PathVariable Long id,@RequestBody WebServerType webServerType){
-        WebServerType updated = webServerTypeService.updateWebServerType(id,webServerType);
-        return ResponseEntity.ok(updated);
-    }
 }
