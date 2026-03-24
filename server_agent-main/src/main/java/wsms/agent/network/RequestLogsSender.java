@@ -36,6 +36,7 @@ public class RequestLogsSender {
             payload.put("method", requestLog.getMethod());
             payload.put("url", requestLog.getUrl());
             payload.put("port", requestLog.getPort());
+            payload.put("statusCode", requestLog.getStatusCode());
 
             String jsonPayload = JsonUtils.toJson(payload);
 

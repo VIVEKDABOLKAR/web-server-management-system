@@ -30,8 +30,8 @@ public class RequestLogService {
      * Submit a new request log from the agent
      */
     public RequestLogResponse submitRequestLog(RequestLogSubmitRequest request) {
-        log.info("Submitting request log - Server: {}, Client IP: {}, Method: {}, URL: {}, Port: {}",
-                request.getServerId(), request.getClientIP(), request.getMethod(), request.getUrl(), request.getPort());
+        log.info("Submitting request log - Server: {}, Client IP: {}, Method: {}, URL: {}",
+                request.getServerId(), request.getClientIP(), request.getMethod(), request.getUrl());
 
         // Verify server exists
         Server server = serverRepository.findById(request.getServerId())
@@ -45,7 +45,6 @@ public class RequestLogService {
                 .clientIP(request.getClientIP())
                 .method(request.getMethod())
                 .url(request.getUrl())
-                .port(request.getPort())
                 .statusCode(request.getStatusCode())
                 .build();
 
@@ -153,7 +152,6 @@ public class RequestLogService {
                 .clientIP(requestLog.getClientIP())
                 .method(requestLog.getMethod())
                 .url(requestLog.getUrl())
-                .port(requestLog.getPort())
                 .statusCode(requestLog.getStatusCode())
                 .build();
     }

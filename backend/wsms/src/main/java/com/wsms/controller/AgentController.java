@@ -39,8 +39,8 @@ public class AgentController {
         @GetMapping(value = "/install.sh", produces = MediaType.TEXT_PLAIN_VALUE)
         public ResponseEntity<String> getInstallScriptTemplate() {
                 return ResponseEntity.ok()
-                                .contentType(MediaType.TEXT_PLAIN)
-                                .body(installScript.generatePublicTemplate());
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .body(installScript.generatePublicTemplate());
         }
 
         /**
@@ -48,39 +48,39 @@ public class AgentController {
          * it will store matrics inside db
          * pass it through alert system
          * if alert created, store in db
-         * 
+         *
          * @param authHeader
          * @param request
          * @return
          */
         @PostMapping("/metrics")
         public ResponseEntity<Map<String, Object>> submitMetrics(
-                        @RequestHeader("Authorization") String authHeader,
-                        @Valid @RequestBody MetricSubmitRequest request) {
+                @RequestHeader("Authorization") String authHeader,
+                @Valid @RequestBody MetricSubmitRequest request) {
 
                 // log server matrics
                 log.info("Received metrics from agent. Server ID: {}, CPU: {}%, Memory: {}%, Disk: {}%, Request: {}%",
-                                request.getServerId(),
-                                request.getCpuUsage(),
-                                request.getMemoryUsage(),
-                                request.getDiskUsage(),
-                                request.getRequestCount());
+                        request.getServerId(),
+                        request.getCpuUsage(),
+                        request.getMemoryUsage(),
+                        request.getDiskUsage(),
+                        request.getRequestCount());
 
                 // Extract token from "Bearer <token>" format
                 String token = authHeader.replace("Bearer ", "");
 
                 // Verify server exists and token matches
                 Server server = serverRepository.findById(request.getServerId())
-                                .orElseThrow(() -> new ResponseStatusException(
-                                                HttpStatus.NOT_FOUND,
-                                                "Server not found"));
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Server not found"));
 
                 // validate agent token
                 if (!server.getAgentToken().equals(token)) {
                         log.warn("Invalid agent token for server ID: {}", request.getServerId());
                         throw new ResponseStatusException(
-                                        HttpStatus.UNAUTHORIZED,
-                                        "Invalid agent token");
+                                HttpStatus.UNAUTHORIZED,
+                                "Invalid agent token");
                 }
 
                 //save hertbeat in db
@@ -96,25 +96,25 @@ public class AgentController {
                 // just for test :- remove it during commit
                 if (!alertOccured) {
                         System.out.println(
-                                        "Alert not occured .......................................................................................");
+                                "Alert not occured .......................................................................................");
                 } else {
                         System.out.println(
-                                        "Alert occured ##########################################################################################");
+                                "Alert occured ##########################################################################################");
                 }
 
                 Map<String, Object> result = new HashMap<>();
                 result.put("success", true);
                 result.put("message", "Metrics received successfully");
                 result.put("metricId", response.getId());
-                        // result.put("serverStatus", response.getServerStatus()); // Removed: MetricResponse has no serverStatus
+                // result.put("serverStatus", response.getServerStatus()); // Removed: MetricResponse has no serverStatus
 
                 return ResponseEntity.ok(result);
         }
 
         @PostMapping("/heartbeat")
         public ResponseEntity<Map<String, Object>> heartbeat(
-                        @RequestHeader("Authorization") String authHeader,
-                        @RequestBody Map<String, Object> request) {
+                @RequestHeader("Authorization") String authHeader,
+                @RequestBody Map<String, Object> request) {
 
                 Long serverId = ((Number) request.get("serverId")).longValue();
                 String token = authHeader.replace("Bearer ", "");
@@ -122,14 +122,14 @@ public class AgentController {
                 log.info("Heartbeat received from server ID: {}", serverId);
 
                 Server server = serverRepository.findById(serverId)
-                                .orElseThrow(() -> new ResponseStatusException(
-                                                HttpStatus.NOT_FOUND,
-                                                "Server not found"));
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Server not found"));
 
                 if (!server.getAgentToken().equals(token)) {
                         throw new ResponseStatusException(
-                                        HttpStatus.UNAUTHORIZED,
-                                        "Invalid agent token");
+                                HttpStatus.UNAUTHORIZED,
+                                "Invalid agent token");
                 }
 
                 server.setLastHeartbeat(LocalDateTime.now());
@@ -151,29 +151,29 @@ public class AgentController {
          * @param request
          * @return
          */
-        @PostMapping("/submitRequest")
+        @PostMapping("/request")
         public ResponseEntity<Map<String, Object>> submitRequestLog(
-                        @RequestHeader("Authorization") String authHeader,
-                        @Valid @RequestBody RequestLogSubmitRequest request) {
+                @RequestHeader("Authorization") String authHeader,
+                @Valid @RequestBody RequestLogSubmitRequest request) {
 
                 log.info("Received request log from agent. Server ID: {}, Client IP: {}, Method: {}, URL: {}",
-                                request.getServerId(), request.getClientIP(), request.getMethod(), request.getUrl());
+                        request.getServerId(), request.getClientIP(), request.getMethod(), request.getUrl());
 
                 // Extract token from "Bearer <token>" format
                 String token = authHeader.replace("Bearer ", "");
 
                 // Verify server exists and token matches
                 Server server = serverRepository.findById(request.getServerId())
-                                .orElseThrow(() -> new ResponseStatusException(
-                                                HttpStatus.NOT_FOUND,
-                                                "Server not found"));
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Server not found"));
 
                 // Validate agent token
                 if (!server.getAgentToken().equals(token)) {
                         log.warn("Invalid agent token for server ID: {}", request.getServerId());
                         throw new ResponseStatusException(
-                                        HttpStatus.UNAUTHORIZED,
-                                        "Invalid agent token");
+                                HttpStatus.UNAUTHORIZED,
+                                "Invalid agent token");
                 }
 
                 // Submit request log
@@ -186,4 +186,5 @@ public class AgentController {
 
                 return ResponseEntity.ok(result);
         }
+}
 

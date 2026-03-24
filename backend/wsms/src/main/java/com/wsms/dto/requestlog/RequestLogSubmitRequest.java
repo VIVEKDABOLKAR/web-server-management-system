@@ -25,9 +25,6 @@ public class RequestLogSubmitRequest {
     @NotBlank(message = "Request URL is required")
     private String url;
 
-    @NotNull(message = "Port is required")
-    private Integer port;
-
     private Integer statusCode;
 
     private String timestamp;

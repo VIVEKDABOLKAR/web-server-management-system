@@ -25,7 +25,5 @@ public class RequestLogResponse {
 
     private String url;
 
-    private Integer port;
-
     private Integer statusCode;
 }

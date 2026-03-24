@@ -101,6 +101,7 @@ public class ConnectionMonitor {
         String clientIp = conn.getInetAddress().getHostAddress();
         String method = "UNKNOWN";
         String url = "/";
+        int statusCode = 0;
 
         logger.info("========================================");
 
@@ -130,7 +131,6 @@ public class ConnectionMonitor {
             }
 
             logger.infoWebof("Incoming Request - IP: %s, Method: %s, URL: %s", clientIp, method, url);
-            sendRequestLog(clientIp, method, url, conn.getPort());
 
             /// Danger :- if hostname is localhost :- then try this addres localhost , 127.0.0.1, ::1, :::1
             /// we can chaekc which localhost connection is accepting by application we can put check at init pass one which we got success
@@ -145,6 +145,16 @@ public class ConnectionMonitor {
 
             targetOut.write(buffer, 0, n);
             targetOut.flush();
+
+            byte[] responseBuffer = new byte[4096];
+            int responseBytes = targetIn.read(responseBuffer);
+            if (responseBytes > 0) {
+                statusCode = parseStatusCode(responseBuffer, responseBytes);
+                sourceOut.write(responseBuffer, 0, responseBytes);
+                sourceOut.flush();
+            }
+
+            sendRequestLog(clientIp, method, url, conn.getPort(), statusCode);
 
             //two thread for sending req to 5173, and getting response to 4017 response stream
             Thread uplink = new Thread(() -> streamCopy(sourceIn, targetOut), "uplink");
@@ -163,7 +173,26 @@ public class ConnectionMonitor {
         }
     }
 
-    private void sendRequestLog(String clientIp, String method, String url, int port) {
+    private int parseStatusCode(byte[] responseBuffer, int responseBytes) {
+        try {
+            String responseData = new String(responseBuffer, 0, responseBytes);
+            String[] lines = responseData.split("\\r?\\n");
+            if (lines.length == 0) {
+                return 0;
+            }
+
+            String statusLine = lines[0].trim();
+            String[] parts = statusLine.split("\\s+");
+            if (parts.length >= 2) {
+                return Integer.parseInt(parts[1]);
+            }
+        } catch (Exception ex) {
+            logger.errorf("Unable to parse response status code: %s", ex.getMessage());
+        }
+        return 0;
+    }
+
+    private void sendRequestLog(String clientIp, String method, String url, int port, int statusCode) {
         if (requestLogsSender == null || serverId == null || serverId.isBlank()) {
             return;
         }
@@ -175,6 +204,7 @@ public class ConnectionMonitor {
         requestLog.setMethod(method);
         requestLog.setUrl(url);
         requestLog.setPort(port);
+        requestLog.setStatusCode(statusCode);
 
         requestLogsSender.sendRequestLog(requestLog);
     }
