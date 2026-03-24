@@ -9,12 +9,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.wsms.dto.server.AddServerRequest;
-import com.wsms.entity.*;
+import com.wsms.entity.OSType;
+import com.wsms.entity.Server;
+import com.wsms.entity.ServerStatus;
+import com.wsms.entity.User;
+import com.wsms.entity.WebServerType;
 import com.wsms.repository.OSTypeRepo;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
-
 import com.wsms.repository.WebServerTypeRepo;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -28,7 +32,7 @@ public class ServerService {
 
     /**
      * add server to the db
-     * 
+     *
      * @param dto
      * @param userId
      * @return
@@ -81,7 +85,6 @@ public class ServerService {
         WebServerType webServerType = webServerTypeRepo.findById(dto.getWebServerType().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Web Server Type not found"));
 
-        // ✅ update fields
         server.setServerName(dto.getServerName());
         server.setIpAddress(dto.getIpAddress());
         server.setDescription(dto.getDescription());
@@ -94,7 +97,7 @@ public class ServerService {
 
     /**
      * get all server based on the userId
-     * 
+     *
      * @param userId
      * @return
      */
@@ -105,7 +108,7 @@ public class ServerService {
 
     /**
      * get single server based on serverId
-     * 
+     *
      * @param serverId
      * @return
      */
@@ -116,9 +119,7 @@ public class ServerService {
     }
 
     /**
-     * get server object based on serverId and userId (it use to resolve duplicted
-     * serverId but unique userId)
-     * 
+     * get server object based on serverId and userId (it use to resolve duplicted serverId but unique userId)
      * @param serverId
      * @param userId
      * @return Server
@@ -131,7 +132,7 @@ public class ServerService {
 
     /**
      * delete server from db
-     * 
+     *
      * @param serverId
      * @param userId
      */
@@ -140,5 +141,4 @@ public class ServerService {
         Server server = getServerByIdForUser(serverId, userId);
         serverRepository.delete(server);
     }
-
 }

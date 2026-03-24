@@ -49,7 +49,7 @@ const useServerForm = (navigate) => {
         await api.post("/api/servers", payload);
       }
 
-      navigate("/dashboard");
+      navigate("/admin/servers");
     } catch (err) {
       console.error("API ERROR:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Something went wrong");

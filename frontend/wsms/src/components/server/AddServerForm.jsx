@@ -1,5 +1,4 @@
 const AddServerForm = ({
-  title = "Add Server",
   formData,
   osTypes,
   webServerTypes,
@@ -14,8 +13,6 @@ const AddServerForm = ({
   disabledSubmit,
   spacious = false,
 }) => {
-  console.log(webServerTypes);
-  
   const cardPadding = spacious ? "p-8" : "p-6";
   const titleClass = spacious ? "text-2xl mb-8" : "text-xl mb-6";
   const formSpacing = spacious ? "space-y-8" : "space-y-5";
