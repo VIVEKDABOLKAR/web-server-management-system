@@ -43,34 +43,63 @@ public class Logger {
 
     //INFO Log
     public synchronized void info(String msg) {
-        write("[INFO]", msg, false, null);
+        write("[INFO]", msg, false, null, false);
     }
 
     //Error Log
     public synchronized void error(String msg) {
-        write("[ERROR]", msg, false,null);
+        write("[ERROR]", msg, false, null, false);
     }
 
     //INFO_WEB Log
     public synchronized void infoWeb(String msg) {
-        write("[INFO_WEB]", msg, true,null);
+        write("[INFO_WEB]", msg, true, null, false);
     }
 
     //formated logging
     public synchronized void infof(String format, Object... args) {
-        write("[INFO]", String.format(format, args), false,null);
+        write("[INFO]", String.format(format, args), false, null, false);
     }
 
     public synchronized void errorf(String format, Object... args) {
-        write("[ERROR]", String.format(format, args), false,null);
+        write("[ERROR]", String.format(format, args), false, null, false);
     }
 
     public synchronized void infoWebof(String format, Object... args) {
-        write("[INFO_WEB]", String.format(format, args), true,null);
+        write("[INFO_WEB]", String.format(format, args), true, null, false);
     }
 
     public synchronized void error(String msg, Throwable throwable) {
-        write("[ERROR]", msg, false,throwable);
+        write("[ERROR]", msg, false, throwable, false);
+    }
+
+    // Console-only logs (do not write to files)
+    public synchronized void printInfo(String msg) {
+        write("[INFO]", msg, false, null, true);
+    }
+
+    public synchronized void printError(String msg) {
+        write("[ERROR]", msg, false, null, true);
+    }
+
+    public synchronized void printInfoWeb(String msg) {
+        write("[INFO_WEB]", msg, true, null, true);
+    }
+
+    public synchronized void printInfof(String format, Object... args) {
+        write("[INFO]", String.format(format, args), false, null, true);
+    }
+
+    public synchronized void printErrorf(String format, Object... args) {
+        write("[ERROR]", String.format(format, args), false, null, true);
+    }
+
+    public synchronized void printInfoWebf(String format, Object... args) {
+        write("[INFO_WEB]", String.format(format, args), true, null, true);
+    }
+
+    public synchronized void printError(String msg, Throwable throwable) {
+        write("[ERROR]", msg, false, throwable, true);
     }
 
     public synchronized void close() {
@@ -81,7 +110,7 @@ public class Logger {
         fileWriterWeb.close();
     }
 
-    private void write(String level, String msg, boolean webFlag, Throwable throwable) {
+    private void write(String level, String msg, boolean webFlag, Throwable throwable, boolean consoleOnly) {
         //formate of log
         String line = String.format("%s %s %s", level, LocalDateTime.now().format(FORMATTER), msg);
 
@@ -89,15 +118,19 @@ public class Logger {
         System.out.println(line);
 
         //write in agent.log file
-        if(!webFlag) {
-            fileWriter.println(line);
-        } else {
-            fileWriterWeb.println(line);
+        if (!consoleOnly) {
+            if (!webFlag) {
+                fileWriter.println(line);
+            } else {
+                fileWriterWeb.println(line);
+            }
         }
         //print and write error
         if (throwable != null) {
             throwable.printStackTrace(System.out);
-            throwable.printStackTrace(fileWriter);
+            if (!consoleOnly) {
+                throwable.printStackTrace(fileWriter);
+            }
         }
     }
 }

@@ -32,7 +32,6 @@ public class MetricService {
      */
     @Transactional
     public MetricResponse submitMetric(MetricSubmitRequest request) {
-
         log.info("Receiving metric from server ID: {}", request.getServerId());
 
         // 1. Validate server

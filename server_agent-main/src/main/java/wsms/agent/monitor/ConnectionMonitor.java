@@ -16,6 +16,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConnectionMonitor {
+    private static final int SOCKET_TIMEOUT_MS = 30000;
+    private static final int CONNECT_TIMEOUT_MS = 5000;
+
     private final int publishPort;
     private final String webServerHost;
     private final int webServerPort;
@@ -85,7 +88,7 @@ public class ConnectionMonitor {
         while (active.get()) {
             try {
                 Socket conn = listener.accept();
-                conn.setSoTimeout(30000);
+                conn.setSoTimeout(SOCKET_TIMEOUT_MS);
                 reqCount.incrementAndGet();
                 connectionPool.submit(() -> handleConnection(conn));
             } catch (Exception ex) {
@@ -103,7 +106,7 @@ public class ConnectionMonitor {
         String url = "/";
         int statusCode = 0;
 
-        logger.info("========================================");
+        logger.printInfo("========================================");
 
         try (Socket sourceConn = conn;
              //input output stream for our publishing port
@@ -121,7 +124,7 @@ public class ConnectionMonitor {
             String[] lines = requestData.split("\\n");
             if (lines.length > 0) {
                 String requestLine = lines[0].trim();
-                logger.infof("HTTP Request: %s", requestLine);
+                logger.printInfof("HTTP Request: %s", requestLine);
 
                 String[] requestParts = requestLine.split("\\s+");
                 if (requestParts.length >= 2) {
@@ -130,12 +133,11 @@ public class ConnectionMonitor {
                 }
             }
 
-            logger.infoWebof("Incoming Request - IP: %s, Method: %s, URL: %s", clientIp, method, url);
 
             /// Danger :- if hostname is localhost :- then try this addres localhost , 127.0.0.1, ::1, :::1
             /// we can chaekc which localhost connection is accepting by application we can put check at init pass one which we got success
-            targetConn.connect(new InetSocketAddress(webServerHost, webServerPort), 5000);
-            targetConn.setSoTimeout(30000);
+            targetConn.connect(new InetSocketAddress(webServerHost, webServerPort), CONNECT_TIMEOUT_MS);
+            targetConn.setSoTimeout(SOCKET_TIMEOUT_MS);
 
 //            System.out.println("getting connection :- " + targetConn.getLocalAddress().toString());
 
@@ -154,6 +156,12 @@ public class ConnectionMonitor {
                 sourceOut.flush();
             }
 
+            logger.infoWebof("Incoming Request - IP: %s, Method: %s, StatusCode: %s, URL: %s",
+                    clientIp,
+                    method,
+                    statusCode,
+                    url);
+
             sendRequestLog(clientIp, method, url, statusCode);
 
             //two thread for sending req to 5173, and getting response to 4017 response stream
@@ -163,13 +171,42 @@ public class ConnectionMonitor {
             uplink.start();
             downlink.start();
 
-            uplink.join();
-            downlink.join();
+            flushAndDeallocateTransfer(uplink, downlink, sourceOut, targetOut, sourceConn, targetConn, remoteAddr);
         } catch (Exception ex) {
             logger.errorf("Failed to handle connection %s: %s", remoteAddr, ex.getMessage());
         } finally {
-            logger.infof("Connection closed for %s", remoteAddr);
-            logger.info("========================================");
+            logger.printInfof("Connection closed for %s", remoteAddr);
+            logger.printInfo("========================================");
+        }
+    }
+
+    private void flushAndDeallocateTransfer(Thread uplink,
+                                            Thread downlink,
+                                            OutputStream sourceOut,
+                                            OutputStream targetOut,
+                                            Socket sourceConn,
+                                            Socket targetConn,
+                                            String remoteAddr) {
+        try {
+            uplink.join(SOCKET_TIMEOUT_MS);
+            downlink.join(SOCKET_TIMEOUT_MS);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        } finally {
+            try {
+                sourceOut.flush();
+            } catch (Exception ignored) {
+            }
+            try {
+                targetOut.flush();
+            } catch (Exception ignored) {
+            }
+
+            uplink.interrupt();
+            downlink.interrupt();
+            closeSocketQuietly(sourceConn);
+            closeSocketQuietly(targetConn);
+            logger.printInfof("Transfer flushed and deallocated for %s", remoteAddr);
         }
     }
 
@@ -216,6 +253,16 @@ public class ConnectionMonitor {
                 out.write(data, 0, read);
                 out.flush();
             }
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void closeSocketQuietly(Socket socket) {
+        if (socket == null || socket.isClosed()) {
+            return;
+        }
+        try {
+            socket.close();
         } catch (Exception ignored) {
         }
     }
