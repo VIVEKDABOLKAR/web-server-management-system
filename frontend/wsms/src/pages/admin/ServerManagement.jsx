@@ -82,7 +82,7 @@ const ServerManagement = () => {
                 </button>
               }
             >
-              <Table columns={serverColumns(navigate, openDeleteDialog)} data={servers} />
+              <Table columns={serverColumns(navigate, openDeleteDialog)} data={serversData} />
             </SectionCard>
           </>
         )}

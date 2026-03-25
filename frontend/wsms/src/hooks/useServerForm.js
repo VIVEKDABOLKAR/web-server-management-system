@@ -9,11 +9,13 @@ const useServerForm = (navigate) => {
     webServerType: null,
     webServerPortNo: "",
     description: "",
+    userId: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
+ 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,6 +43,7 @@ const useServerForm = (navigate) => {
         webServerType: {
           id: formData.webServerType?.id,
         },
+        userId: formData.userId ? Number(formData.userId) : undefined
       };
 
       if (isEditMode && id) {

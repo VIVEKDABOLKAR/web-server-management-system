@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -45,6 +47,21 @@ public class ServerService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        System.out.println("DTO userId: " + dto.getUserId());
+        // ✅ If ADMIN + userId provided → override user
+        if (isAdmin && dto.getUserId() != null) {
+            user = userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Target user not found"
+                    ));
+        }
         OSType osType = osTypeRepo.findById(dto.getOsType().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OS Type not found"));
 
@@ -66,6 +83,7 @@ public class ServerService {
 
         return serverRepository.save(server);
     }
+
 
     @Transactional
     public Server updateServer(Long id, AddServerRequest dto) {

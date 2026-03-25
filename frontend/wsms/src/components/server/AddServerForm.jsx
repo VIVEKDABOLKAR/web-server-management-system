@@ -10,11 +10,13 @@ const AddServerForm = ({
   onSelectWebServer,
   onSubmit,
   onCancel,
+  users = [],
+  isAdmin,
   disabledSubmit,
   spacious = false,
 }) => {
   const cardPadding = spacious ? "p-8" : "p-6";
-  const titleClass = spacious ? "text-2xl mb-8" : "text-xl mb-6";
+  // const titleClass = spacious ? "text-2xl mb-8" : "text-xl mb-6";
   const formSpacing = spacious ? "space-y-8" : "space-y-5";
   const labelSpacing = spacious ? "mb-2" : "mb-1";
   const fieldPadding = spacious ? "px-4 py-3" : "px-3 py-2";
@@ -23,26 +25,56 @@ const AddServerForm = ({
   const actionsGap = spacious ? "gap-4" : "gap-3";
   const buttonPadding = spacious ? "px-6 py-3 text-lg" : "px-5 py-2";
   const messagePadding = spacious ? "p-4 mb-6" : "p-3 mb-4";
-
+  
   return (
-    <div className={`bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm ${cardPadding}`}>
-   
-
+    <div
+      className={`bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm ${cardPadding}`}
+    >
       {error && (
-        <div className={`${messagePadding} text-sm text-red-600 bg-red-50 border border-red-200 rounded`}>
+        <div
+          className={`${messagePadding} text-sm text-red-600 bg-red-50 border border-red-200 rounded`}
+        >
           {error}
         </div>
       )}
 
       {success && (
-        <div className={`${messagePadding} text-sm text-green-600 bg-green-50 border border-green-200 rounded`}>
+        <div
+          className={`${messagePadding} text-sm text-green-600 bg-green-50 border border-green-200 rounded`}
+        >
           {success}
         </div>
       )}
 
       <form onSubmit={onSubmit} className={formSpacing}>
+        
+        {isAdmin && (
+          <div>
+            <label
+              className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}
+            >
+              Select User
+            </label>
+            <select
+              name="userId"
+              value={formData.userId || ""}
+              onChange={onChange}
+              className={`w-full ${fieldPadding} border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100`}
+            >
+              <option value="">Select user</option>
+              {users.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.id}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div>
-          <label className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}>
+          <label
+            className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}
+          >
             Server Name
           </label>
           <input
@@ -56,7 +88,9 @@ const AddServerForm = ({
         </div>
 
         <div>
-          <label className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}>
+          <label
+            className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}
+          >
             IP Address
           </label>
           <input
@@ -70,7 +104,9 @@ const AddServerForm = ({
         </div>
 
         <div>
-          <label className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}>
+          <label
+            className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}
+          >
             Operating System
           </label>
           <select
@@ -79,17 +115,21 @@ const AddServerForm = ({
             value={formData.osType?.id || ""}
             className={`w-full ${fieldPadding} border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500`}
           >
-            {osTypes.map((os) => (
-              os.active && (
-              <option key={os.id} value={os.id}>
-                {os.name}
-              </option>)
-            ))}
+            {osTypes.map(
+              (os) =>
+                os.active && (
+                  <option key={os.id} value={os.id}>
+                    {os.name}
+                  </option>
+                ),
+            )}
           </select>
         </div>
 
         <div>
-          <label className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}>
+          <label
+            className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}
+          >
             Web Server Type
           </label>
           <select
@@ -98,17 +138,21 @@ const AddServerForm = ({
             value={formData.webServerType?.id || ""}
             className={`w-full ${fieldPadding} border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500`}
           >
-            {webServerTypes.map((web) => (
-              web.active &&
-              <option key={web.id} value={web.id}>
-                {web.name}
-              </option>
-            ))}
+            {webServerTypes.map(
+              (web) =>
+                web.active && (
+                  <option key={web.id} value={web.id}>
+                    {web.name}
+                  </option>
+                ),
+            )}
           </select>
         </div>
 
         <div>
-          <label className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}>
+          <label
+            className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}
+          >
             Web Server Port
           </label>
           <input
@@ -123,7 +167,9 @@ const AddServerForm = ({
         </div>
 
         <div>
-          <label className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}>
+          <label
+            className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${labelSpacing}`}
+          >
             Description
           </label>
           <textarea
