@@ -32,12 +32,8 @@ const Sidebar = ({ isOpen, toggleOpen }) => {
     <>
       {/* hamburger icon */}
       {!isOpen ? (
-        <button
-          onClick={toggleOpen}
-          className="fixed top-3 left-4 z-50 p-2  rounded-md bg-white dark:bg-slate-800 shadow-md border-2 border-gray-400 "
-        >
-          ☰
-        </button>
+        <>
+        </>
       ) : (
         <div
           className={`

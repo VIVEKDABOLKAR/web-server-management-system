@@ -6,13 +6,8 @@ import com.wsms.entity.Server;
 import com.wsms.entity.User;
 import com.wsms.service.AlertService;
 import com.wsms.service.ServerService;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.wsms.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,18 +15,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wsms.dto.alert.AlertResponse;
-import com.wsms.entity.Alert;
-import com.wsms.entity.Server;
-import com.wsms.entity.User;
-import com.wsms.service.AlertService;
-import com.wsms.service.ServerService;
-import com.wsms.service.UserService;
-
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/alerts")
@@ -136,5 +125,26 @@ public class AlertController {
             }
         }
         return ResponseEntity.ok(allAlerts);
+    }
+
+    @PutMapping("/{alertId}/open")
+    public ResponseEntity<Void> markAlertAsOpen(@PathVariable Long alertId) {
+        Long userId = getLoggedInUserId();
+        alertService.markAlertAsOpen(userId, alertId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{alertId}/acknowledged")
+    public ResponseEntity<Void> markAlertAsAcknowledged(@PathVariable Long alertId) {
+        Long userId = getLoggedInUserId();
+        alertService.markAlertAsAcknowledged(userId, alertId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{alertId}/closed")
+    public ResponseEntity<Void> markAlertAsClosed(@PathVariable Long alertId) {
+        Long userId = getLoggedInUserId();
+        alertService.markAlertAsClosed(userId, alertId);
+        return ResponseEntity.ok().build();
     }
 }

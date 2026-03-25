@@ -29,7 +29,7 @@ public class AlertSystem {
     private final EmailService emailService;
     private final UserService userService;
 
-//     evalu server-status
+//      evalu server-status
 //      ACTIVE: heartbeat is fresh.
 //      WARNING: heartbeat delayed but not fully stale.
 //      DOWN: heartbeat stale past timeout.
