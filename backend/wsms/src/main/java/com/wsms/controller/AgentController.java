@@ -5,6 +5,7 @@ import com.wsms.dto.metric.MetricSubmitRequest;
 import com.wsms.dto.requestlog.RequestLogResponse;
 import com.wsms.dto.requestlog.RequestLogSubmitRequest;
 import com.wsms.entity.Server;
+import com.wsms.entity.ServerStatus;
 import com.wsms.repository.ServerRepository;
 import com.wsms.service.MetricService;
 import com.wsms.service.RequestLogService;
@@ -83,10 +84,6 @@ public class AgentController {
                                 "Invalid agent token");
                 }
 
-                //save hertbeat in db
-                server.setLastHeartbeat(LocalDateTime.now());
-                serverRepository.save(server); // change it into serverService.updateLastHeartBeat
-
                 // Submit metric
                 MetricResponse response = metricService.submitMetric(request);
 
@@ -132,7 +129,9 @@ public class AgentController {
                                 "Invalid agent token");
                 }
 
+                // create service layer for this :- serverService.updateLastHeatBeat
                 server.setLastHeartbeat(LocalDateTime.now());
+                server.setStatus(ServerStatus.ACTIVE); //MARK SERVER AS ACTIVE WHEN BACKEND RECIVE HEARTBEAT
                 serverRepository.save(server);
 
                 Map<String, Object> result = new HashMap<>();

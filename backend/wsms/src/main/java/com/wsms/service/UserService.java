@@ -127,4 +127,10 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
+
+    public User getUserByServerId(Long serverId) {
+
+        return userRepository.findByServersId(serverId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found By server ID"));
+    }
 }

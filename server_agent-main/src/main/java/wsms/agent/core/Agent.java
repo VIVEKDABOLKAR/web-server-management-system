@@ -209,10 +209,11 @@ public class Agent {
         m.setServerStatus("ACTIVE");
 
         if (metricSender != null) {
+
             metricSender.sendMetrics(m);
+
+            metricSender.sendHeartbeat();
         }
-
-
     }
 
     private void print(Metrics m) {

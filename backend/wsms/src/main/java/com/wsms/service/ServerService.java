@@ -3,6 +3,7 @@ package com.wsms.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.wsms.repository.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,11 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.wsms.dto.server.AddServerRequest;
 import com.wsms.entity.*;
-import com.wsms.repository.OSTypeRepo;
-import com.wsms.repository.ServerRepository;
-import com.wsms.repository.UserRepository;
 
-import com.wsms.repository.WebServerTypeRepo;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -141,4 +138,32 @@ public class ServerService {
         serverRepository.delete(server);
     }
 
+    /**
+     * get all of the server from db , only need id and lastHeartBeat
+     * 
+     */
+    @Transactional(readOnly = true)
+    public List<Server> getAllServer(){
+
+        return serverRepository.findAll();
+    }
+
+    /**
+     * get all of the server from db , only need id and lastHeartBeat
+     *
+     */
+    @Transactional(readOnly = true)
+    public List<ServerHeartbeatView> getAllServerHeartBeat(){
+
+        return serverRepository.findAllProjectedBy();
+    }
+
+    @Transactional
+    public void updateServerStatus(Long serverId, ServerStatus status) {
+
+        Server server = serverRepository.findById(serverId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Server not found"));
+
+        serverRepository.updateServerStatus(server.getId(), status);
+    }
 }

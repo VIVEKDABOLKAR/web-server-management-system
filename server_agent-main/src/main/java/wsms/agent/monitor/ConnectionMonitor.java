@@ -106,7 +106,7 @@ public class ConnectionMonitor {
         String url = "/";
         int statusCode = 0;
 
-        logger.printInfo("========================================");
+        logger.info("========================================");
 
         try (Socket sourceConn = conn;
              //input output stream for our publishing port
@@ -124,7 +124,7 @@ public class ConnectionMonitor {
             String[] lines = requestData.split("\\n");
             if (lines.length > 0) {
                 String requestLine = lines[0].trim();
-                logger.printInfof("HTTP Request: %s", requestLine);
+                logger.infof("HTTP Request: %s", requestLine);
 
                 String[] requestParts = requestLine.split("\\s+");
                 if (requestParts.length >= 2) {
@@ -175,8 +175,8 @@ public class ConnectionMonitor {
         } catch (Exception ex) {
             logger.errorf("Failed to handle connection %s: %s", remoteAddr, ex.getMessage());
         } finally {
-            logger.printInfof("Connection closed for %s", remoteAddr);
-            logger.printInfo("========================================");
+            logger.infof("Connection closed for %s", remoteAddr);
+            logger.info("========================================");
         }
     }
 
@@ -206,7 +206,7 @@ public class ConnectionMonitor {
             downlink.interrupt();
             closeSocketQuietly(sourceConn);
             closeSocketQuietly(targetConn);
-            logger.printInfof("Transfer flushed and deallocated for %s", remoteAddr);
+            logger.infof("Transfer flushed and deallocated for %s", remoteAddr);
         }
     }
 
