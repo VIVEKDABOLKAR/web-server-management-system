@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +22,6 @@ public class AdminService {
     @Autowired
     private ServerRepository serverRepository;
 
-    /**
-     * Fetch all users and all servers for admin dashboard
-     */
     public Map<String, Object> getDashboardData() {
         Map<String, Object> data = new HashMap<>();
         List<User> users = userRepository.findAll();
@@ -31,5 +29,14 @@ public class AdminService {
         data.put("users", users);
         data.put("servers", servers);
         return data;
+    }
+
+    @Transactional
+    public void updateUserVerification(Long userId, boolean isVerified) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        user.setVerified(isVerified);
+
+//    userRepository.saveAndFlush(user);
     }
 }

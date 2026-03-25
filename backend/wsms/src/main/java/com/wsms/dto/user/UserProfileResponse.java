@@ -1,5 +1,6 @@
 package com.wsms.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wsms.entity.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ public class UserProfileResponse {
     private String email;
     private UserRole role;
     private LocalDateTime createdAt;
+    @JsonProperty("isVerified")
     private boolean isVerified;
     private int totalServers;
     private int activeServers;

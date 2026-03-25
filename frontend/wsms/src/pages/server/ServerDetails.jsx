@@ -8,7 +8,6 @@ import ServerInfoCard from "../../components/server/server_details/ServerInfoCar
 import AgentStatusCard from "../../components/server/server_details/AgentStatusCard";
 import MetricsOverview from "../../components/server/MetricsOverview";
 import PerformanceTrends from "../../components/server/PerformanceTrends";
-import MetricsHistoryTable from "../../components/server/server_details/MetricsHistoryTable";
 
 const ServerDetails = () => {
   const { id } = useParams();
@@ -121,10 +120,9 @@ const ServerDetails = () => {
 
           {/* Performance Trends Charts */}
           {latestMetrics && (
-            <>
+          
               <PerformanceTrends metrics={metrics} />
-              <MetricsHistoryTable metrics={metrics} latestMetrics={latestMetrics} />
-            </>
+          
           )}
 
           {/* Alerts and Blocked IPs */}

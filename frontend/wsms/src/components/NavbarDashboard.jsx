@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Toast from "./Toast";
 import { useDarkMode } from "../context/DarkModeContext";
+import { isAdminToken } from "../utils/auth";
 
 const NavbarDashboard = ({ hideDashboard = false }) => {
   const navigate = useNavigate();
@@ -56,6 +57,14 @@ const NavbarDashboard = ({ hideDashboard = false }) => {
     }, 1000);
   };
 
+  const handleDashboardNavigation = () => {
+    if (isAdminToken(token)) {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/dashboard");
+    }
+  };
+
   return (
     <>
       {showToast && (
@@ -71,7 +80,7 @@ const NavbarDashboard = ({ hideDashboard = false }) => {
             {/* Logo */}
             <div
               className="flex items-center gap-3 cursor-pointer group"
-              onClick={() => navigate("/dashboard")}
+              onClick={handleDashboardNavigation}
             >
               <div className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center shadow group-hover:shadow-lg transition">
                 <span className="text-white font-bold text-xl">W</span>
@@ -86,7 +95,7 @@ const NavbarDashboard = ({ hideDashboard = false }) => {
               <div className="flex items-center gap-4">
                 {!hideDashboard && (
                   <button
-                    onClick={() => navigate("/dashboard")}
+                    onClick={handleDashboardNavigation}
                     className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition hover:bg-blue-50 dark:hover:bg-slate-800 rounded"
                   >
                     Dashboard
@@ -195,50 +204,6 @@ const NavbarDashboard = ({ hideDashboard = false }) => {
                           )}
                         </div>
                       </div>
-
-                      {/* Stats */}
-                      {userProfile && (
-                        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-slate-800">
-                          <div className="grid grid-cols-3 gap-2 text-center">
-                            <div>
-                              <button
-                                className="text-xl font-bold text-blue-600 hover:underline focus:outline-none"
-                                onClick={() => {
-                                  setShowDropdown(false);
-                                  navigate("/all-servers");
-                                }}
-                              >
-                                {userProfile.totalServers || 0}
-                              </button>
-                              <button
-                                className="text-xs text-gray-600 dark:text-gray-400 hover:underline focus:outline-none"
-                                onClick={() => {
-                                  setShowDropdown(false);
-                                  navigate("/all-servers");
-                                }}
-                              >
-                                Servers
-                              </button>
-                            </div>
-                            <div>
-                              <div className="text-xl font-bold text-green-600 dark:text-green-400">
-                                {userProfile.activeServers || 0}
-                              </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">
-                                Active
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-xl font-bold text-amber-600 dark:text-amber-400">
-                                {userProfile.totalAlerts || 0}
-                              </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">
-                                Alerts
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
 
                       {/* Menu Items */}
                       <div className="py-2">

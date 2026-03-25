@@ -53,7 +53,7 @@ public class UserService {
                 .email(user.getEmail())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
-                .isVerified(user.getIsVerified())
+                .isVerified(user.isVerified())
                 .totalServers(totalServers)
                 .activeServers(activeServers)
                 .totalAlerts(totalAlerts)

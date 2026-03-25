@@ -25,6 +25,7 @@ import UserManagement from "./pages/admin/UserManagement";
 import ServerManagement from "./pages/admin/ServerManagement";
 import EditServer from "./pages/server/EditServer/EditServer";
 import AlertsPage from "./AlertsPage";
+import { AdminAddUser } from "./pages/admin/AdminAddUser";
 
 
 function App() {
@@ -138,7 +139,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+          <Route
+          path="/admin/add-user"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminAddUser />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
+     
       <ToastContainer
         position="top-right"
         newestOnTop

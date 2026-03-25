@@ -56,7 +56,7 @@ public class SignupVerificationService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OTP has expired");
         }
 
-        user.setIsVerified(true);
+        user.setVerified(true);
         userRepository.save(user);
 
         token.setUsed(true);
