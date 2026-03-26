@@ -52,6 +52,7 @@ const Login = () => {
   };
 
   const getApiErrorMessage = () => {
+    console.log(error)
     if (!error) {
       return "";
     }

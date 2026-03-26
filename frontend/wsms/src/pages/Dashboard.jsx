@@ -90,6 +90,7 @@ const Dashboard = () => {
       setServers(serverData);
       setError("");
     } catch (err) {
+      console.log(err)
       setError("Failed to fetch servers: " + (err?.message || err));
     } finally {
       if (showLoader) setLoading(false);
