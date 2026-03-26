@@ -29,7 +29,7 @@ public class AlertSystem {
     private final EmailService emailService;
     private final UserService userService;
 
-//      evalu server-status
+//      evalue server-status
 //      ACTIVE: heartbeat is fresh.
 //      WARNING: heartbeat delayed but not fully stale.
 //      DOWN: heartbeat stale past timeout.
@@ -38,9 +38,9 @@ public class AlertSystem {
     // Create schuldure :- runs every 5 second
 
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 4500)
     public void evaluateServerHealth() {
-        // fetch every server-last heratbeat
+        // fetch every server-last heartbeat
         List<ServerHeartbeatView> servers = serverService.getAllServerHeartBeat();
 
         LocalDateTime now = LocalDateTime.now();
@@ -53,12 +53,12 @@ public class AlertSystem {
 
             //temp var server-status
             ServerStatus status;
-            // cmpare with current-time
+            // compare with current-time
 
-            //if hartbeat is null - mark status as Unknown
-            //if diff less then 5 - do nothing
+            //if heartbeat is null - mark status as Unknown
+            //if diff less than 5 - do nothing
             //if diff bw 5 - 15 - mark serverStatus as warning
-            //if more then 15 = mark it as InActive
+            //if more than 15 = mark it as InActive
             if(lastHeartbeat == null) {
                 status = ServerStatus.UNKNOWN;
             } else {
@@ -79,7 +79,8 @@ public class AlertSystem {
                 serverService.updateServerStatus(serverId, status);
                 if(status == ServerStatus.INACTIVE ) {
                     Server serverObj = serverService.getServerById(serverId);
-                    Alert alert = alertService.createAlert(serverObj, AlertType.SERVER_DOWN, "Your Server is down");
+                    Alert alert = alertService.createOrUpdateAlert(
+                            serverObj, AlertType.SERVER_DOWN, null,null,"Your Server is down");
                     System.out.println("Alert Occured ;- ");
 
                     //send email-notification
@@ -88,7 +89,13 @@ public class AlertSystem {
                         emailService.sendAlert(alert, email,"Medium");
                     }
                 }
+                if (status == ServerStatus.ACTIVE ) {
+                    // Server recovered: close active SERVER_DOWN alerts automatically.
+                    System.out.println("Server recovered, closing SERVER_DOWN alerts");
+                    alertService.closeActiveAlertsByType(serverId, AlertType.SERVER_DOWN);
+                }
             }
+
         }
     }
 
@@ -111,7 +118,7 @@ public class AlertSystem {
         //CREATE FUNCTION TO CHECK WITH THRESHOLD
         //for cpu usage
         if (metricSubmitRequest.getCpuUsage() > 90) {
-            alertService.createAlert(
+            alertService.createOrUpdateAlert(
                    server,
                     AlertType.CPU_HIGH,
                     metricSubmitRequest.getCpuUsage(),
@@ -119,11 +126,13 @@ public class AlertSystem {
                     "CPU exceeds the limit"
             );
             alertFlag = true;
+        } else {
+            alertService.closeActiveAlertsByType(server.getId(), AlertType.CPU_HIGH);
         }
 
         //for memory usage
         if (metricSubmitRequest.getMemoryUsage() > 80) {
-            alertService.createAlert(
+            alertService.createOrUpdateAlert(
                     server,
                     AlertType.MEMORY_HIGH,
                     metricSubmitRequest.getMemoryUsage(),
@@ -131,11 +140,13 @@ public class AlertSystem {
                     "MEMORY exceeds the limit"
             );
             alertFlag = true;
+        } else {
+            alertService.closeActiveAlertsByType(server.getId(), AlertType.MEMORY_HIGH);
         }
 
         //for Disk usage
         if (metricSubmitRequest.getDiskUsage() > 80) {
-            alertService.createAlert(
+            alertService.createOrUpdateAlert(
                     server,
                     AlertType.DISK_HIGH,
                     metricSubmitRequest.getDiskUsage(),
@@ -143,6 +154,8 @@ public class AlertSystem {
                     "DISK exceeds the limit"
             );
             alertFlag = true;
+        } else {
+            alertService.closeActiveAlertsByType(server.getId(), AlertType.DISK_HIGH);
         }
 
         //by default no alert occurred

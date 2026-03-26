@@ -124,6 +124,12 @@ const AlertsPage = ({ serverId }) => {
     }
   };
 
+  const handleAlertRowClick = async (alert) => {
+    const status = String(alert?.status || "").toUpperCase();
+    if (status !== "OPEN") return;
+    await updateAlertStatus(alert.id, "ACKNOWLEDGED");
+  };
+
   useEffect(() => {
     const controller = new AbortController();
 
@@ -279,6 +285,7 @@ const AlertsPage = ({ serverId }) => {
                 return (
                   <div
                     key={alert.id}
+                    onClick={() => handleAlertRowClick(alert)}
                     className={`grid grid-cols-12 gap-x-6 gap-y-2 items-center px-3 md:px-4 py-3 rounded-xl border transition-colors ${cardClass}`}
                     title={alert.message}
                   >
@@ -319,27 +326,23 @@ const AlertsPage = ({ serverId }) => {
                       {alertStatusValue !== "OPEN" && (
                         <button
                           type="button"
-                          onClick={() => updateAlertStatus(alert.id, "OPEN")}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateAlertStatus(alert.id, "OPEN");
+                          }}
                           disabled={isUpdating}
                           className="px-2.5 py-1 rounded-md text-xs font-semibold border border-red-400 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50"
                         >
                           Reopen
                         </button>
                       )}
-                      {alertStatusValue === "OPEN" && (
-                        <button
-                          type="button"
-                          onClick={() => updateAlertStatus(alert.id, "ACKNOWLEDGED")}
-                          disabled={isUpdating}
-                          className="px-2.5 py-1 rounded-md text-xs font-semibold border border-amber-400 text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 disabled:opacity-50"
-                        >
-                          Acknowledge
-                        </button>
-                      )}
                       {alertStatusValue !== "CLOSED" && (
                         <button
                           type="button"
-                          onClick={() => updateAlertStatus(alert.id, "CLOSED")}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateAlertStatus(alert.id, "CLOSED");
+                          }}
                           disabled={isUpdating}
                           className="px-2.5 py-1 rounded-md text-xs font-semibold border border-emerald-400 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 disabled:opacity-50"
                         >

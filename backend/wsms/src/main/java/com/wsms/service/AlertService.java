@@ -125,4 +125,53 @@ public class AlertService {
         alert.setStatus(AlertStatus.CLOSED);
         alertRepository.save(alert);
     }
+
+    /**
+     * Auto close all active alerts (OPEN, ACKNOWLEDGED) for server + type.
+     * Used by alert automation when system detects recovery.
+     */
+    public void closeActiveAlertsByType(Long serverId, AlertType alertType) {
+        List<Alert> activeAlerts = alertRepository.findAllByServerIdAndAlertTypeAndStatusInOrderByCreatedAtDesc(
+                serverId,
+                alertType,
+                List.of(AlertStatus.OPEN, AlertStatus.ACKNOWLEDGED)
+        );
+
+        for (Alert alert : activeAlerts) {
+            alert.setStatus(AlertStatus.CLOSED);
+        }
+
+        if (!activeAlerts.isEmpty()) {
+            alertRepository.saveAll(activeAlerts);
+        }
+    }
+
+    /**
+     * Create or update alert: if active alert (OPEN/ACKNOWLEDGED) exists for server + type,
+     * update its value/threshold/message; otherwise create new one.
+     * Prevents duplicate alerts for same issue.
+     */
+    public Alert createOrUpdateAlert(Server server, AlertType alertType, Double value, 
+                                      Double threshold, String message) {
+        if (server == null) return null;
+
+        // Find existing active alert for this server + type
+        List<Alert> existingAlerts = alertRepository.findAllByServerIdAndAlertTypeAndStatusInOrderByCreatedAtDesc(
+                server.getId(),
+                alertType,
+                List.of(AlertStatus.OPEN, AlertStatus.ACKNOWLEDGED)
+        );
+
+        if (!existingAlerts.isEmpty()) {
+            // Reuse the most recent active alert - update metrics and message
+            Alert existingAlert = existingAlerts.get(0);
+            existingAlert.setValue(value);
+            existingAlert.setThreshold(threshold);
+            existingAlert.setMessage(message);
+            return alertRepository.save(existingAlert);
+        }
+
+        // No active alert found, create new one
+        return createAlert(server, alertType, value, threshold, message);
+    }
 }

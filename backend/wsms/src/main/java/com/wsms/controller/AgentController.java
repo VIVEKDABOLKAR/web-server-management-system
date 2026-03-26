@@ -60,12 +60,12 @@ public class AgentController {
                 @Valid @RequestBody MetricSubmitRequest request) {
 
                 // log server matrics
-                log.info("Received metrics from agent. Server ID: {}, CPU: {}%, Memory: {}%, Disk: {}%, Request: {}%",
-                        request.getServerId(),
-                        request.getCpuUsage(),
-                        request.getMemoryUsage(),
-                        request.getDiskUsage(),
-                        request.getRequestCount());
+//                log.info("Received metrics from agent. Server ID: {}, CPU: {}%, Memory: {}%, Disk: {}%, Request: {}%",
+//                        request.getServerId(),
+//                        request.getCpuUsage(),
+//                        request.getMemoryUsage(),
+//                        request.getDiskUsage(),
+//                        request.getRequestCount());
 
                 // Extract token from "Bearer <token>" format
                 String token = authHeader.replace("Bearer ", "");
@@ -131,7 +131,6 @@ public class AgentController {
 
                 // create service layer for this :- serverService.updateLastHeatBeat
                 server.setLastHeartbeat(LocalDateTime.now());
-                server.setStatus(ServerStatus.ACTIVE); //MARK SERVER AS ACTIVE WHEN BACKEND RECIVE HEARTBEAT
                 serverRepository.save(server);
 
                 Map<String, Object> result = new HashMap<>();
