@@ -62,6 +62,11 @@ public class User {
     @Builder.Default
     private UserRole role = UserRole.USER; // change by default user.role - ADMIN -> USER
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private UserStatus status = UserStatus.ACTIVE;
+
     @Column(nullable = false)
     @Builder.Default
     private boolean isVerified = false;

@@ -12,6 +12,7 @@ import com.wsms.entity.Server;
 import com.wsms.entity.User;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
+import com.wsms.entity.UserStatus;
 
 @Service
 public class AdminService {
@@ -31,12 +32,11 @@ public class AdminService {
         return data;
     }
 
-    @Transactional
-    public void updateUserVerification(Long userId, boolean isVerified) {
+        @Transactional
+        public void updateUserStatus(Long userId, boolean isActive) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-        user.setVerified(isVerified);
-
-//    userRepository.saveAndFlush(user);
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        user.setStatus(isActive ? UserStatus.ACTIVE : UserStatus.BLOCKED);
+        userRepository.saveAndFlush(user);
     }
 }

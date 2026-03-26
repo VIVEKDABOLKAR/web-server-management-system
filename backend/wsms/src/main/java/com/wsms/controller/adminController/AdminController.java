@@ -1,6 +1,6 @@
 package com.wsms.controller.adminController;
 
-import com.wsms.dto.user.VerifyUserRequest;
+import com.wsms.dto.user.UserStatusRequest;
 import com.wsms.entity.OSType;
 import com.wsms.entity.WebServerType;
 import com.wsms.service.OSTypeService;
@@ -58,9 +58,9 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getDashboardData());
     }
 
-    @PutMapping("/users/{userId}/verify")
-    public ResponseEntity<?> updateUserVerification(@PathVariable Long userId, @RequestBody VerifyUserRequest request) {
-        adminService.updateUserVerification(userId, request.isVerified());
+    @PutMapping("/users/{userId}/status")
+    public ResponseEntity<?> updateUserStatus(@PathVariable Long userId, @RequestBody UserStatusRequest request) {
+        adminService.updateUserStatus(userId, request.isActive());
         return ResponseEntity.ok("Updated");
     }
 

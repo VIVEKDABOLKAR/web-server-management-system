@@ -6,7 +6,6 @@ import SectionCard from "../../components/SectionCard";
 import useAdminDashboard from "../../hooks/useAdminDashboard";
 import api from "../../services/api";
 import { toast } from "react-toastify";
-import Signup from "../auth/signUp/Signup";
 
 const UserManagement = () => {
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ const UserManagement = () => {
   useEffect(() => {
     const normalizedUsers = users.map((u) => ({
       ...u,
-      isVerified: u.verified === true,
+      isActive: u.status === "ACTIVE", 
     }));
 
     setUserList(normalizedUsers);
@@ -30,30 +29,29 @@ const UserManagement = () => {
       );
   };
 
-  const handleToggleVerify = async (userId) => {
+  const handleToggleActive = async (userId) => {
     try {
       setUpdatingUserId(userId);
 
       const user = userList.find((u) => u.id === userId);
+      const newStatus = !user?.isActive;
 
-      const newStatus = !user?.isVerified;
-
-      await api.put(`/api/admin/users/${userId}/verify`, {
-        verified: newStatus,
+      await api.put(`/api/admin/users/${userId}/status`, {
+        active: newStatus,
       });
 
       setUserList((prev) =>
         prev.map((u) =>
-          u.id === userId ? { ...u, isVerified: newStatus } : u,
+          u.id === userId ? { ...u, isActive: newStatus } : u,
         ),
       );
 
       toast.success(
-        `User ${newStatus ? "verified" : "unverified"} successfully`,
+        `User ${newStatus ? "activated" : "blocked"} successfully`,
       );
     } catch (err) {
       console.error(err);
-      toast.error("Failed to update verification status");
+      toast.error("Failed to update user status");
     } finally {
       setUpdatingUserId(null);
     }
@@ -71,12 +69,12 @@ const UserManagement = () => {
       render: (user) => (
         <span
           className={`px-2 py-1 rounded text-xs font-semibold ${
-            user.isVerified
+            user.isActive
               ? "bg-green-100 text-green-700"
-              : "bg-amber-100 text-amber-700"
+              : "bg-red-100 text-red-700"
           }`}
         >
-          {user.isVerified ? "Verified" : "Unverified"}
+          {user.isActive ? "Active" : "Blocked"}
         </span>
       ),
     },
@@ -96,15 +94,17 @@ const UserManagement = () => {
                 ${
                   isUpdating
                     ? "opacity-50 cursor-not-allowed"
-                    : "border-sky-400 text-sky-600 bg-white hover:bg-sky-50"
+                    : user.isActive
+                      ? "border-red-400 text-red-600 bg-white hover:bg-red-50"
+                      : "border-green-400 text-green-600 bg-white hover:bg-green-50"
                 }`}
-              onClick={() => handleToggleVerify(userId)}
+              onClick={() => handleToggleActive(userId)}
             >
               {isUpdating
                 ? "Updating..."
-                : user.isVerified
-                  ? "Unverify"
-                  : "Verify"}
+                : user.isActive
+                  ? "Block"
+                  : "Activate"}
             </button>
           </div>
         );

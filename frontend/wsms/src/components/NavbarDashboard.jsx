@@ -48,14 +48,6 @@ const NavbarDashboard = ({ hideDashboard = false }) => {
     return name.substring(0, 2).toUpperCase();
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setShowToast(true);
-    setShowDropdown(false);
-    setTimeout(() => {
-      navigate("/login");
-    }, 1000);
-  };
 
   const handleDashboardNavigation = () => {
     if (isAdminToken(token)) {
@@ -235,7 +227,10 @@ const NavbarDashboard = ({ hideDashboard = false }) => {
                           </div>
                         </button>
                         <button
-                          onClick={handleLogout}
+                            onClick={() => {
+                            navigate("/logout");
+                            setShowDropdown(false);
+                          }}
                           className="w-full px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/20 transition flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400"
                         >
                           <svg

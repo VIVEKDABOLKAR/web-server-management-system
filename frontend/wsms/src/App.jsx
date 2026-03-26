@@ -13,8 +13,8 @@ import Signup from "./pages/auth/signUp/Signup";
 import VerifySignup from "./pages/auth/signUp/VerifySignup";
 import Dashboard from "./pages/user/Dashboard";
 import AllServers from "./pages/server/AllServers/AllServers";
-  import ServerDetails from "./pages/server/ServerDetails";
-  import AddServer from "./pages/server/AddServer/AddServer";
+import ServerDetails from "./pages/server/ServerDetails";
+import AddServer from "./pages/server/AddServer/AddServer";
 import Profile from "./pages/profile/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Performance from "./pages/performance/Performance";
@@ -25,8 +25,8 @@ import UserManagement from "./pages/admin/UserManagement";
 import ServerManagement from "./pages/admin/ServerManagement";
 import EditServer from "./pages/server/EditServer/EditServer";
 import AlertsPage from "./AlertsPage";
-import { AdminAddUser } from "./pages/admin/AdminAddUser";
-
+import AdminAddUser from "./pages/admin/AdminAddUser";
+import Logout from "./pages/auth/logout/Logout";
 
 function App() {
   return (
@@ -37,6 +37,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/signup/verify" element={<VerifySignup />} />
+         <Route path="/logout" element={<Logout />} />
         <Route
           path="/dashboard"
           element={
@@ -61,11 +62,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/alerts" element={
-          <ProtectedRoute>
-            <AlertsPage />
-          </ProtectedRoute>
-        } />
+        <Route
+          path="/alerts"
+          element={
+            <ProtectedRoute>
+              <AlertsPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/add-server"
           element={
@@ -90,6 +94,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        
         <Route
           path="/server-setup/:serverId"
           element={
@@ -131,15 +136,15 @@ function App() {
             </ProtectedRoute>
           }
         />
-          <Route
+        <Route
           path="/admin/servers/:id"
           element={
             <ProtectedRoute requireAdmin>
-              <EditServer  />
+              <EditServer />
             </ProtectedRoute>
           }
         />
-          <Route
+        <Route
           path="/admin/add-user"
           element={
             <ProtectedRoute requireAdmin>
@@ -148,14 +153,13 @@ function App() {
           }
         />
       </Routes>
-     
+
       <ToastContainer
         position="top-right"
         newestOnTop
         pauseOnFocusLoss={false}
         theme="colored"
       />
-
     </Router>
   );
 }
