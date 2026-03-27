@@ -1,7 +1,11 @@
 package com.wsms.controller;
 
 import com.wsms.dto.requestlog.RequestLogResponse;
+import com.wsms.dto.server.ServerResponse;
+import com.wsms.entity.RequestLog;
+import com.wsms.entity.Server;
 import com.wsms.service.RequestLogService;
+import com.wsms.service.ServerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,114 +21,26 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/request-logs")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('USER')")
 public class RequestLogController {
 
-    private final RequestLogService requestLogService;
+    private  final RequestLogService requestLogService;
+    private final ServerController serverController;
+    private final ServerService serverService;
+    @GetMapping("/server")
+    public ResponseEntity<List<Server>> getAllServer(){
+        Long userId = serverController.getLoggedInUserId();
+        return  ResponseEntity.ok(serverService.getAllServersByUser(userId));
+    }
 
-    /**
-     * Get paginated request logs for a specific server
-     */
     @GetMapping("/server/{serverId}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Page<RequestLogResponse>> getRequestLogsByServer(
-            @PathVariable Long serverId,
-            Pageable pageable) {
-        log.info("Fetching request logs for server ID: {}", serverId);
-        return ResponseEntity.ok(requestLogService.getRequestLogsByServer(serverId, pageable));
+    public ResponseEntity<Page<RequestLogResponse>> getAllLog( @PathVariable Long serverId,Pageable pageable){
+             return ResponseEntity.ok(requestLogService.getByServerId(serverId,pageable));
     }
 
-    /**
-     * Get recent request logs for a server (latest first)
-     */
-    @GetMapping("/server/{serverId}/recent")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<RequestLogResponse>> getRecentRequestLogs(
-            @PathVariable Long serverId,
-            @RequestParam(defaultValue = "50") int limit) {
-        log.info("Fetching {} recent request logs for server ID: {}", limit, serverId);
-        return ResponseEntity.ok(requestLogService.getRecentRequestLogs(serverId, limit));
-    }
-
-    /**
-     * Get request logs by client IP address
-     */
-    @GetMapping("/client-ip/{clientIP}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Page<RequestLogResponse>> getRequestLogsByClientIP(
-            @PathVariable String clientIP,
-            Pageable pageable) {
-        log.info("Fetching request logs for client IP: {}", clientIP);
-        return ResponseEntity.ok(requestLogService.getRequestLogsByClientIP(clientIP, pageable));
-    }
-
-    /**
-     * Get request logs for a server by specific client IP
-     */
-    @GetMapping("/server/{serverId}/client-ip/{clientIP}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Page<RequestLogResponse>> getRequestLogsByServerAndClientIP(
-            @PathVariable Long serverId,
-            @PathVariable String clientIP,
-            Pageable pageable) {
-        log.info("Fetching request logs for server ID: {} and client IP: {}", serverId, clientIP);
-        return ResponseEntity.ok(requestLogService.getRequestLogsByServerAndClientIP(serverId, clientIP, pageable));
-    }
-
-    /**
-     * Get request logs by HTTP method
-     */
     @GetMapping("/method/{method}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Page<RequestLogResponse>> getRequestLogsByMethod(
-            @PathVariable String method,
-            Pageable pageable) {
-        log.info("Fetching request logs for method: {}", method);
-        return ResponseEntity.ok(requestLogService.getRequestLogsByMethod(method, pageable));
+    public ResponseEntity<Page<RequestLogResponse>> getMethodByMethodName(@PathVariable String method,Pageable pageable,@RequestParam Long serverId){
+        return ResponseEntity.ok( requestLogService.getMethodByMethodName(serverId,method,pageable));
     }
 
-    /**
-     * Get request logs by status code
-     */
-    @GetMapping("/server/{serverId}/status/{statusCode}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Page<RequestLogResponse>> getRequestLogsByStatusCode(
-            @PathVariable Long serverId,
-            @PathVariable Integer statusCode,
-            Pageable pageable) {
-        log.info("Fetching request logs for server ID: {} with status code: {}", serverId, statusCode);
-        return ResponseEntity.ok(requestLogService.getRequestLogsByStatusCode(serverId, statusCode, pageable));
-    }
-
-    /**
-     * Get request count for a server in the last N minutes
-     */
-    @GetMapping("/server/{serverId}/count-last-minutes")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Integer> getRequestCountInLastNMinutes(
-            @PathVariable Long serverId,
-            @RequestParam(defaultValue = "5") int minutes) {
-        log.info("Fetching request count for server ID: {} in last {} minutes", serverId, minutes);
-        Integer count = requestLogService.getRequestCountInLastNMinutes(serverId, minutes);
-        return ResponseEntity.ok(count);
-    }
-
-    /**
-     * Get all unique client IPs for a server
-     */
-    @GetMapping("/server/{serverId}/unique-ips")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<String>> getUniqueClientIPsByServer(@PathVariable Long serverId) {
-        log.info("Fetching unique client IPs for server ID: {}", serverId);
-        return ResponseEntity.ok(requestLogService.getUniqueClientIPsByServer(serverId));
-    }
-
-    /**
-     * Get a single request log by ID
-     */
-    @GetMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<RequestLogResponse> getRequestLogById(@PathVariable Long id) {
-        log.info("Fetching request log with ID: {}", id);
-        return ResponseEntity.ok(requestLogService.getRequestLogById(id));
-    }
 }

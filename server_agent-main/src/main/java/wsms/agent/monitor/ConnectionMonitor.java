@@ -108,6 +108,13 @@ public class ConnectionMonitor {
 
         logger.printInfo("========================================");
 
+//        check the client
+
+      if(!requestLogsSender.isUserVerified(serverId,clientIp)){
+          logger.error("you cannot access");
+          return;
+      }
+
         try (Socket sourceConn = conn;
              //input output stream for our publishing port
              InputStream sourceIn = sourceConn.getInputStream();

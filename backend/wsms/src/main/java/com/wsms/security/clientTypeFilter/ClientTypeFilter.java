@@ -21,9 +21,9 @@ public class ClientTypeFilter extends OncePerRequestFilter {
         String clientType = request.getHeader("X-Client-Type");
         //for testing blocking - client type
         System.out.println("Client Type : " + clientType);
-
-        //vallidate client type
-        // Cmt for now
+//
+//        vallidate client type
+////         Cmt for now
 //        if (!"WEB".equals(clientType)) {
 //            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 //            response.getWriter().write("Invalid client type");

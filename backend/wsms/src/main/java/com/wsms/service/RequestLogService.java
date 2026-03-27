@@ -2,6 +2,8 @@ package com.wsms.service;
 
 import com.wsms.dto.requestlog.RequestLogResponse;
 import com.wsms.dto.requestlog.RequestLogSubmitRequest;
+import com.wsms.dto.server.ServerResponse;
+import com.wsms.entity.IPBlock;
 import com.wsms.entity.RequestLog;
 import com.wsms.entity.Server;
 import com.wsms.repository.RequestLogRepository;
@@ -25,10 +27,8 @@ public class RequestLogService {
 
     private final RequestLogRepository requestLogRepository;
     private final ServerRepository serverRepository;
+    private final IPBlockService ipBlockService;
 
-    /**
-     * Submit a new request log from the agent
-     */
     public RequestLogResponse submitRequestLog(RequestLogSubmitRequest request) {
         log.info("Submitting request log - Server: {}, Client IP: {}, Method: {}, URL: {}",
                 request.getServerId(), request.getClientIP(), request.getMethod(), request.getUrl());
@@ -48,111 +48,54 @@ public class RequestLogService {
                 .statusCode(request.getStatusCode())
                 .build();
 
+        //create ipblock and save in the ipblock table for the first time
+        String clientIP = requestLog.getClientIP();
+        if(ipBlockService.isClientIP(clientIP,server.getId())){
+             IPBlock ipBlock = ipBlockService.update(server.getId(),clientIP);
+            log.info("Request IPBlock lastRequest updated successfully -ID : {} ",ipBlock.getId());
+
+        }
+        else{
+            IPBlock ipBlock = IPBlock.builder()
+                    .serverId(requestLog.getId())
+                    .clientIp(requestLog.getClientIP())
+                    .serverId(requestLog.getServer().getId())
+                    .status("UNBLOCK")
+                    .lastRequest(LocalDateTime.now())
+                    .build();
+
+            IPBlock savedIPBlock = ipBlockService.save(ipBlock);
+            log.info("Request IPBlock saved successfully -ID : {}",savedIPBlock.getId());
+        }
+
+
         RequestLog savedLog = requestLogRepository.save(requestLog);
         log.info("Request log saved successfully - ID: {}", savedLog.getId());
 
-        return mapToResponse(savedLog);
+        return toResponse(savedLog);
+    }
+    public Page<RequestLogResponse> getByServerId(Long serverId, Pageable pageable) {
+       return requestLogRepository.findByServerId(serverId, pageable)
+                .map(this::toResponse);
     }
 
-    /**
-     * Get paginated request logs for a specific server
-     */
-    public Page<RequestLogResponse> getRequestLogsByServer(Long serverId, Pageable pageable) {
-        return requestLogRepository.findByServerId(serverId, pageable)
-                .map(this::mapToResponse);
+    public Page<RequestLogResponse> getMethodByMethodName(Long serverId,String method, Pageable pageable) {
+       return requestLogRepository.findByServerIdAndMethod(serverId,method,pageable).map(this::toResponse);
     }
 
-    /**
-     * Get recent request logs for a server (latest first)
-     */
-    public List<RequestLogResponse> getRecentRequestLogs(Long serverId, int limit) {
-        List<RequestLog> logs = requestLogRepository.findByServerIdOrderByTimestampDesc(serverId);
-        return logs.stream()
-                .limit(limit)
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
-    }
 
-    /**
-     * Get request logs by client IP address
-     */
-    public Page<RequestLogResponse> getRequestLogsByClientIP(String clientIP, Pageable pageable) {
-        return requestLogRepository.findByClientIP(clientIP, pageable)
-                .map(this::mapToResponse);
-    }
-
-    /**
-     * Get request logs for a server by specific client IP
-     */
-    public Page<RequestLogResponse> getRequestLogsByServerAndClientIP(Long serverId, String clientIP, Pageable pageable) {
-        return requestLogRepository.findByServerIdAndClientIP(serverId, clientIP, pageable)
-                .map(this::mapToResponse);
-    }
-
-    /**
-     * Get request logs by HTTP method
-     */
-    public Page<RequestLogResponse> getRequestLogsByMethod(String method, Pageable pageable) {
-        return requestLogRepository.findByMethod(method, pageable)
-                .map(this::mapToResponse);
-    }
-
-    /**
-     * Get request logs for a server within a time range
-     */
-    public List<RequestLogResponse> getRequestLogsByTimeRange(Long serverId, LocalDateTime startTime, LocalDateTime endTime) {
-        return requestLogRepository.findByServerIdAndTimestampBetween(serverId, startTime, endTime)
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Get request logs by status code
-     */
-    public Page<RequestLogResponse> getRequestLogsByStatusCode(Long serverId, Integer statusCode, Pageable pageable) {
-        return requestLogRepository.findByServerIdAndStatusCode(serverId, statusCode, pageable)
-                .map(this::mapToResponse);
-    }
-
-    /**
-     * Get request count for a server in the last N minutes
-     */
-    public Integer getRequestCountInLastNMinutes(Long serverId, int minutes) {
-        LocalDateTime startTime = LocalDateTime.now().minusMinutes(minutes);
-        return requestLogRepository.countRequestsInTimeRange(serverId, startTime);
-    }
-
-    /**
-     * Get all unique client IPs for a server
-     */
-    public List<String> getUniqueClientIPsByServer(Long serverId) {
-        return requestLogRepository.findDistinctClientIPsByServerId(serverId);
-    }
-
-    /**
-     * Get a single request log by ID
-     */
-    public RequestLogResponse getRequestLogById(Long id) {
-        RequestLog requestLog = requestLogRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Request log not found with ID: " + id));
-        return mapToResponse(requestLog);
-    }
-
-    /**
-     * Map RequestLog entity to response DTO
-     */
-    private RequestLogResponse mapToResponse(RequestLog requestLog) {
+    public RequestLogResponse toResponse(RequestLog requestLog){
         return RequestLogResponse.builder()
                 .id(requestLog.getId())
                 .timestamp(requestLog.getTimestamp())
-                .serverId(requestLog.getServer().getId())
-                .clientIP(requestLog.getClientIP())
-                .method(requestLog.getMethod())
                 .url(requestLog.getUrl())
+                .clientIP(requestLog.getClientIP())
+                .serverId(requestLog.getServer().getId())
+                .method(requestLog.getMethod())
                 .statusCode(requestLog.getStatusCode())
                 .build();
     }
+
+
+
 }

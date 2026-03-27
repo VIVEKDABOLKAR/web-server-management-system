@@ -24,4 +24,6 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
     OSType save(OSType osType);
 
     WebServerType save(WebServerType webServerType);
+
+    boolean existsByIdAndUser_Id(Long serverId, Long userId);
 }

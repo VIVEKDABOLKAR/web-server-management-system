@@ -19,13 +19,9 @@ const Dashboard = () => {
   });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchServers();
-    const interval = setInterval(fetchServers, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchServers = async () => {
+  useEffect(() => { 
+    
+    const fetchServers = async () => {
     setLoading(true);
     try {
       const response = await api.get("/api/servers");
@@ -41,6 +37,10 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+    fetchServers();
+  }, []);
+
+
 
   const stats = useMemo(() => {
     const total = servers.length;
@@ -67,8 +67,7 @@ const Dashboard = () => {
         server.serverName?.toLowerCase().includes(term) ||
         server.ipAddress?.toLowerCase().includes(term) ||
         server.osType?.name?.toLowerCase().includes(term) ||
-        server.webServerType?.name?.toLowerCase().includes(term) ||
-        server.webServerPortNo?.toLowerCase().includes(term),
+        server.webServerType?.name?.toLowerCase().includes(term)
     );
   }, [servers, searchTerm]);
 

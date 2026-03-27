@@ -136,10 +136,9 @@ public class ServerController {
      *
      * @return
      **/
-    private Long getLoggedInUserId() {
+    public Long getLoggedInUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getCurrentUser();
-
         return user.getId();
     }
 
@@ -155,6 +154,7 @@ public class ServerController {
         }
         return "USER";
     }
+
 
     /**
      * private method to create server Response based on the server object

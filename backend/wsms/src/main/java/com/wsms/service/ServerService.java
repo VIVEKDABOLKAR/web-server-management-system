@@ -141,4 +141,8 @@ public class ServerService {
         serverRepository.delete(server);
     }
 
+    public boolean existsByIdAndUserId(Long serverId, Long userId) {
+        boolean exists = serverRepository.existsByIdAndUser_Id(serverId, userId);
+        return  exists;
+    }
 }
