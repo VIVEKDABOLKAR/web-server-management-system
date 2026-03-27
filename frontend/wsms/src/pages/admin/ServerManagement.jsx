@@ -12,7 +12,7 @@ const serverColumns = (navigate, onDelete) => [
   { header: "Name", accessor: "serverName" },
   { header: "IP", accessor: "ipAddress", className: "font-mono" },
   { header: "Status", accessor: "status" },
-  { header: "Owner", accessor: "userId" },
+  { header: "Owner", accessor: "username" },
   {
     header: "Actions",
     align: "text-center",
@@ -25,7 +25,7 @@ const serverColumns = (navigate, onDelete) => [
           View
         </button>
         <button
-          onClick={() => navigate(`/admin/servers/${server.id}`)}
+          onClick={() => navigate(`/admin/editServers/${server.id}`)}
           className="px-3 py-1 rounded border border-green-400 text-green-600 bg-white hover:bg-green-50 transition font-medium"
         >
           Edit

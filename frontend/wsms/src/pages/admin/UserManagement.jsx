@@ -57,8 +57,52 @@ const UserManagement = () => {
     }
   };
 
+  const handleDeleteUser = async (userId) => {
+    try {
+      setUpdatingUserId(userId);
+
+      // const user = userList.find((u) => u.id === userId);
+
+      await api.delete(`/api/admin/users/${userId}`);
+
+      setUserList((prev) =>
+        prev.filter((u) =>
+          u.id !== userId
+        ),
+      );
+
+      toast.success(
+        `User Deleted successfully`,
+      );
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete user");
+    } finally {
+      setUpdatingUserId(null);
+    }
+  }
+
+  const renderDeleteUser = (isUpdating, user) => {
+
+    return (
+      <button
+              disabled={isUpdating}
+              className={`px-3 py-1 rounded border font-medium transition
+                ${
+                  isUpdating
+                    ? "opacity-50 cursor-not-allowed"
+                    :  "border-red-400 text-red-600 bg-white hover:bg-red-50"
+                }`}
+              onClick={() => handleDeleteUser(user.id)}
+            >
+              {isUpdating
+                ? "Updating..."
+                : "delete"}
+            </button>
+    )
+  }
   const userColumns = [
-    { header: "User ID", accessor: "id" },
+    { header: "Username", accessor: "username" },
     {
       header: "Name",
       render: (user) => user.fullName || user.username || "-",
@@ -87,7 +131,7 @@ const UserManagement = () => {
         const isUpdating = updatingUserId === userId;
 
         return (
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-3">
             <button
               disabled={isUpdating}
               className={`px-3 py-1 rounded border font-medium transition
@@ -106,6 +150,8 @@ const UserManagement = () => {
                   ? "Block"
                   : "Activate"}
             </button>
+
+            {renderDeleteUser(isUpdating, user)}
           </div>
         );
       },

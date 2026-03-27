@@ -20,7 +20,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Performance from "./pages/performance/Performance";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ServerSetup from "./pages/server/serverSetup/ServerSetup";
-import AdminAddServer from "./pages/admin/AdminAddServer";
+import AdminAddServer from "./pages/admin/FormsManage/AdminAddServer";
 import UserManagement from "./pages/admin/UserManagement";
 import ServerManagement from "./pages/admin/ServerManagement";
 import EditServer from "./pages/server/EditServer/EditServer";
@@ -137,7 +137,7 @@ function App() {
           }
         />
         <Route
-          path="/admin/servers/:id"
+          path="/admin/editServers/:id"
           element={
             <ProtectedRoute requireAdmin>
               <EditServer />

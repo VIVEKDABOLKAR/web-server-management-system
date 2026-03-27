@@ -90,4 +90,12 @@ public class User {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Server> servers = new ArrayList<>();
+
+    @Builder.Default
+    @Lazy
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<VerificationOtp> verificationOtps = new ArrayList<>();
 }

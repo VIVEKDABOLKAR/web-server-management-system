@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -29,6 +30,18 @@ public class UserController {
     //removed repository use directly into controller
     //added service layer for user module
     private final UserService userService;
+
+    /**
+     * endpoint :- Get /api/users/search?username=xxx ;
+     * req Body :- query parameter username;
+     * res Body :- list of matching users with id, username, email;
+     * Desc :- search users by username for admin server assignment;
+     */
+    @GetMapping("/search")
+    public ResponseEntity<List<Map<String, Object>>> searchUsers(
+            @RequestParam(value = "username", defaultValue = "") String username) {
+        return ResponseEntity.ok(userService.searchUsersByUsername(username));
+    }
 
     /**
      * endpoint :- Get /api/users/profile ;
@@ -61,6 +74,7 @@ public class UserController {
     public ResponseEntity<Map<String,String>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         return ResponseEntity.ok(userService.changePassword(request));
     }
+
 
 
 }
