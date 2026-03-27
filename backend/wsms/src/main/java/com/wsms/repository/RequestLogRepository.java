@@ -1,6 +1,7 @@
 package com.wsms.repository;
 
 import com.wsms.entity.RequestLog;
+import com.wsms.entity.Server;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,7 +38,7 @@ public interface RequestLogRepository extends JpaRepository<RequestLog, Long> {
     /**
      * Find request logs by HTTP method
      */
-    Page<RequestLog> findByMethod(String method, Pageable pageable);
+    Page<RequestLog> findByServerIdAndMethod(Long serverId,String method, Pageable pageable);
 
     /**
      * Find request logs for a server within a time range
@@ -66,4 +67,6 @@ public interface RequestLogRepository extends JpaRepository<RequestLog, Long> {
      */
     @Query("SELECT DISTINCT r.clientIP FROM RequestLog r WHERE r.server.id = :serverId ORDER BY r.clientIP")
     List<String> findDistinctClientIPsByServerId(@Param("serverId") Long serverId);
+
+
 }

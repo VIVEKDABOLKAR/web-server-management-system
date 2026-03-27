@@ -25,7 +25,8 @@ import UserManagement from "./pages/admin/UserManagement";
 import ServerManagement from "./pages/admin/ServerManagement";
 import EditServer from "./pages/server/EditServer/EditServer";
 import AlertsPage from "./AlertsPage";
-
+import RequestLog from "./components/server/RequestLog";
+import IpBlocks from "./components/server/IpBlocks";
 function App() {
   return (
     <Router>
@@ -64,6 +65,22 @@ function App() {
             <AlertsPage />
           </ProtectedRoute>
         } />
+        <Route
+          path="/log"
+          element={
+            <ProtectedRoute>
+              <RequestLog />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ipBlocks"
+          element={
+            <ProtectedRoute>
+              <IpBlocks />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/add-server"
           element={
@@ -137,6 +154,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        
+
       </Routes>
       <ToastContainer
         position="top-right"

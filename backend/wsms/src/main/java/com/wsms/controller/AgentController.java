@@ -1,11 +1,13 @@
 package com.wsms.controller;
 
+import com.wsms.dto.ipblock.IPBlockRequest;
 import com.wsms.dto.metric.MetricResponse;
 import com.wsms.dto.metric.MetricSubmitRequest;
 import com.wsms.dto.requestlog.RequestLogResponse;
 import com.wsms.dto.requestlog.RequestLogSubmitRequest;
 import com.wsms.entity.Server;
 import com.wsms.repository.ServerRepository;
+import com.wsms.service.IPBlockService;
 import com.wsms.service.MetricService;
 import com.wsms.service.RequestLogService;
 import com.wsms.utils.alertSystem.AlertSystem;
@@ -35,6 +37,7 @@ public class AgentController {
         private final AlertSystem alertSystem;
         private final InstallScript installScript;
         private final RequestLogService requestLogService;
+        private final IPBlockService ipBlockService;
 
         @GetMapping(value = "/install.sh", produces = MediaType.TEXT_PLAIN_VALUE)
         public ResponseEntity<String> getInstallScriptTemplate() {
@@ -186,5 +189,14 @@ public class AgentController {
 
                 return ResponseEntity.ok(result);
         }
+
+        @PostMapping("/isBlock")
+        public ResponseEntity<Boolean> isUserVerified(
+                @RequestHeader("Authorization") String authHeader,
+                @RequestBody IPBlockRequest request
+                ){
+                return  ResponseEntity.ok(ipBlockService.isUserVerified(request.getServerId(),request.getClientIp()));
+        }
+
 }
 

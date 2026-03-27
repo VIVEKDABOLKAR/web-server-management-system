@@ -119,7 +119,7 @@ public class Agent {
         while (!stopped.get()) {
             try {
                 TimeUnit.SECONDS.sleep(config.getCollectionInterval().getSeconds());
-                 collectAndSend();
+//                 collectAndSend();
             } catch (Exception e) {
                 Thread.currentThread().interrupt();
                 stop();

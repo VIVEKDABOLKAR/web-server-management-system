@@ -60,4 +60,35 @@ public class RequestLogsSender {
             return false;
         }
     }
+
+    public boolean isUserVerified(String serverId, String clientIp) {
+        try{
+                Map<String,Object> payload = new HashMap<>();
+                payload.put("serverId",serverId);
+                payload.put("clientIp",clientIp);
+
+                String jsonPayload = JsonUtils.toJson(payload);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(backendUrl+"/api/agent/isBlock"))
+                        .header("Content-Type","application/json")
+                        .header("Authorization","Bearer "+authToken)
+                        .timeout(Duration.ofSeconds(5))
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                        .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            //logger.info("response" + response.body());
+
+            boolean isVerified = Boolean.parseBoolean(response.body());
+            return  isVerified;
+
+
+        }
+        catch(Exception e){
+            logger.errorf("Error in verification", e.getMessage());
+            return false;
+        }
+
+    }
 }

@@ -34,7 +34,7 @@ const UserMenuItems = [
     submenu: [
       { label: "Performance", path: "/performance" },
       { label: "Alerts", path: `/alerts` },
-      { label: "Logs", path: "#" },
+      { label: "Logs", path: "/log" },
     ],
   },
   {
@@ -43,7 +43,7 @@ const UserMenuItems = [
     path: "#",
     icon: <SecurityIcon className="w-5 h-5" />,
     submenu: [
-      { label: "Blocked IPs", path: "#" },
+      { label: "Blocked IPs", path: "/ipBlocks" },
       { label: "Access Control", path: "#" },
       { label: "Firewall Rules", path: "#" },
     ],
