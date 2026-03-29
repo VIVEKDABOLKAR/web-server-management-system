@@ -6,6 +6,7 @@ import com.wsms.dto.metric.MetricSubmitRequest;
 import com.wsms.dto.requestlog.RequestLogResponse;
 import com.wsms.dto.requestlog.RequestLogSubmitRequest;
 import com.wsms.entity.Server;
+import com.wsms.entity.ServerStatus;
 import com.wsms.repository.ServerRepository;
 import com.wsms.service.IPBlockService;
 import com.wsms.service.MetricService;
@@ -62,12 +63,12 @@ public class AgentController {
                 @Valid @RequestBody MetricSubmitRequest request) {
 
                 // log server matrics
-                log.info("Received metrics from agent. Server ID: {}, CPU: {}%, Memory: {}%, Disk: {}%, Request: {}%",
-                        request.getServerId(),
-                        request.getCpuUsage(),
-                        request.getMemoryUsage(),
-                        request.getDiskUsage(),
-                        request.getRequestCount());
+//                log.info("Received metrics from agent. Server ID: {}, CPU: {}%, Memory: {}%, Disk: {}%, Request: {}%",
+//                        request.getServerId(),
+//                        request.getCpuUsage(),
+//                        request.getMemoryUsage(),
+//                        request.getDiskUsage(),
+//                        request.getRequestCount());
 
                 // Extract token from "Bearer <token>" format
                 String token = authHeader.replace("Bearer ", "");
@@ -85,10 +86,6 @@ public class AgentController {
                                 HttpStatus.UNAUTHORIZED,
                                 "Invalid agent token");
                 }
-
-                //save hertbeat in db
-                server.setLastHeartbeat(LocalDateTime.now());
-                serverRepository.save(server); // change it into serverService.updateLastHeartBeat
 
                 // Submit metric
                 MetricResponse response = metricService.submitMetric(request);
@@ -135,6 +132,7 @@ public class AgentController {
                                 "Invalid agent token");
                 }
 
+                // create service layer for this :- serverService.updateLastHeatBeat
                 server.setLastHeartbeat(LocalDateTime.now());
                 serverRepository.save(server);
 

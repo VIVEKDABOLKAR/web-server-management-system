@@ -30,6 +30,11 @@ public class MetricSender {
 
     }
 
+    /**
+     * send matrics data to bakendurl
+     * @param metrics
+     * @return
+     */
     public boolean sendMetrics(Metrics metrics) {
         try {
             // Create payload with only required fields
@@ -64,15 +69,15 @@ public class MetricSender {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                logger.info("✓ Metrics sent successfully to backend");
+                logger.info("Metrics sent successfully to backend");
                 return true;
             } else {
-                logger.errorf("✗ Failed to send metrics. Status: %d, Response: %s",
+                logger.errorf(" Failed to send metrics. Status: %d, Response: %s",
                         response.statusCode(), response.body());
                 return false;
             }
         } catch (Exception ex) {
-            logger.errorf("✗ Error sending metrics to backend: %s", ex.getMessage());
+            logger.errorf(" Error sending metrics to backend: %s", ex.getMessage());
             return false;
         }
     }
@@ -81,7 +86,7 @@ public class MetricSender {
         try {
             Map<String, Object> payload = new HashMap<>();
             payload.put("serverId", serverId);
-            payload.put("status", "ACTIVE");
+            payload.put("status", "ACTIVE"); // it is just a single
 
             String jsonPayload = JsonUtils.toJson(payload);
 
@@ -96,14 +101,14 @@ public class MetricSender {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                logger.info("✓ Heartbeat sent successfully");
+                logger.info(" Heartbeat sent successfully");
                 return true;
             } else {
-                logger.errorf("✗ Failed to send heartbeat. Status: %d", response.statusCode());
+                logger.errorf(" Failed to send heartbeat. Status: %d", response.statusCode());
                 return false;
             }
         } catch (Exception ex) {
-            logger.errorf("✗ Error sending heartbeat: %s", ex.getMessage());
+            logger.errorf(" Error sending heartbeat: %s", ex.getMessage());
             return false;
         }
     }

@@ -50,15 +50,15 @@ public class Alert {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private AlertStatus status = AlertStatus.ACTIVE;
+    private AlertStatus status = AlertStatus.OPEN;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double value;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double threshold;
 }

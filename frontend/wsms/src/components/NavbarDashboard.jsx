@@ -1,16 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-import Toast from "./Toast";
-import { useDarkMode } from "../context/DarkModeContext";
 
-const NavbarDashboard = ({ hideDashboard = false }) => {
+import { useDarkMode } from "../context/DarkModeContext";
+import { toast } from "react-toastify";
+import Sidebar from "./sidebar/Sidebar";
+
+const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = false }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const { isDarkMode, toggleDarkMode } = useDarkMode();
-  const [showToast, setShowToast] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
+
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -49,36 +51,52 @@ const NavbarDashboard = ({ hideDashboard = false }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    setShowToast(true);
     setShowDropdown(false);
+    toast.success(
+      "You have been logged out successfully!",
+      {
+        autoClose: 500
+      }
+    )
     setTimeout(() => {
       navigate("/login");
-    }, 1000);
+    }, 1100);
   };
 
   return (
     <>
-      {showToast && (
-        <Toast
-          message="You have been logged out successfully!"
-          type="success"
-          onClose={() => setShowToast(false)}
-        />
-      )}
       <nav className="bg-white dark:bg-slate-900 shadow-md border-b border-gray-200 dark:border-slate-700 sticky top-0 z-50 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div
-              className="flex items-center gap-3 cursor-pointer group"
-              onClick={() => navigate("/dashboard")}
-            >
-              <div className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center shadow group-hover:shadow-lg transition">
-                <span className="text-white font-bold text-xl">W</span>
+            {/* right side navbar */}
+            <div className="flex items-center gap-5">
+
+              {/* sidebar */}
+              {!isOpenSidebar &&
+              <button
+              onClick={toggleOpenSidebar}
+              className="p-2 rounded-lg bg-gray-100 dark:bg-slate-800  border-2
+              hover:bg-gray-200 dark:hover:bg-slate-700
+              text-gray-700 dark:text-gray-300
+              transition duration-200 ease-in-out
+              focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                -
+              </button>
+              }
+
+              {/* Logo */}
+              <div
+                className="flex items-center gap-3 cursor-pointer group"
+                onClick={() => navigate("/dashboard")}
+              >
+                <div className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center shadow group-hover:shadow-lg transition">
+                  <span className="text-white font-bold text-xl">W</span>
+                </div>
+                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  WSMS
+                </span>
               </div>
-              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                WSMS
-              </span>
             </div>
 
             {/* Right side - Dashboard & Profile */}

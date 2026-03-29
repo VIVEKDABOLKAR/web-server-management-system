@@ -1,5 +1,9 @@
 package com.wsms.service;
 
+import com.wsms.entity.Alert;
+import com.wsms.entity.AlertType;
+import com.wsms.entity.Server;
+import com.wsms.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -12,11 +16,63 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-    @Value("${app.mail.enabled:false}")
+    @Value("${app.mail.enabled}")
     private boolean mailEnabled;
 
-    @Value("${app.mail.from:no-reply@example.com}")
+    @Value("${app.mail.from}")
     private String from;
+
+    /**
+     * sendMail Helper Function
+     *
+     */
+    public void sendEmail(String to, String subject, String body) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
+
+        sendEmail(message);
+    }
+    public void sendEmail(SimpleMailMessage message) {
+        mailSender.send(message);
+    }
+
+    public void sendAlert(Alert alert, String email, String severity) {
+        if (!mailEnabled) {
+            System.out.println("[EMAIL DISABLED] Alert :- " + alert.getMessage());
+            return;
+        }
+
+        String subject = "WSMS :- ALERT OCCURED -- " + alert.getMessage();
+
+        String body = """
+            Dear User,
+
+            An alert has been triggered in your WSMS monitoring system.
+
+            Alert Details:
+            -----------------------------------
+            Server      : %s
+            Message     : %s
+            Time        : %s
+            Severity    : %s
+            -----------------------------------
+
+            Please review the system as soon as possible.
+
+            Regards,
+            WSMS Monitoring System
+            """.formatted(
+                alert.getServer().getServerName(),
+                alert.getMessage(),
+                alert.getCreatedAt(),
+                severity
+        );
+
+        sendEmail(email, subject, body);
+    }
 
     public void sendOtp(String to, String otp) {
         String subject = "WSMS Password Reset Code";

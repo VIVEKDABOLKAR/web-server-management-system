@@ -119,7 +119,7 @@ public class Agent {
         while (!stopped.get()) {
             try {
                 TimeUnit.SECONDS.sleep(config.getCollectionInterval().getSeconds());
-//                 collectAndSend();
+                 collectAndSend();
             } catch (Exception e) {
                 Thread.currentThread().interrupt();
                 stop();
@@ -209,10 +209,11 @@ public class Agent {
         m.setServerStatus("ACTIVE");
 
         if (metricSender != null) {
+
             metricSender.sendMetrics(m);
+
+            metricSender.sendHeartbeat();
         }
-
-
     }
 
     private void print(Metrics m) {
