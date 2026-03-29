@@ -1,27 +1,49 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useSignupMutation } from "../../../store/authApi";
+import { toast } from "react-toastify";
 
-const Signup = () => {
+const Signup = ({
+  title = "Sign Up for WSMS",
+  subtitle = "Web Server Monitoring System",
+  showLoginLink = true,
+  buttonText = "Sign Up",
+}) => {
   const [formData, setFormData] = useState({
     username: "",
     fullName: "",
     email: "",
     password: "",
   });
-  const [formError, setFormError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [signup, { isLoading, isSuccess, error }] = useSignupMutation();
+
+
+  const [signup, { isLoading, isSuccess}] =
+    useSignupMutation();
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isSuccess) {
-      return;
-    }
+    if (!isSuccess) return;
 
-    setSuccessMessage("Signup successful. Redirecting to verification...");
-    navigate(`/signup/verify?email=${encodeURIComponent(formData.email)}`);
-  }, [isSuccess, formData.email, navigate]);
+    if (showLoginLink) {
+      toast.success("Signup successful! Redirecting...");
+      navigate(
+        `/signup/verify?email=${encodeURIComponent(formData.email)}`
+      );
+    } else {
+      toast.success("User created successfully!");
+      navigate(
+        `/admin/users`
+      );
+
+      setFormData({
+        username: "",
+        fullName: "",
+        email: "",
+        password: "",
+      });
+    }
+  }, [isSuccess]);
 
   const handleChange = (e) => {
     setFormData({
@@ -32,190 +54,145 @@ const Signup = () => {
 
   const validateForm = () => {
     if (!formData.username || !formData.email || !formData.password) {
-      setFormError("Username, email and password are required");
-      return false;
+      return "Username, email and password are required";
     }
     if (formData.username.length < 3) {
-      setFormError("Username must be at least 3 characters");
-      return false;
+      return "Username must be at least 3 characters";
     }
     if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      setFormError("Please enter a valid email");
-      return false;
+      return "Please enter a valid email";
     }
     if (formData.password.length < 6) {
-      setFormError("Password must be at least 6 characters");
-      return false;
+      return "Password must be at least 6 characters";
     }
-    return true;
+    return null;
   };
 
-  const getApiErrorMessage = () => {
-    if (!error) {
-      return "";
+  const getApiErrorMessage = (err) => {
+    const defaultMessage = showLoginLink
+      ? "Signup failed. Please try again."
+      : "Failed to create user.";
+
+    if (!err) return defaultMessage;
+
+    if (err.status === "FETCH_ERROR") {
+      return "Cannot connect to server.";
     }
 
-    if (error.status === "FETCH_ERROR") {
-      return "Cannot connect to server. Please ensure the backend is running on port 8080.";
+    if (typeof err.data === "string") {
+      return err.data;
     }
 
-    if (typeof error.data === "string") {
-      return error.data;
+    if (err.data?.message) {
+      return err.data.message;
     }
 
-    if (error.data?.message) {
-      return error.data.message;
-    }
-
-    if (typeof error.status === "number") {
-      return `Server error: ${error.status}`;
-    }
-
-    return "Signup failed. Please try again.";
+    return defaultMessage;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormError("");
-    setSuccessMessage("");
 
-    if (!validateForm()) {
+    const validationError = validateForm();
+    if (validationError) {
+      toast.error(validationError);
       return;
     }
 
     try {
-      const payload = {
-        username: formData.username,
-        fullName: formData.fullName,
-        email: formData.email,
-        password: formData.password,
-      };
-
-      await signup(payload).unwrap();
-    } catch {
-      // Handled via RTK Query mutation error state.
+      await signup(formData).unwrap();
+    } catch (err) {
+      const msg = getApiErrorMessage(err);
+      toast.error(msg);
     }
   };
-
-  const apiErrorMessage = getApiErrorMessage();
-  const errorMessage = formError || apiErrorMessage;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-200 via-gray-100 to-zinc-200 dark:bg-slate-900 transition-colors flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md rounded-2xl border border-slate-200/80 bg-white/90 p-8 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.35)] backdrop-blur-sm dark:bg-slate-800 dark:border-slate-700">
-        <h2 className="text-4xl font-bold text-gray-800 dark:text-white text-center mb-2">
-          Sign Up for WSMS
-        </h2>
-        <p className="text-slate-600 dark:text-gray-300 text-center mb-6">
-          Web Server Monitoring System
-        </p>
 
-        {errorMessage && (
-          <div className="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-4">
-            {errorMessage}
-          </div>
+        {title && (
+          <h2 className="text-4xl font-bold text-gray-800 dark:text-white text-center mb-2">
+            {title}
+          </h2>
         )}
 
-        {successMessage && (
-          <div className="bg-green-100 dark:bg-green-900/20 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-400 px-4 py-3 rounded mb-4">
-            {successMessage}
-          </div>
+        {subtitle && (
+          <p className="text-slate-600 dark:text-gray-300 text-center mb-6">
+            {subtitle}
+          </p>
         )}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label
-              htmlFor="username"
-              className="block text-slate-800 dark:text-gray-300 font-semibold mb-2"
-            >
-              Username
-            </label>
+            <label className="block text-slate-800 dark:text-gray-300 font-semibold mb-2">Username</label>
             <input
               type="text"
-              id="username"
               name="username"
               value={formData.username}
               onChange={handleChange}
-              placeholder="Choose a username"
               className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 shadow-sm transition focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-100"
+              placeholder="Enter username"
               required
             />
           </div>
 
           <div className="mb-4">
-            <label
-              htmlFor="fullName"
-              className="block text-slate-800 dark:text-gray-300 font-semibold mb-2"
-            >
-              Full Name
-            </label>
+            <label className="block text-slate-800 dark:text-gray-300 font-semibold mb-2">Full Name</label>
             <input
               type="text"
-              id="fullName"
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              placeholder="Enter your full name (optional)"
               className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 shadow-sm transition focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-100"
+              placeholder="Enter full name (optional)"
             />
           </div>
 
           <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-slate-800 dark:text-gray-300 font-semibold mb-2"
-            >
-              Email
-            </label>
+            <label className="block text-slate-800 dark:text-gray-300 font-semibold mb-2">Email</label>
             <input
               type="email"
-              id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email"
               className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 shadow-sm transition focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-100"
+              placeholder="Enter email"
               required
             />
           </div>
 
           <div className="mb-6">
-            <label
-              htmlFor="password"
-              className="block text-slate-800 dark:text-gray-300 font-semibold mb-2"
-            >
-              Password
-            </label>
+            <label className="block text-slate-800 dark:text-gray-300 font-semibold mb-2">Password</label>
             <input
               type="password"
-              id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Enter your password (min 6 characters)"
               className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder:text-slate-400 shadow-sm transition focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-100 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-100"
+              placeholder="Enter password"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 py-3 text-white font-semibold shadow-lg shadow-cyan-500/25 transition hover:from-cyan-700 hover:to-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isLoading}
+            className="w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 py-3 text-white font-semibold shadow-lg shadow-cyan-500/25 transition hover:from-cyan-700 hover:to-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isLoading ? "Creating account..." : "Sign Up"}
+            {isLoading ? "Creating..." : buttonText}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-slate-600 dark:text-gray-300">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="font-semibold text-cyan-700 hover:text-cyan-800 hover:underline dark:text-blue-400"
-          >
-            Login here
-          </Link>
-        </p>
+       
+        {showLoginLink && (
+          <p className="mt-6 text-center text-slate-600 dark:text-gray-300">
+            Already have an account?{" "}
+            <Link to="/login" className="font-semibold text-cyan-700 hover:text-cyan-800 hover:underline dark:text-blue-400">
+              Login here
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

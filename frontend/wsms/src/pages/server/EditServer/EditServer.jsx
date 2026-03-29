@@ -82,7 +82,6 @@ const EditServer = () => {
           </div>
 
           <AddServerForm
-            title="Edit Server"
             formData={formData}
             osTypes={osTypes.filter((os) => os.active)}
             webServerTypes={webServerTypes.filter((web) => web.active)}

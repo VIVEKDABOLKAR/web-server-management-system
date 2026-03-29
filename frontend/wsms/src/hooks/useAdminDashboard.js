@@ -28,8 +28,26 @@ const useAdminDashboard = () => {
             ? usersRes.value.data
             : [(await api.get("/api/users/profile")).data];
 
-        setServers(Array.isArray(serversData) ? serversData : []);
-        setUsers(Array.isArray(usersData) ? usersData : []);
+        const safeServers = Array.isArray(serversData) ? serversData : [];
+        const safeUsers = Array.isArray(usersData) ? usersData : [];
+
+        // 🔥 Create user map (userId -> username)
+        const userMap = {};
+        safeUsers.forEach((user) => {
+          userMap[user.id] = user.username;
+        });
+
+        // 🔥 Attach username to each server
+        const serversWithUsername = safeServers.map((server) => ({
+          ...server,
+          username: userMap[server.userId] || "Unknown",
+        }));
+
+        console.log(serversWithUsername);
+
+
+        setServers(serversWithUsername);
+        setUsers(safeUsers);
       } catch (err) {
         setError(
           err.response?.data?.message || "Failed to load admin dashboard data"

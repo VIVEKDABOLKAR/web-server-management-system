@@ -1,6 +1,7 @@
 package com.wsms.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,30 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     /**
+     * Search users by username for admin user assignment
+     * Returns list of verified users matching the search term
+     */
+    public List<Map<String, Object>> searchUsersByUsername(String username) {
+        if (username == null || username.trim().isEmpty()) {
+            return List.of();
+        }
+
+        List<User> users = userRepository.searchByUsernameContainingIgnoreCase(username);
+
+        return users.stream()
+                .limit(10) // Limit to 10 results
+                .map(user -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", user.getId());
+                    map.put("username", user.getUsername());
+                    map.put("email", user.getEmail());
+                    map.put("fullName", user.getFullName());
+                    return map;
+                })
+                .toList();
+    }
+
+    /**
      * fetch user profile and server details base on user email
      * 
      * @return
@@ -53,7 +78,7 @@ public class UserService {
                 .email(user.getEmail())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
-                .isVerified(user.getIsVerified())
+                .isVerified(user.isVerified())
                 .totalServers(totalServers)
                 .activeServers(activeServers)
                 .totalAlerts(totalAlerts)
@@ -132,5 +157,10 @@ public class UserService {
 
         return userRepository.findByServersId(serverId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found By server ID"));
+    }
+
+    public void delete(Long userId) {
+
+        userRepository.deleteById(userId);
     }
 }

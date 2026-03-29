@@ -60,6 +60,19 @@ const Login = () => {
       return "Cannot connect to server. Is the backend running on port 8080?";
     }
 
+    if (error.status === 403) {
+      if (
+        typeof error.data === "string" &&
+        error.data.toLowerCase().includes("blocked")
+      ) {
+        return "Your account has been blocked by admin.";
+      }
+
+      if (error.data?.message?.toLowerCase().includes("blocked")) {
+        return "Your account has been blocked by admin.";
+      }
+    }
+
     if (typeof error.data === "string") {
       return error.data;
     }

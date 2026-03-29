@@ -1,15 +1,18 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../components/dashboard/DashboardLayout";
 import Table from "../../components/Table";
 import SectionCard from "../../components/SectionCard";
+import ConfirmDialog from "../../components/ConfirmDialog";
 import useAdminDashboard from "../../hooks/useAdminDashboard";
+import useDeleteServer from "../../hooks/useDeleteServer";
 
-const serverColumns = (navigate) =>  [
+const serverColumns = (navigate, onDelete) => [
   { header: "Server ID", accessor: "id" },
   { header: "Name", accessor: "serverName" },
   { header: "IP", accessor: "ipAddress", className: "font-mono" },
   { header: "Status", accessor: "status" },
-  { header: "Owner", accessor: "userId" },
+  { header: "Owner", accessor: "username" },
   {
     header: "Actions",
     align: "text-center",
@@ -22,15 +25,13 @@ const serverColumns = (navigate) =>  [
           View
         </button>
         <button
-          onClick={() => navigate(`/admin/servers/${server.id}`)}
+          onClick={() => navigate(`/admin/editServers/${server.id}`)}
           className="px-3 py-1 rounded border border-green-400 text-green-600 bg-white hover:bg-green-50 transition font-medium"
         >
           Edit
         </button>
         <button
-          onClick={() => {
-            /* delete logic here */
-          }}
+          onClick={() => onDelete(server)}
           className="px-3 py-1 rounded border border-pink-400 text-pink-600 bg-white hover:bg-pink-50 transition font-medium"
         >
           Delete
@@ -43,6 +44,15 @@ const serverColumns = (navigate) =>  [
 const ServerManagement = () => {
   const navigate = useNavigate();
   const { servers, loading, error } = useAdminDashboard();
+
+  const [serversData, setServersData] = useState([]);
+
+  useEffect(() => {
+    setServersData(servers);
+  }, [servers]);
+
+  const { deleteDialog, openDeleteDialog, closeDeleteDialog, confirmDelete } =
+    useDeleteServer(setServersData);
 
   return (
     <DashboardLayout pageTitle="Admin Dashboard">
@@ -72,10 +82,17 @@ const ServerManagement = () => {
                 </button>
               }
             >
-              <Table columns={serverColumns(navigate)} data={servers} />
+              <Table columns={serverColumns(navigate, openDeleteDialog)} data={serversData} />
             </SectionCard>
           </>
         )}
+        <ConfirmDialog
+          isOpen={deleteDialog.isOpen}
+          onClose={closeDeleteDialog}
+          onConfirm={confirmDelete}
+          title="Delete Server"
+          message={`Delete ${deleteDialog.serverName}?`}
+        />
       </div>
     </DashboardLayout>
   );

@@ -1,5 +1,6 @@
 package com.wsms.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,6 +50,7 @@ public class User {
     @Column(nullable = false, length = 120, unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
@@ -60,10 +62,16 @@ public class User {
     @Builder.Default
     private UserRole role = UserRole.USER; // change by default user.role - ADMIN -> USER
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private UserStatus status = UserStatus.ACTIVE;
+
     @Column(nullable = false)
     @Builder.Default
-    private Boolean isVerified = false;
+    private boolean isVerified = false;
 
+    @JsonIgnore
     @Column(length = 255)
     private String verificationToken;
 
@@ -78,8 +86,16 @@ public class User {
     @Builder.Default
     @Lazy
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Server> servers = new ArrayList<>();
+
+    @Builder.Default
+    @Lazy
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<VerificationOtp> verificationOtps = new ArrayList<>();
 }

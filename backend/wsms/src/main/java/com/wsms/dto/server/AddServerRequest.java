@@ -36,4 +36,6 @@ public class AddServerRequest {
     private Integer webServerPortNo;
 
     private String description;
+
+    private Long userId;
 }

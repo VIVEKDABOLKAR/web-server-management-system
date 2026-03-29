@@ -15,12 +15,12 @@ import VerifySignup from "./pages/auth/signUp/VerifySignup";
 
 import Dashboard from "./pages/user/Dashboard";
 import AllServers from "./pages/server/AllServers/AllServers";
-import ServerDetails from "./pages/server/ServerDetails";
-import AddServer from "./pages/server/AddServer/AddServer";
+  import ServerDetails from "./pages/server/ServerDetails";
+  import AddServer from "./pages/server/AddServer/AddServer";
 import Profile from "./pages/profile/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Performance from "./pages/performance/Performance";
-import AlertsPage from "./pages/alert/AlertsPage";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import ServerSetup from "./pages/server/serverSetup/ServerSetup";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -28,6 +28,9 @@ import AdminAddServer from "./pages/admin/AdminAddServer";
 import UserManagement from "./pages/admin/UserManagement";
 import ServerManagement from "./pages/admin/ServerManagement";
 import EditServer from "./pages/server/EditServer/EditServer";
+import AlertsPage from "./pages/alert/AlertsPage";
+import AdminAddUser from "./pages/admin/AdminAddUser";
+import Logout from "./pages/auth/logout/Logout";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./pages/layout/MainLayout";
@@ -44,6 +47,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/signup/verify" element={<VerifySignup />} />
+        <Route path="/logout" element={<Logout />} />
 
         {/* Protected Routes with Layout */}
         <Route element={<MainLayout />}>
@@ -162,7 +166,7 @@ function App() {
             }
           />
           <Route
-            path="/admin/servers/:id"
+            path="/admin/editServers/:id"
             element={
               <ProtectedRoute requireAdmin>
                 <EditServer />

@@ -5,13 +5,19 @@ import java.util.UUID;
 
 import com.wsms.repository.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.wsms.dto.server.AddServerRequest;
 import com.wsms.entity.*;
+import com.wsms.repository.OSTypeRepo;
+import com.wsms.repository.ServerRepository;
+import com.wsms.repository.UserRepository;
 
+import com.wsms.repository.WebServerTypeRepo;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -25,7 +31,7 @@ public class ServerService {
 
     /**
      * add server to the db
-     * 
+     *
      * @param dto
      * @param userId
      * @return
@@ -38,6 +44,21 @@ public class ServerService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        System.out.println("DTO userId: " + dto.getUserId());
+        // ✅ If ADMIN + userId provided → override user
+        if (isAdmin && dto.getUserId() != null) {
+            user = userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Target user not found"
+                    ));
+        }
         OSType osType = osTypeRepo.findById(dto.getOsType().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OS Type not found"));
 
@@ -59,6 +80,7 @@ public class ServerService {
 
         return serverRepository.save(server);
     }
+
 
     @Transactional
     public Server updateServer(Long id, AddServerRequest dto) {
@@ -91,7 +113,7 @@ public class ServerService {
 
     /**
      * get all server based on the userId
-     * 
+     *
      * @param userId
      * @return
      */
@@ -102,7 +124,7 @@ public class ServerService {
 
     /**
      * get single server based on serverId
-     * 
+     *
      * @param serverId
      * @return
      */
@@ -128,7 +150,7 @@ public class ServerService {
 
     /**
      * delete server from db
-     * 
+     *
      * @param serverId
      * @param userId
      */

@@ -11,14 +11,14 @@ const serverColumns = [
   { header: "Name", accessor: "serverName" },
   { header: "IP", accessor: "ipAddress", className: "font-mono" },
   { header: "Status", accessor: "status" },
-  { header: "Owner", accessor: "userId" },
+  { header: "Owner", accessor: "username" },
 ];
 
 const userColumns = [
   { header: "User ID", accessor: "id" },
   {
     header: "Name",
-    render: (user) => user.fullName || user.username || "-",
+    render: (user) => user.fullName || "-",
   },
   { header: "Email", accessor: "email" },
   {

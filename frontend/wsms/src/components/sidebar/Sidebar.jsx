@@ -55,10 +55,7 @@ const Sidebar = ({ isOpen, toggleOpen }) => {
             isActive={isActive}
             handleLinkClick={handleLinkClick}
           />
-          <SidebarFooter
-            isActive={isActive}
-            handleLinkClick={handleLinkClick}
-          />
+          <SidebarFooter/>
         </div>
       )}
     </>

@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-
+import Toast from "./Toast";
 import { useDarkMode } from "../context/DarkModeContext";
 import { toast } from "react-toastify";
 import Sidebar from "./sidebar/Sidebar";
+import { isAdminToken } from "../utils/auth";
 
 const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = false }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const [showToast, setShowToast] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
 
@@ -61,10 +63,24 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
     setTimeout(() => {
       navigate("/login");
     }, 1100);
+
+  const handleDashboardNavigation = () => {
+    if (isAdminToken(token)) {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/dashboard");
+    }
   };
 
   return (
     <>
+      {showToast && (
+        <Toast
+          message="You have been logged out successfully!"
+          type="success"
+          onClose={() => setShowToast(false)}
+        />
+      )}
       <nav className="bg-white dark:bg-slate-900 shadow-md border-b border-gray-200 dark:border-slate-700 sticky top-0 z-50 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -88,7 +104,7 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
               {/* Logo */}
               <div
                 className="flex items-center gap-3 cursor-pointer group"
-                onClick={() => navigate("/dashboard")}
+                onClick={handleDashboardNavigation}
               >
                 <div className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center shadow group-hover:shadow-lg transition">
                   <span className="text-white font-bold text-xl">W</span>
@@ -104,7 +120,7 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
               <div className="flex items-center gap-4">
                 {!hideDashboard && (
                   <button
-                    onClick={() => navigate("/dashboard")}
+                    onClick={handleDashboardNavigation}
                     className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition hover:bg-blue-50 dark:hover:bg-slate-800 rounded"
                   >
                     Dashboard
@@ -214,50 +230,6 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
                         </div>
                       </div>
 
-                      {/* Stats */}
-                      {userProfile && (
-                        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-slate-800">
-                          <div className="grid grid-cols-3 gap-2 text-center">
-                            <div>
-                              <button
-                                className="text-xl font-bold text-blue-600 hover:underline focus:outline-none"
-                                onClick={() => {
-                                  setShowDropdown(false);
-                                  navigate("/all-servers");
-                                }}
-                              >
-                                {userProfile.totalServers || 0}
-                              </button>
-                              <button
-                                className="text-xs text-gray-600 dark:text-gray-400 hover:underline focus:outline-none"
-                                onClick={() => {
-                                  setShowDropdown(false);
-                                  navigate("/all-servers");
-                                }}
-                              >
-                                Servers
-                              </button>
-                            </div>
-                            <div>
-                              <div className="text-xl font-bold text-green-600 dark:text-green-400">
-                                {userProfile.activeServers || 0}
-                              </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">
-                                Active
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-xl font-bold text-amber-600 dark:text-amber-400">
-                                {userProfile.totalAlerts || 0}
-                              </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">
-                                Alerts
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
                       {/* Menu Items */}
                       <div className="py-2">
                         <button
@@ -288,7 +260,10 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
                           </div>
                         </button>
                         <button
-                          onClick={handleLogout}
+                            onClick={() => {
+                            navigate("/logout");
+                            setShowDropdown(false);
+                          }}
                           className="w-full px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/20 transition flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400"
                         >
                           <svg

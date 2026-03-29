@@ -150,11 +150,11 @@ const Dashboard = () => {
 
   return (
     <>
-      {/* <Navbar hideDashboard={true} /> */}
+      
       <DashboardLayout>
 
         <div className=" bg-slate-100 dark:bg-slate-950 transition-colors">
-          {/* <div className="max-w-7xl mx-auto px-4 py-8"> */}
+         
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
               {/* dashboard title */}
               <div>
@@ -195,7 +195,7 @@ const Dashboard = () => {
               onAdd={() => navigate("/add-server")}
             />
           </div>
-        {/* </div> */}
+        
 
         <ConfirmDialog
           isOpen={deleteDialog.isOpen}

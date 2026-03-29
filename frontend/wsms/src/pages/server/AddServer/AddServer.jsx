@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { isAdminToken } from "../../../utils/auth";
 
 import DashboardLayout from "../../../components/dashboard/DashboardLayout";
 import AddServerForm from "../../../components/server/AddServerForm";
@@ -7,20 +8,19 @@ import AddServerForm from "../../../components/server/AddServerForm";
 import useServerForm from "../../../hooks/useServerForm";
 import useServerTypes from "../../../hooks/useServerTypes";
 
+import useAdminDashboard from "../../../hooks/useAdminDashboard";
+
 const AddServer = () => {
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("token");
 
+  const isAdmin = isAdminToken(token) ? true : false;
+  const { users } = isAdmin ? useAdminDashboard() : { users: [] };
   const { osTypes, webServerTypes } = useServerTypes();
 
-  const {
-    formData,
-    setFormData,
-    handleChange,
-    submit,
-    loading,
-    error,
-  } = useServerForm(navigate);
+  const { formData, setFormData, handleChange, submit, loading, error } =
+    useServerForm(navigate);
 
   useEffect(() => {
     if (osTypes.length > 0 && !formData.osType) {
@@ -31,7 +31,6 @@ const AddServer = () => {
     }
   }, [osTypes]);
 
-
   useEffect(() => {
     if (webServerTypes.length > 0 && !formData.webServerType) {
       setFormData((prev) => ({
@@ -41,11 +40,8 @@ const AddServer = () => {
     }
   }, [webServerTypes]);
 
-
   const handleOSType = (e) => {
-    const selected = osTypes.find(
-      (os) => os.id === Number(e.target.value)
-    );
+    const selected = osTypes.find((os) => os.id === Number(e.target.value));
 
     setFormData((prev) => ({
       ...prev,
@@ -55,7 +51,7 @@ const AddServer = () => {
 
   const handleWebServerType = (e) => {
     const selected = webServerTypes.find(
-      (web) => web.id === Number(e.target.value)
+      (web) => web.id === Number(e.target.value),
     );
 
     setFormData((prev) => ({
@@ -68,7 +64,6 @@ const AddServer = () => {
     <DashboardLayout>
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
         <div className="w-full max-w-3xl px-4">
-
           {/* Header */}
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200">
@@ -82,10 +77,9 @@ const AddServer = () => {
 
           {/* Form */}
           <AddServerForm
-            title="Add Server"
             formData={formData}
-            osTypes={osTypes.filter(os => os.active)}
-            webServerTypes={webServerTypes.filter(web => web.active)}
+            osTypes={osTypes.filter((os) => os.active)}
+            webServerTypes={webServerTypes.filter((web) => web.active)}
             loading={loading}
             error={error}
             success=""
@@ -97,8 +91,9 @@ const AddServer = () => {
               submit();
             }}
             onCancel={() => navigate("/dashboard")}
+            users={users}
+            isAdmin={isAdmin}
           />
-
         </div>
       </div>
     </DashboardLayout>

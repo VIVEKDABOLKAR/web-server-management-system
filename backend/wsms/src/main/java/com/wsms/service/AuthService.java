@@ -1,5 +1,16 @@
 package com.wsms.service;
 
+import java.util.Map;
+
+import com.wsms.entity.UserStatus;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.wsms.dto.auth.AuthResponse;
 import com.wsms.dto.auth.LoginRequest;
 import com.wsms.dto.auth.SignupRequest;
@@ -7,16 +18,8 @@ import com.wsms.entity.User;
 import com.wsms.entity.UserRole;
 import com.wsms.repository.UserRepository;
 import com.wsms.security.JwtService;
-import com.wsms.service.SignupVerificationService;
-import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +67,11 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
 
-        if (!Boolean.TRUE.equals(user.getIsVerified())) {
+        if (user.getStatus() == UserStatus.BLOCKED) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is blocked");
+        }
+
+        if (!Boolean.TRUE.equals(user.isVerified())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Email not verified");
         }
 

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import com.wsms.entity.Server;
 import com.wsms.entity.User;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
+import com.wsms.entity.UserStatus;
 
 @Service
 public class AdminService {
@@ -21,9 +23,6 @@ public class AdminService {
     @Autowired
     private ServerRepository serverRepository;
 
-    /**
-     * Fetch all users and all servers for admin dashboard
-     */
     public Map<String, Object> getDashboardData() {
         Map<String, Object> data = new HashMap<>();
         List<User> users = userRepository.findAll();
@@ -31,5 +30,13 @@ public class AdminService {
         data.put("users", users);
         data.put("servers", servers);
         return data;
+    }
+
+        @Transactional
+        public void updateUserStatus(Long userId, boolean isActive) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        user.setStatus(isActive ? UserStatus.ACTIVE : UserStatus.BLOCKED);
+        userRepository.saveAndFlush(user);
     }
 }

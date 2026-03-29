@@ -6,22 +6,31 @@ import ConfirmDialog from "../../components/ConfirmDialog";
 import StatsCard from "../../components/StatsCard";
 import ServerTable from "../../components/server/ServerTable";
 import DashboardLayout from "../../components/dashboard/DashboardLayout";
+import useDeleteServer from "../../hooks/useDeleteServer";
 
 const Dashboard = () => {
   const [servers, setServers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [deleteDialog, setDeleteDialog] = useState({
-    isOpen: false,
-    serverId: null,
-    serverName: "",
-  });
+
   const navigate = useNavigate();
 
-  useEffect(() => { 
-    
-    const fetchServers = async () => {
+  const {
+    deleteDialog,
+    openDeleteDialog,
+    closeDeleteDialog,
+    confirmDelete,
+  } = useDeleteServer(setServers);
+
+
+  useEffect(() => {
+    fetchServers();
+    const interval = setInterval(fetchServers, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchServers = async () => {
     setLoading(true);
     try {
       const response = await api.get("/api/servers");
@@ -37,10 +46,6 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-    fetchServers();
-  }, []);
-
-
 
   const stats = useMemo(() => {
     const total = servers.length;
@@ -71,25 +76,7 @@ const Dashboard = () => {
     );
   }, [servers, searchTerm]);
 
-  const handleDeleteServer = (serverId, serverName) => {
-    setDeleteDialog({ isOpen: true, serverId, serverName });
-  };
 
-  const confirmDelete = async () => {
-    const { serverId } = deleteDialog;
-    try {
-      await api.delete(`/api/servers/${serverId}`);
-      setServers((prev) =>
-        prev.filter((s) => (s.id || s._id || s.serverId) !== serverId),
-      );
-      setDeleteDialog({ isOpen: false, serverId: null, serverName: "" });
-    } catch (err) {
-      alert(
-        err.response?.data?.message ||
-          "Failed to delete server. Please try again.",
-      );
-    }
-  };
 
   if (loading) {
     return (
@@ -116,11 +103,11 @@ const Dashboard = () => {
             {/* dashboard title */}
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
-                Admin Server Dashboard
+                User Dashboard
               </h1>
               <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                 Visualize system health, manage servers and keep configurations
-                under control with a modern admin UI.
+                under control with a modern UI.
               </p>
             </div>
             {/* add server button :- To Do - create buuton component addserver - reuseability :- DONE*/}
@@ -174,7 +161,7 @@ const Dashboard = () => {
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
             onView={(id) => navigate(`/servers/${id}`)}
-            onDelete={handleDeleteServer}
+            onDelete={openDeleteDialog}
             onAdd={() => navigate("/add-server")}
           />
         </div>
@@ -182,9 +169,8 @@ const Dashboard = () => {
 
         <ConfirmDialog
           isOpen={deleteDialog.isOpen}
-          onClose={() =>
-            setDeleteDialog({ isOpen: false, serverId: null, serverName: "" })
-          }
+               onClose={closeDeleteDialog}
+
           onConfirm={confirmDelete}
           title="Delete Server"
           message={`Are you sure you want to delete ${deleteDialog.serverName || "this server"}?`}
