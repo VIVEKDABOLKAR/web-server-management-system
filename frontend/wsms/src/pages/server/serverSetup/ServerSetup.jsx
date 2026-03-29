@@ -1,150 +1,232 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
-import DashboardLayout from "../../../components/dashboard/DashboardLayout";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import WebTerminal from "../../../components/terminal/WebTerminal";
 import api from "../../../services/api";
+
+const CopyButton = ({ text }) => {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      const el = document.createElement("textarea");
+      el.value = text;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      title={copied ? "Copied!" : "Copy to clipboard"}
+      className="shrink-0 p-1.5 rounded transition text-slate-400 hover:text-white hover:bg-slate-600"
+    >
+      {copied ? (
+        <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+      ) : (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+      )}
+    </button>
+  );
+};
 
 const ServerSetup = () => {
   const { serverId } = useParams();
   const { state } = useLocation();
+  const navigate = useNavigate();
 
   const [scriptUrl, setScriptUrl] = useState(null);
-  const [server, setServer] = useState({
-    ipAddress: "",
-  });
+  const [server, setServer] = useState({ ipAddress: "" });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const serverName = state?.serverName || `Server #${serverId}`;
   const terminalControlRef = useRef(null);
 
-    useEffect(() => {
-    const fetchScriptUrl = async () => {
+  useEffect(() => {
+    let active = true;
+    const fetchAll = async () => {
       try {
-        const res = await api.get(`/api/servers/${serverId}/install-script`);
-        setScriptUrl(res.data);
+        const [scriptRes, serverRes] = await Promise.all([
+          api.get(`/api/servers/${serverId}/install-script`),
+          api.get(`/api/servers/${serverId}`),
+        ]);
+        if (!active) return;
+        setScriptUrl(scriptRes.data);
+        setServer(serverRes.data);
       } catch (err) {
-        setError("Failed to load install script");
+        if (!active) return;
+        setError("Failed to load setup details. Please try again.");
         console.error(err);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
-
-    const fetchServerDetails = async () => {
-    try {
-      const response = await api.get(`/api/servers/${serverId}`);
-      console.log(response.data);
-      
-      setServer(response.data);
-    } catch (err) {
-      setError("Failed to fetch server details");
-      console.error(err);
-    } 
-  };
-    
-    fetchScriptUrl();
-    fetchServerDetails();
+    fetchAll();
+    return () => { active = false; };
   }, [serverId]);
 
   if (loading) {
     return (
-      <DashboardLayout>
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 px-4 py-6">
-          <div className="mx-auto max-w-4xl text-slate-700 dark:text-slate-300 ml-12">
-            Loading setup details...
-          </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent mx-auto mb-3" />
+          <p className="text-sm text-slate-500 dark:text-slate-400">Loading setup details...</p>
         </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
   const instructions = [
     {
+      step: 1,
       title: "SSH into your server",
-      description: "Connect to your server using SSH",
+      description: "Open a terminal and connect to your server via SSH.",
       command: `ssh username@${server.ipAddress}`,
+      warning: null,
     },
     {
-      title: "Download install script",
-      description: "Fetch the installer from the server",
-      command:
-        `curl -fL ${scriptUrl} -o ./install-script.sh`,
+      step: 2,
+      title: "Download the install script",
+      description: "Fetch the installer generated for this server from S3.",
+      command: `curl -fL "${scriptUrl}" -o ./install-script.sh`,
+      warning: null,
     },
     {
-      title: "Make script executable",
-      description: "Add execute permission to the script",
+      step: 3,
+      title: "Make the script executable",
+      description: "Grant execute permission before running.",
       command: "chmod +x install-script.sh",
+      warning: null,
     },
     {
+      step: 4,
       title: "Run the installer",
-      description: "Execute the script to install and start the agent service",
+      description: "This installs and starts the WSMS agent as a background service.",
       command: "./install-script.sh",
+      warning: null,
     },
-     {
-      title: "If error occurs, during installation :- cannot execute: required file not found",
-      description: "becaus of the line ending issue, run the below command to fix it and then re-run the installer",
-      command: "sed -i 's/\r$//' install-script.sh  || dos2unix install-script.sh",
+    {
+      step: 5,
+      title: "Fix line-ending errors (if needed)",
+      description: 'If you see "cannot execute: required file not found", the script has Windows-style line endings. Run this then re-run step 4.',
+      command: "sed -i 's/\\r$//' install-script.sh || dos2unix install-script.sh",
+      warning: "Only needed if the installer fails with a line-ending error.",
     },
   ];
 
   return (
-    <DashboardLayout>
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 px-4 py-6">
-        <div className="mx-auto max-w-4xl">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-6 ml-12">
-            Setup: {serverName}
-          </h1>
-
-          {/* Installation Steps */}
-          <div className="space-y-4 mb-8 ml-12">
-            {instructions.map((step, index) => (
-              <div
-                key={step.title}
-                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-5"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="shrink-0 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">
-                    {index + 1}
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                      {step.title}
-                    </h2>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-                      {step.description}
-                    </p>
-                    <code className="block bg-black text-green-400 p-3 rounded font-mono text-sm mb-3 overflow-x-auto">
-                      {step.command}
-                    </code>
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {/* Summary */}
-            <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-lg p-4">
-              <p className="text-sm text-emerald-900 dark:text-emerald-100">
-                ✓ After the script completes, your agent service will run automatically.
-                <br />
-                ✓ Your server will start sending monitoring data to the dashboard.
-              </p>
-            </div>
-          </div>
-
-          {/* Real-time Terminal */}
-          <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm p-5">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
-              Live Terminal
-            </h2>
-            {error && (
-              <p className="text-sm text-red-600 dark:text-red-400 mb-3">{error}</p>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      {/* Page header */}
+      <div className="flex items-center gap-3 mb-8">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          title="Go back"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Agent Setup</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+            {serverName}
+            {server.ipAddress && (
+              <span className="ml-2 font-mono text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded">
+                {server.ipAddress}
+              </span>
             )}
-            <WebTerminal ref={terminalControlRef} serverId={serverId} />
-          </section>
+          </p>
         </div>
       </div>
-    </DashboardLayout>
+
+      {error && (
+        <div className="mb-6 flex items-start gap-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3">
+          <svg className="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+        </div>
+      )}
+
+      {/* Installation steps */}
+      <section className="mb-8">
+        <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-4">
+          Installation Steps
+        </h2>
+        <div className="space-y-3">
+          {instructions.map((step) => (
+            <div
+              key={step.step}
+              className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-5"
+            >
+              <div className="flex items-start gap-4">
+                <div className="shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  {step.step}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">{step.title}</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">{step.description}</p>
+                  <div className="flex items-center gap-2 bg-slate-900 dark:bg-slate-950 rounded-lg px-4 py-3 font-mono text-sm text-green-400 overflow-x-auto">
+                    <span className="select-all flex-1 whitespace-pre break-all">{step.command}</span>
+                    <CopyButton text={step.command} />
+                  </div>
+                  {step.warning && (
+                    <p className="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                      <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                      </svg>
+                      {step.warning}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 flex items-start gap-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 px-4 py-3">
+          <svg className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div className="text-sm text-emerald-800 dark:text-emerald-200">
+            <p className="font-medium mb-0.5">After setup completes</p>
+            <p className="text-emerald-700 dark:text-emerald-300">The agent service will start automatically and your server will begin sending monitoring data to the dashboard within seconds.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Terminal section */}
+      <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Live Terminal</h2>
+          </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500">
+            Restricted shell — only setup-related commands are allowed
+          </p>
+        </div>
+        <div className="p-5">
+          <WebTerminal ref={terminalControlRef} serverId={serverId} />
+        </div>
+      </section>
+    </div>
   );
 };
 

@@ -63,6 +63,7 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
     setTimeout(() => {
       navigate("/login");
     }, 1100);
+  }
 
   const handleDashboardNavigation = () => {
     if (isAdminToken(token)) {
@@ -297,6 +298,7 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
       </nav>
     </>
   );
+  
 };
 
 export default NavbarDashboard;

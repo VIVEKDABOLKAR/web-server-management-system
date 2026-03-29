@@ -19,8 +19,15 @@ SERVER_NAME="__SERVER_NAME__"
 BACKEND_URL="__BACKEND_URL__"
 COLLECTION_INTERVAL="__COLLECTION_INTERVAL__"
 
+WEB_SERVER_HOST="__WEB_SERVER_HOST__"
+WEB_SERVER_PORT="__WEB_SERVER_PORT__"
+PUBLISH_PORT="__PUBLISH_PORT__"
+WEB_APPLICATION_MONITOR="__WEB_APPLICATION_MONITOR__"
+
 #CREATE ARGS
-AGENT_ARGS=" --configPath=${CONFIG_PATH} --serverId=${SERVER_ID} --agentToken=${AGENT_TOKEN} --serverName=${SERVER_NAME} --backendUrl=${BACKEND_URL} --collectionInterval=${COLLECTION_INTERVAL}"
+AGENT_ARGS=" --configPath=${CONFIG_PATH} --serverId=${SERVER_ID} --agentToken=${AGENT_TOKEN} --serverName=${SERVER_NAME} --backendUrl=${BACKEND_URL} "
+COLLECTION_ARGS=" --collectionInterval=${COLLECTION_INTERVAL} "
+WEB_SERVER_ARGS=" --webServerHost=${WEB_SERVER_HOST} --webServerPort=${WEB_SERVER_PORT} --publishPort=${PUBLISH_PORT} --webApplicationMonitor=${WEB_APPLICATION_MONITOR}"
 
 #install server
 echo "===> Installing Java..."
@@ -46,7 +53,7 @@ After=network.target
 [Service]
 User=root
 WorkingDirectory=${INSTALL_DIR}
-ExecStart=/usr/bin/java -jar ${INSTALL_DIR}/${JAR_NAME} ${AGENT_ARGS}
+ExecStart=/usr/bin/java -jar ${INSTALL_DIR}/${JAR_NAME} ${AGENT_ARGS} ${COLLECTION_ARGS} ${WEB_SERVER_ARGS}
 SuccessExitStatus=143
 Restart=always
 RestartSec=5

@@ -16,7 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 public class AddServerFormController {
 
     private final OSTypeService osTypeService;
@@ -32,23 +31,29 @@ public class AddServerFormController {
         List<WebServerType> allWebServerType = webServerTypeService.getAllWebServerType();
         return ResponseEntity.ok(allWebServerType);
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/ostypes")
     public ResponseEntity<OSType> createOSType(@RequestBody OSType osType) {
         OSType saved = osTypeService.createOSType(osType);
         return ResponseEntity.ok(saved);
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/web-server-types")
     public ResponseEntity<WebServerType> createWebServerType(@RequestBody WebServerType webServerType){
         WebServerType saved = webServerTypeService.createWebServerType(webServerType);
         return ResponseEntity.ok(saved);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/ostypes/{id}")
     public ResponseEntity<OSType> updateOSType(@PathVariable Long id , @RequestBody OSType osType){
        OSType updated = osTypeService.updateOSType(id,osType);
        return ResponseEntity.ok(updated);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/webtypes/{id}")
     public ResponseEntity<WebServerType> updateWebServerType(@PathVariable Long id,@RequestBody WebServerType webServerType){
         WebServerType updated = webServerTypeService.updateWebServerType(id,webServerType);

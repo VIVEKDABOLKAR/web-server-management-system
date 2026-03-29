@@ -33,7 +33,7 @@ public class InstallScript {
     private final S3Service s3Service;
 
     public String generatePublicTemplate() {
-        return renderTemplate("", "", "", "", DEFAULT_COLLECTION_INTERVAL);
+        return renderTemplate("", "", "", "", DEFAULT_COLLECTION_INTERVAL, 7088, 4017, true);
     }
 
     public String generateScript(Server server, String backendUrl) {
@@ -42,17 +42,23 @@ public class InstallScript {
                 server.getAgentToken(),
                 server.getServerName(),
                 backendUrl,
-                DEFAULT_COLLECTION_INTERVAL
+                DEFAULT_COLLECTION_INTERVAL,
+                7088,
+                4017,
+                true
         );
     }
 
-    public String generateScriptAndUpload(Server server, String backendUrl) {
+    public String generateScriptAndUpload(Server server, String backendUrl, int webServerPort, int publishPort, boolean webApplicationMonitor) {
          String renderedTemplate = renderTemplate(
                 String.valueOf(server.getId()),
                 server.getAgentToken(),
                 server.getServerName(),
                 backendUrl,
-                DEFAULT_COLLECTION_INTERVAL
+                DEFAULT_COLLECTION_INTERVAL,
+                webServerPort,
+                publishPort,
+                webApplicationMonitor
         );
 
          //save renderTemplate as install-script-{server.id}.sh
@@ -73,7 +79,10 @@ public class InstallScript {
             String agentToken,
             String serverName,
             String backendUrl,
-            String collectionInterval
+            String collectionInterval,
+            int webServerPort,
+            int publishPort,
+            boolean webApplicationMonitor
     ) {
         String template = readTemplate();
 
@@ -83,7 +92,11 @@ public class InstallScript {
                 .replace("__AGENT_TOKEN__", escapeForDoubleQuotes(agentToken))
                 .replace("__SERVER_NAME__", escapeForDoubleQuotes(serverName))
                 .replace("__BACKEND_URL__", escapeForDoubleQuotes(backendUrl))
-                .replace("__COLLECTION_INTERVAL__", escapeForDoubleQuotes(collectionInterval));
+                .replace("__COLLECTION_INTERVAL__", escapeForDoubleQuotes(collectionInterval))
+                .replace("__WEB_SERVER_HOST__", escapeForDoubleQuotes("::1"))
+                .replace("__WEB_SERVER_PORT__", escapeForDoubleQuotes(String.valueOf(webServerPort)))
+                .replace("__PUBLISH_PORT__", escapeForDoubleQuotes(String.valueOf(publishPort)))
+                .replace("__WEB_APPLICATION_MONITOR__", escapeForDoubleQuotes(String.valueOf(webApplicationMonitor)));
     }
 
     private String readTemplate() {

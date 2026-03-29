@@ -20,11 +20,10 @@ import AllServers from "./pages/server/AllServers/AllServers";
 import Profile from "./pages/profile/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Performance from "./pages/performance/Performance";
-import AdminDashboard from "./pages/admin/AdminDashboard";
 import ServerSetup from "./pages/server/serverSetup/ServerSetup";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminAddServer from "./pages/admin/AdminAddServer";
+import AdminAddServer from "./pages/admin/FormsManage/AdminAddServer";
 import UserManagement from "./pages/admin/UserManagement";
 import ServerManagement from "./pages/admin/ServerManagement";
 import EditServer from "./pages/server/EditServer/EditServer";
@@ -32,7 +31,6 @@ import AlertsPage from "./pages/alert/AlertsPage";
 import AdminAddUser from "./pages/admin/AdminAddUser";
 import Logout from "./pages/auth/logout/Logout";
 
-import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./pages/layout/MainLayout";
 
 import RequestLog from "./components/server/RequestLog";
@@ -173,6 +171,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+                    path="/admin/add-user"
+                    element={
+                      <ProtectedRoute requireAdmin>
+                        <AdminAddUser />
+                      </ProtectedRoute>
+                    }
+                  />
         </Route>
       </Routes>
 

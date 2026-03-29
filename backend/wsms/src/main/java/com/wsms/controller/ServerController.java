@@ -106,7 +106,7 @@ public class ServerController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_PLAIN)
-                .body(installScript.generateScriptAndUpload(server, backendUrl));
+                .body(installScript.generateScriptAndUpload(server, backendUrl, server.getWebServerPortNo(), 4017, true));
     }
 
     /**
