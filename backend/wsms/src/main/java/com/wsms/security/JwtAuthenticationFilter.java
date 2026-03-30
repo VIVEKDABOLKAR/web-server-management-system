@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        return path != null && path.startsWith("/auth/");
+        return path != null && (path.startsWith("/auth/") || path.startsWith("/api/agent/"));
     }
 
     @Override
@@ -40,14 +40,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String jwt = authHeader.substring(7);
-        String email;
-        try {
-            email = jwtService.extractEmail(jwt);
-        } catch (RuntimeException ex) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid or expired JWT token");
-            return;
-        }
+        String email ;
+        email = jwtService.extractEmail(jwt);
+
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
