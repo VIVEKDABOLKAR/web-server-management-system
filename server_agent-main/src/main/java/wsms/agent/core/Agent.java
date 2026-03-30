@@ -42,7 +42,7 @@ public class Agent {
 
     public Agent(Config config) {
         this.config = config;
-        this.logger = new Logger(config.getConfigPath());
+        this.logger = new Logger("");
         this.cpuCollector = new CPUCollector();
         this.memoryCollector = new MemoryCollector();
         this.diskCollector = new DiskCollector("/");

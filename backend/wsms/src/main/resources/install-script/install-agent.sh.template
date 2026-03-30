@@ -4,8 +4,8 @@
 set -e
 
 SERVICE_NAME="server-agent"
-JAR_NAME="server-agent.jar"
-JAR_INSTALL_PATH="https://drive.google.com/uc?export=download&id=14pVkoKjV-yCL88njaBiCOgmTlj1BMNHi"
+JAR_NAME="__JAR_NAME__.jar"
+JAR_INSTALL_PATH="__JAR_URL__"
 INSTALL_DIR="/opt/server-agent"
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 

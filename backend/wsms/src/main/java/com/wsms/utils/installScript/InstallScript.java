@@ -30,6 +30,9 @@ public class InstallScript {
     @Value("${app.agent.jar-url}")
     private String jarUrl;
 
+    @Value("${app.agent.jar-name}")
+    private String jarName;
+
     private final S3Service s3Service;
 
     public String generatePublicTemplate() {
@@ -88,6 +91,7 @@ public class InstallScript {
 
         return template
                 .replace("__JAR_URL__", escapeForDoubleQuotes(jarUrl))
+                .replace("__JAR_NAME__", escapeForDoubleQuotes(jarName))
                 .replace("__SERVER_ID__", escapeForDoubleQuotes(serverId))
                 .replace("__AGENT_TOKEN__", escapeForDoubleQuotes(agentToken))
                 .replace("__SERVER_NAME__", escapeForDoubleQuotes(serverName))
