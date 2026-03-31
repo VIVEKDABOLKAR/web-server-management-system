@@ -372,11 +372,10 @@ const AddServerAdmin = () => {
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => handleToggleOsStatus(os.id)}
-                                  className={`text-xs px-2 py-1 rounded transition font-medium ${
-                                    os.active
+                                  className={`text-xs px-2 py-1 rounded transition font-medium ${os.active
                                       ? "bg-green-100 text-green-700 hover:bg-green-200"
                                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                  }`}
+                                    }`}
                                 >
                                   {os.active ? "Active" : "Inactive"}
                                 </button>
@@ -403,7 +402,7 @@ const AddServerAdmin = () => {
                   <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">
                     Web Server Types
                   </h3>
-                  <span className={`text-xl text-bl transition-transform ${isManageWebServerTypeOpen ? 'rotate-180' : ''}`}>
+                  <span className={`text-xl text-slate-500 transition-transform ${isManageOsTypeOpen ? 'rotate-180' : ''}`}>
                     ▼
                   </span>
                 </button>
@@ -467,11 +466,10 @@ const AddServerAdmin = () => {
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => handleToggleWebStatus(web.id)}
-                                  className={`text-xs px-2 py-1 rounded transition font-medium ${
-                                    web.active
+                                  className={`text-xs px-2 py-1 rounded transition font-medium ${web.active
                                       ? "bg-green-100 text-green-700 hover:bg-green-200"
                                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                  }`}
+                                    }`}
                                 >
                                   {web.active ? "Active" : "Inactive"}
                                 </button>

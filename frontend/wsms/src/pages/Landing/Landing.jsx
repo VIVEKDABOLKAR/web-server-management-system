@@ -16,6 +16,8 @@ import alertIcon from  "../../assets/svg/alert.svg"
 import ipManageIcon from  "../../assets/svg/ipManage.svg"
 import multiIcon from  "../../assets/svg/multi.svg"
 import trackIcon from  "../../assets/svg/track.svg"
+import Moon from "../../components/svg/Moon";
+import Sun from "../../components/svg/Sun";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -76,7 +78,7 @@ const Landing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[rgb(80,82,88)] transition-colors">
+    <div className="min-h-screen bg-blue-300 dark:bg-[rgb(80,82,88)] transition-colors">
       {/* Navigation */}
       <nav className="sticky top-0 left-0 w-full z-50 bg-black/80 backdrop-blur border-b border-white/10  ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -103,10 +105,10 @@ const Landing = () => {
             {/* Auth Buttons */}
             <div className="flex items-center gap-3">
               <Button
-                text={isDarkMode ? "☀️" : "🌙"}
+                text={isDarkMode ? <Sun /> : <Moon />}
                 onClick={toggleDarkMode}
                 title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                className="p-2 text-2xl bg-white/10 hover:bg-white/20"
+                className="p-2 rounded hover:bg-gray-100 dark:hover:bg-slate-800 transition"
                 isDarkMode={isDarkMode}
               />
               <Button text="Login" to="/login" isDarkMode={isDarkMode} className="px-6 py-2  rounded  font-medium text-sm transition" />

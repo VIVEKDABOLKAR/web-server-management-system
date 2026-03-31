@@ -3,10 +3,11 @@ import api from "../services/api"
 
 export const isAdminToken = async() => {
   try{
-    const response = await api.get("/api/admin/is_admin")
+    const response = await api.get("/api/users/is_admin")
     return response.data
 
-  } catch  {
+  } catch (err)  {
+    console.log(err);
     return false  
   }
 }

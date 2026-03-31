@@ -75,14 +75,6 @@ public class AdminController {
         return ResponseEntity.ok("Updated");
     }
 
-    /**
-     * vaild-test for user is admin or not
-     */
-    // @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @GetMapping("/is_admin")
-    @PreAuthorize("hasRole('ADMIN')")
-    public boolean isAdmin() {
-        return true;
-    }
+
 
 }

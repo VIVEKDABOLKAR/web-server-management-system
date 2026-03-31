@@ -27,7 +27,7 @@ const Login = () => {
 
     if (data?.token) {
       localStorage.setItem("token", data.token);
-      setSuccessMessage("Login successful. Redirecting...");
+      setSuccessMessage("Login successful. Loading...");
 
       setTimeout(() => {
         adminCheck();

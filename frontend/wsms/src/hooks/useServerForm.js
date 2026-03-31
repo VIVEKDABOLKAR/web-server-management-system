@@ -48,11 +48,16 @@ const useServerForm = (navigate) => {
 
       if (isEditMode && id) {
         await api.put(`/api/servers/${id}`, payload);
+              navigate("/dashboard");
       } else {
-        await api.post("/api/servers", payload);
+        const response = await api.post("/api/servers", payload);
+        const serverId = response.data.id;
+        console.log(serverId);
+        
+        navigate(`/server-setup/${serverId}`);
       }
 
-      navigate("/admin/servers");
+
     } catch (err) {
       console.error("API ERROR:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Something went wrong");

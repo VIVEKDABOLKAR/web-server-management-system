@@ -5,19 +5,18 @@ import com.wsms.dto.user.UpdateProfileRequest;
 import com.wsms.dto.user.UserProfileResponse;
 import com.wsms.entity.ServerStatus;
 import com.wsms.entity.User;
-import com.wsms.repository.AlertRepository;
-import com.wsms.repository.ServerRepository;
-import com.wsms.repository.UserRepository;
+// ...existing code...
 import com.wsms.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import com.wsms.exception.UserNotFoundException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +39,11 @@ public class UserController {
     @GetMapping("/search")
     public ResponseEntity<List<Map<String, Object>>> searchUsers(
             @RequestParam(value = "username", defaultValue = "") String username) {
-        return ResponseEntity.ok(userService.searchUsersByUsername(username));
+        List<Map<String, Object>> users = userService.searchUsersByUsername(username);
+        if (users.isEmpty()) {
+            throw new UserNotFoundException("No users found with username: " + username);
+        }
+        return ResponseEntity.ok(users);
     }
 
     /**
@@ -75,6 +78,18 @@ public class UserController {
         return ResponseEntity.ok(userService.changePassword(request));
     }
 
+    /**
+     * endpoint :- Get /api/users/is_admin ;
+     * req Body :- null;
+     * res Body :- if admin return true or return false ;
+     * Desc :- vaild-test for user is admin or not
+     */
+    @GetMapping("/is_admin")
+    public ResponseEntity<Boolean> isAdmin(Authentication authentication) {
 
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
 
+        return ResponseEntity.ok(isAdmin);
+    }
 }
