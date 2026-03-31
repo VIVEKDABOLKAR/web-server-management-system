@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -11,6 +12,8 @@ import java.io.IOException;
 
 @Component
 public class ClientTypeFilter extends OncePerRequestFilter {
+    @Value("${app.config.only-allow-ui-req}")
+    private String onlyUiReq;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -24,12 +27,12 @@ public class ClientTypeFilter extends OncePerRequestFilter {
 //
 //        vallidate client type
 ////         Cmt for now
-//        if (!"WEB".equals(clientType)) {
-//            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-//            response.getWriter().write("Invalid client type");
-//            System.out.println("Blocked request from IP: " + request.getRemoteAddr());
-//            return;
-//        }
+       if (onlyUiReq.equals("true") && !"WEB".equals(clientType)) {
+           response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+           response.getWriter().write("Invalid client type");
+           System.out.println("Blocked request from IP: " + request.getRemoteAddr());
+           return;
+       }
 
         filterChain.doFilter(request, response);
     }

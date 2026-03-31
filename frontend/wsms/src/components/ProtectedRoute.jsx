@@ -25,22 +25,22 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
     checkAccess();
   }, [token, requireAdmin]);
 
-  // ⏳ Wait until async check finishes
+  //Wait until async check finishes
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  // ❌ No token → redirect to login
+  //No token → redirect to login
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  // ❌ Admin required but not admin
+  //Admin required but not admin
   if (requireAdmin && !isAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  // ✅ Authorized
+  //Authorized
   return children;
 };
 

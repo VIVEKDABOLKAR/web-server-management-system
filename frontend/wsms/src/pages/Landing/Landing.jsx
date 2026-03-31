@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDarkMode } from "../../context/DarkModeContext";
 import heroLight from "../../assets/hero-light.png";
 import heroDark from "../../assets/hero-dark.png";
