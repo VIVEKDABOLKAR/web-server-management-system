@@ -18,7 +18,7 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
 
   useEffect(() => {
     const fetchAdmin = async () => {
-      setIsAdmin(await isAdmin());
+      setIsAdmin(await isAdminToken());
     }
 
     fetchAdmin()
