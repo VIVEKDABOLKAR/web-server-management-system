@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { isAdminToken } from "../../../utils/auth";
 
@@ -13,14 +13,22 @@ import useAdminDashboard from "../../../hooks/useAdminDashboard";
 const AddServer = () => {
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
-
-  const isAdmin = isAdminToken(token) ? true : false;
-  const { users } = isAdmin ? useAdminDashboard() : { users: [] };
+  const [isAdmin, setIsAdmin] = useState(false);
+  const { users } = useAdminDashboard() 
   const { osTypes, webServerTypes } = useServerTypes();
 
   const { formData, setFormData, handleChange, submit, loading, error } =
     useServerForm(navigate);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if(await isAdminToken()) 
+     setIsAdmin();
+
+    }
+    
+    fetchUser()
+  }, [])
 
   useEffect(() => {
     if (osTypes.length > 0 && !formData.osType) {
@@ -91,7 +99,7 @@ const AddServer = () => {
               submit();
             }}
             onCancel={() => navigate("/dashboard")}
-            users={users}
+            users={isAdmin ? users :  { users: [] }}
             isAdmin={isAdmin}
           />
         </div>

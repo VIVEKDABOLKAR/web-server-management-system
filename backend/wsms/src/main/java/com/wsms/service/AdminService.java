@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.wsms.entity.Server;
 import com.wsms.entity.User;
+import com.wsms.entity.UserRole;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
 import com.wsms.entity.UserStatus;
@@ -37,6 +38,26 @@ public class AdminService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
         user.setStatus(isActive ? UserStatus.ACTIVE : UserStatus.BLOCKED);
+        userRepository.saveAndFlush(user);
+    }
+
+    @Transactional
+    public void updateUserRole(Long userId, String roleValue) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        if (roleValue == null || roleValue.isBlank()) {
+            throw new RuntimeException("Role is required");
+        }
+
+        UserRole role;
+        try {
+            role = UserRole.valueOf(roleValue.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException("Invalid role: " + roleValue);
+        }
+
+        user.setRole(role);
         userRepository.saveAndFlush(user);
     }
 }

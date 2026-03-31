@@ -13,6 +13,7 @@ const UserManagement = () => {
 
   const [userList, setUserList] = useState([]);
   const [updatingUserId, setUpdatingUserId] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
     const normalizedUsers = users.map((u) => ({
@@ -22,6 +23,19 @@ const UserManagement = () => {
 
     setUserList(normalizedUsers);
   }, [users]);
+
+  useEffect(() => {
+    const loadCurrentUser = async () => {
+      try {
+        const response = await api.get("/api/users/profile");
+        setCurrentUserId(response?.data?.id ?? null);
+      } catch (err) {
+        console.error("Failed to load current user profile", err);
+      }
+    };
+
+    loadCurrentUser();
+  }, []);
 
   const handleAddUser = () => {
        navigate(
@@ -82,14 +96,40 @@ const UserManagement = () => {
     }
   }
 
-  const renderDeleteUser = (isUpdating, user) => {
+  const handleToggleRole = async (userId) => {
+    try {
+      setUpdatingUserId(userId);
+
+      const user = userList.find((u) => u.id === userId);
+      const newRole = user?.role === "ADMIN" ? "USER" : "ADMIN";
+
+      await api.put(`/api/admin/users/${userId}/role`, {
+        role: newRole,
+      });
+
+      setUserList((prev) =>
+        prev.map((u) =>
+          u.id === userId ? { ...u, role: newRole } : u,
+        ),
+      );
+
+      toast.success(`User role changed to ${newRole}`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update user role");
+    } finally {
+      setUpdatingUserId(null);
+    }
+  };
+
+  const renderDeleteUser = (isUpdating, isSelf,  user) => {
 
     return (
       <button
-              disabled={isUpdating}
+              disabled={isUpdating || isSelf}
               className={`px-3 py-1 rounded border font-medium transition
                 ${
-                  isUpdating
+                  isUpdating || isSelf
                     ? "opacity-50 cursor-not-allowed"
                     :  "border-red-400 text-red-600 bg-white hover:bg-red-50"
                 }`}
@@ -129,19 +169,21 @@ const UserManagement = () => {
       render: (user) => {
         const userId = user.id;
         const isUpdating = updatingUserId === userId;
+        const isSelf = currentUserId === userId;
 
         return (
           <div className="flex justify-center gap-3">
             <button
-              disabled={isUpdating}
+              disabled={isUpdating || isSelf}
               className={`px-3 py-1 rounded border font-medium transition
                 ${
-                  isUpdating
+                  isUpdating || isSelf
                     ? "opacity-50 cursor-not-allowed"
                     : user.isActive
                       ? "border-red-400 text-red-600 bg-white hover:bg-red-50"
                       : "border-green-400 text-green-600 bg-white hover:bg-green-50"
                 }`}
+              title={isSelf ? "You cannot block yourself" : ""}
               onClick={() => handleToggleActive(userId)}
             >
               {isUpdating
@@ -151,7 +193,27 @@ const UserManagement = () => {
                   : "Activate"}
             </button>
 
-            {renderDeleteUser(isUpdating, user)}
+            <button
+              disabled={isUpdating || isSelf}
+              className={`px-3 py-1 rounded border font-medium transition
+                ${
+                  isUpdating || isSelf
+                    ? "opacity-50 cursor-not-allowed"
+                    : user.role === "ADMIN"
+                      ? "border-amber-400 text-amber-700 bg-white hover:bg-amber-50"
+                      : "border-indigo-400 text-indigo-700 bg-white hover:bg-indigo-50"
+                }`}
+              title={isSelf ? "You cannot change your own role from this page" : ""}
+              onClick={() => handleToggleRole(userId)}
+            >
+              {isUpdating
+                ? "Updating..."
+                : user.role === "ADMIN"
+                  ? "Make User"
+                  : "Make Admin"}
+            </button>
+
+            {renderDeleteUser(isUpdating, isSelf, user)}
           </div>
         );
       },

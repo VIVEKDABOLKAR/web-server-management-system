@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import SidebarHeader from "./SidebarHeader.jsx";
 import SidebarMenu from "./SidebarMenu.jsx";
@@ -11,9 +11,18 @@ import { isAdminToken } from "../../utils/auth";
 const Sidebar = ({ isOpen, toggleOpen }) => {
   const location = useLocation();
   const [expandedMenu, setExpandedMenu] = useState(null);
-  const token = localStorage.getItem("token");
-  const isAdmin = isAdminToken(token);
-  const menuItems = isAdmin ? AdminMenuItems : UserMenuItems;
+
+
+const [menuItems, setMenuItems] = useState([]);
+
+useEffect(() => {
+  const loadMenu = async () => {
+    const isAdmin = await isAdminToken();
+    setMenuItems(isAdmin ? AdminMenuItems : UserMenuItems);
+  };
+
+  loadMenu();
+}, []);
 
   const isActive = (path) => {
     if (path === "#") return false;

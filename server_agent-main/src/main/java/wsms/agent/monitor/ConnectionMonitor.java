@@ -110,10 +110,27 @@ public class ConnectionMonitor {
 
 //        check the client
 
-      if(!requestLogsSender.isUserVerified(serverId,clientIp)){
-          logger.error("you cannot access");
-          return;
-      }
+        if (!requestLogsSender.isUserVerified(serverId, clientIp)) {
+            logger.error("you cannot access");
+
+            try (OutputStream out = conn.getOutputStream()) {
+                String body = "You are blocked by server";
+                String response =
+                        "HTTP/1.1 403 Forbidden\r\n" +
+                                "Content-Type: text/plain\r\n" +
+                                "Content-Length: " + body.length() + "\r\n" +
+                                "\r\n" +
+                                body;
+
+                out.write(response.getBytes());
+                out.flush();
+            } catch (Exception e) {
+                logger.error("Failed to send blocked response", e);
+            } finally {
+                closeSocketQuietly(conn);
+            }
+            return;
+        }
 
         try (Socket sourceConn = conn;
              //input output stream for our publishing port

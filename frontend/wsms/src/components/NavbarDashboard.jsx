@@ -14,6 +14,15 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
   const [showToast, setShowToast] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(null);
+
+  useEffect(() => {
+    const fetchAdmin = async () => {
+      setIsAdmin(await isAdmin());
+    }
+
+    fetchAdmin()
+  }, [])
 
   const dropdownRef = useRef(null);
 
@@ -66,9 +75,14 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
   }
 
   const handleDashboardNavigation = () => {
-    if (isAdminToken(token)) {
-      navigate("/admin/dashboard");
-    } else {
+
+    if(isAdmin === null) {
+      navigate("/dashboard")
+    }
+
+    try {
+      navigate(!isAdmin ?  "/dashboard" : "/admin/dashboard");
+    } catch {
       navigate("/dashboard");
     }
   };
@@ -90,16 +104,16 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
 
               {/* sidebar */}
               {!isOpenSidebar &&
-              <button
-              onClick={toggleOpenSidebar}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-slate-800  border-2
+                <button
+                  onClick={toggleOpenSidebar}
+                  className="p-2 rounded-lg bg-gray-100 dark:bg-slate-800  border-2
               hover:bg-gray-200 dark:hover:bg-slate-700
               text-gray-700 dark:text-gray-300
               transition duration-200 ease-in-out
               focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                -
-              </button>
+                >
+                  -
+                </button>
               }
 
               {/* Logo */}
@@ -261,7 +275,7 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
                           </div>
                         </button>
                         <button
-                            onClick={() => {
+                          onClick={() => {
                             navigate("/logout");
                             setShowDropdown(false);
                           }}
@@ -298,7 +312,7 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
       </nav>
     </>
   );
-  
+
 };
 
 export default NavbarDashboard;

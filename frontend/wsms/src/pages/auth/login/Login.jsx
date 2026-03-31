@@ -14,6 +14,13 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const adminCheck = async () => {
+      if (await isAdminToken()) {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
+    }
     if (!isSuccess) {
       return;
     }
@@ -21,16 +28,18 @@ const Login = () => {
     if (data?.token) {
       localStorage.setItem("token", data.token);
       setSuccessMessage("Login successful. Redirecting...");
-      if (isAdminToken(data.token)) {
-        navigate("/admin/dashboard");
-      } else {
-        navigate("/dashboard");
-      }
+
+      setTimeout(() => {
+        adminCheck();
+      }, 1500); // 1.5 seconds delay
+
       return;
     }
 
     setFormError("No token received from server");
   }, [isSuccess, data, navigate]);
+
+
 
   const handleChange = (e) => {
     setFormData({
