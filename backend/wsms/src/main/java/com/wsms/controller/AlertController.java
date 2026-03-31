@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,7 +41,10 @@ public class AlertController {
      * @return list of alert
      */
     @GetMapping("/server/{id}")
-    public ResponseEntity<List<AlertResponse>> getAlertsByServer(@PathVariable("id") Long serverId) {
+        public ResponseEntity<List<AlertResponse>> getAlertsByServer(
+            @PathVariable("id") Long serverId,
+            @RequestParam(value = "limit", required = false) Integer limit
+        ) {
         //get current user id
         Long userId = getLoggedInUserId();
         String role = getLoggedInUserRole();
@@ -58,10 +62,14 @@ public class AlertController {
 
         //fetch all alert based in serverId
         List<Alert> alerts = alertService.findAllByServerIdOrderByCreatedAtDesc(server);
-        System.out.println(alerts.toString());
-          List<AlertResponse> alertResponses =alerts.stream()
+                System.out.println(alerts.toString());
+                    List<AlertResponse> alertResponses = alerts.stream()
                 .map(this::toResponse)
                 .toList();
+
+                if (limit != null && limit > 0 && alertResponses.size() > limit) {
+                        alertResponses = alertResponses.subList(0, limit);
+                }
         System.out.println(alerts.toString());
         return ResponseEntity.ok(alertResponses);
     }
@@ -81,9 +89,6 @@ public class AlertController {
 
     //get current userId
     private Long getLoggedInUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
         User user = userService.getCurrentUser();
         return user.getId();
     }

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import api from "../../services/api";
 
 const PAGE_BG = "min-h-screen p-4 md:p-6 bg-gradient-to-br from-slate-300 via-cyan-200 to-blue-300 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950";
@@ -67,6 +68,7 @@ const sortAlertsByNewest = (rows) => {
 };
 
 const AlertsPage = ({ serverId }) => {
+  const location = useLocation();
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -75,8 +77,14 @@ const AlertsPage = ({ serverId }) => {
   const [activeStatusFilter, setActiveStatusFilter] = useState("ALL");
   const [activeTypeFilter, setActiveTypeFilter] = useState("ALL");
 
+  const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const highlightedAlertId = searchParams.get("alertId");
+  const queryServerId = searchParams.get("serverId");
+
   const resolvedServerId =
-    serverId && typeof serverId === "object" ? (serverId.id ?? "") : (serverId ?? "");
+    serverId && typeof serverId === "object"
+      ? (serverId.id ?? queryServerId ?? "")
+      : (serverId ?? queryServerId ?? "");
 
   const fetchAlerts = async ({ showLoader = false, showRefreshing = false, signal } = {}) => {
     if (showLoader) setLoading(true);
@@ -166,6 +174,19 @@ const AlertsPage = ({ serverId }) => {
       (alert) => String(alert?.alertType || "").toUpperCase() === activeTypeFilter,
     );
   }
+
+  useEffect(() => {
+    if (!highlightedAlertId || visibleAlerts.length === 0) return;
+
+    const timeoutId = setTimeout(() => {
+      const target = document.getElementById(`alert-row-${highlightedAlertId}`);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 80);
+
+    return () => clearTimeout(timeoutId);
+  }, [highlightedAlertId, visibleAlerts]);
 
   const typeOptions = ["ALL", ...Array.from(typeSet)];
 
@@ -278,6 +299,8 @@ const AlertsPage = ({ serverId }) => {
                 const alertStatusValue = String(alert?.status || "").toUpperCase();
                 const isServerDown = alertTypeValue === "SERVER_DOWN";
                 const isUpdating = updatingAlertId === alert.id;
+                const isHighlighted =
+                  highlightedAlertId && String(alert.id) === String(highlightedAlertId);
                 const cardClass = isServerDown
                   ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20"
                   : "border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/40 hover:bg-cyan-100 dark:hover:bg-slate-800";
@@ -285,8 +308,9 @@ const AlertsPage = ({ serverId }) => {
                 return (
                   <div
                     key={alert.id}
+                    id={`alert-row-${alert.id}`}
                     onClick={() => handleAlertRowClick(alert)}
-                    className={`grid grid-cols-12 gap-x-6 gap-y-2 items-center px-3 md:px-4 py-3 rounded-xl border transition-colors ${cardClass}`}
+                    className={`grid grid-cols-12 gap-x-6 gap-y-2 items-center px-3 md:px-4 py-3 rounded-xl border transition-colors ${cardClass} ${isHighlighted ? "ring-2 ring-cyan-500 dark:ring-cyan-400" : ""}`}
                     title={alert.message}
                   >
                     <div className="col-span-12 md:col-span-2 text-[11px] tracking-wide text-slate-600 dark:text-slate-400 truncate">

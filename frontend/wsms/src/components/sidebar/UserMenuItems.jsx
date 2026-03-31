@@ -44,8 +44,6 @@ const UserMenuItems = [
     icon: <SecurityIcon className="w-5 h-5" />,
     submenu: [
       { label: "Blocked IPs", path: "/ipBlocks" },
-      { label: "Access Control", path: "#" },
-      { label: "Firewall Rules", path: "#" },
     ],
   },
   {
@@ -55,7 +53,7 @@ const UserMenuItems = [
     icon: <SettingsIcon className="w-5 h-5" />,
     submenu: [
       { label: "Profile", path: "/profile" },
-      { label: "Preferences", path: "#" },
+      // { label: "Preferences", path: "#" },
     ],
   },
 ];

@@ -126,8 +126,13 @@ const ServerDetails = () => {
           )}
 
           {/* Alerts and Blocked IPs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <AlertList serverId={id} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <AlertList
+              serverId={id}
+              maxItems={10}
+              fixedHeightClass="h-[420px]"
+              navigateToAlertOnClick
+            />
             <BlockedIpList serverId={id} />
           </div>
         </div>

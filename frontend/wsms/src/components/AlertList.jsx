@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 const statusPillMap = {
@@ -7,11 +8,20 @@ const statusPillMap = {
   CLOSED: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
 };
 
-const AlertList = ({ serverId }) => {
+const AlertList = ({
+  serverId,
+  maxItems = null,
+  fixedHeightClass = "",
+  navigateToAlertOnClick = false,
+}) => {
+  const navigate = useNavigate();
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [updatingAlertId, setUpdatingAlertId] = useState(null);
+
+  const parsedMaxItems = Number(maxItems);
+  const hasLimit = Number.isFinite(parsedMaxItems) && parsedMaxItems > 0;
 
   useEffect(() => {
     fetchAlerts();
@@ -19,13 +29,17 @@ const AlertList = ({ serverId }) => {
 
   const fetchAlerts = async () => {
     try {
-      const response = await api.get(`/api/alerts/server/${serverId}`);
+      const endpoint = hasLimit
+        ? `/api/alerts/server/${serverId}?limit=${parsedMaxItems}`
+        : `/api/alerts/server/${serverId}`;
+      const response = await api.get(endpoint);
       const rows = Array.isArray(response.data) ? response.data : [];
-      setAlerts(
-        [...rows].sort(
-          (a, b) => new Date(b?.createdAt || 0).getTime() - new Date(a?.createdAt || 0).getTime(),
-        ),
+      const sortedRows = [...rows].sort(
+        (a, b) =>
+          new Date(b?.createdAt || 0).getTime() -
+          new Date(a?.createdAt || 0).getTime(),
       );
+      setAlerts(hasLimit ? sortedRows.slice(0, parsedMaxItems) : sortedRows);
       setError("");
     } catch (err) {
       setError("Failed to fetch alerts");
@@ -59,6 +73,11 @@ const AlertList = ({ serverId }) => {
     }
   };
 
+  const openAlertDetails = (alertId) => {
+    if (!navigateToAlertOnClick || !alertId) return;
+    navigate(`/alerts?alertId=${encodeURIComponent(alertId)}&serverId=${encodeURIComponent(serverId)}`);
+  };
+
   if (loading) {
     return (
       <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-lg dark:shadow-slate-900/30">
@@ -73,7 +92,7 @@ const AlertList = ({ serverId }) => {
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg dark:shadow-gray-900/30">
       <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-        Alerts
+        Alerts {hasLimit ? `(latest ${parsedMaxItems})` : ""}
       </h2>
 
       {error && (
@@ -87,11 +106,16 @@ const AlertList = ({ serverId }) => {
           No alerts found
         </p>
       ) : (
-        <div className="space-y-3">
+        <div
+          className={`space-y-3 ${fixedHeightClass ? `${fixedHeightClass} overflow-y-auto pr-1` : ""}`}
+        >
           {alerts.map((alert) => (
             <div
               key={alert.id}
-              className={`border rounded-lg p-4 transition ${String(alert?.alertType || "").toUpperCase() === "SERVER_DOWN" ? "border-red-300 dark:border-red-700 bg-red-50/70 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30" : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"}`}
+              onClick={() => openAlertDetails(alert.id)}
+              role={navigateToAlertOnClick ? "button" : undefined}
+              title={navigateToAlertOnClick ? "Open this alert in Alerts page" : undefined}
+              className={`border rounded-lg p-4 transition ${navigateToAlertOnClick ? "cursor-pointer" : ""} ${String(alert?.alertType || "").toUpperCase() === "SERVER_DOWN" ? "border-red-300 dark:border-red-700 bg-red-50/70 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30" : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"}`}
             >
               <div className="flex justify-between items-start mb-2">
                 <span className="font-semibold text-gray-800 dark:text-gray-200">
@@ -121,7 +145,10 @@ const AlertList = ({ serverId }) => {
                   {String(alert.status || "").toUpperCase() !== "OPEN" && (
                     <button
                       type="button"
-                      onClick={() => updateAlertStatus(alert.id, "OPEN")}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateAlertStatus(alert.id, "OPEN");
+                      }}
                       disabled={updatingAlertId === alert.id}
                       className="px-2.5 py-1 rounded text-xs border border-red-400 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50"
                     >
@@ -131,7 +158,10 @@ const AlertList = ({ serverId }) => {
                   {String(alert.status || "").toUpperCase() === "OPEN" && (
                     <button
                       type="button"
-                      onClick={() => updateAlertStatus(alert.id, "ACKNOWLEDGED")}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateAlertStatus(alert.id, "ACKNOWLEDGED");
+                      }}
                       disabled={updatingAlertId === alert.id}
                       className="px-2.5 py-1 rounded text-xs border border-amber-400 text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 disabled:opacity-50"
                     >
@@ -141,7 +171,10 @@ const AlertList = ({ serverId }) => {
                   {String(alert.status || "").toUpperCase() !== "CLOSED" && (
                     <button
                       type="button"
-                      onClick={() => updateAlertStatus(alert.id, "CLOSED")}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateAlertStatus(alert.id, "CLOSED");
+                      }}
                       disabled={updatingAlertId === alert.id}
                       className="px-2.5 py-1 rounded text-xs border border-green-400 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 disabled:opacity-50"
                     >

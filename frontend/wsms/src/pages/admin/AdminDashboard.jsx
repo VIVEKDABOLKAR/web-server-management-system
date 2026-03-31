@@ -23,7 +23,7 @@ const userColumns = [
   { header: "Email", accessor: "email" },
   {
     header: "Status",
-    render: (user) => (user.isVerified ? "Verified" : "Unverified"),
+    render: (user) => (user.status),
   },
   { header: "Role", accessor: "role" },
 ];
