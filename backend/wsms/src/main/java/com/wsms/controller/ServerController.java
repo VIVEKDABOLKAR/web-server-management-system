@@ -2,6 +2,7 @@ package com.wsms.controller;
 
 import java.util.List;
 
+import com.wsms.service.AdminRuntimeConfigService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 public class ServerController {
 
     private final ServerService serverService;
-    // removed user Repository
+    private final AdminRuntimeConfigService adminRuntimeConfigService;
     private final UserService userService;
     private final InstallScript installScript;
 
@@ -104,9 +105,27 @@ public class ServerController {
         Long userId = getLoggedInUserId();
         Server server = serverService.getServerByIdForUser(serverId, userId);
 
+        String jarUrl = adminRuntimeConfigService.getConfig().getServerAgentJarUrl();
+
+        //convert jarurl to jar name
+        String jarname = null;
+        if (jarUrl != null && jarUrl.contains("/")) {
+            jarname = jarUrl
+                    .substring(jarUrl.lastIndexOf("/") + 1);
+
+            jarname = jarname.substring(0, jarname.lastIndexOf("."));
+        }
+
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_PLAIN)
-                .body(installScript.generateScriptAndUpload(server, backendUrl, server.getWebServerPortNo(), 4017, true));
+                .body(installScript.generateScriptAndUpload(
+                        server,
+                        backendUrl,
+                        server.getWebServerPortNo(),
+                        4017,
+                        jarname,
+                        jarUrl,
+                        true));
     }
 
     /**

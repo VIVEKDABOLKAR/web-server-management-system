@@ -37,7 +37,11 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="p-10 text-center text-gray-500">Loading profile...</div>
+      <DashboardLayout pageTitle="profile">
+        <div className="rounded-2xl border border-slate-200 bg-white/85 p-8 text-center text-slate-500 shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/75 dark:text-slate-300">
+          Loading profile...
+        </div>
+      </DashboardLayout>
     );
   }
 
@@ -71,7 +75,9 @@ const Profile = () => {
 
         <AccountStats profile={profile} />
 
-        <SecuritySection showToast={showToast} />
+        {profile &&
+              <SecuritySection showToast={showToast} />
+        }
 
         {toast && (
           <Toast

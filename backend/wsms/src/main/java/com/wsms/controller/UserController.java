@@ -1,11 +1,13 @@
 package com.wsms.controller;
 
+import com.wsms.dto.admin.AdminRuntimeConfigDto;
 import com.wsms.dto.user.ChangePasswordRequest;
 import com.wsms.dto.user.UpdateProfileRequest;
 import com.wsms.dto.user.UserProfileResponse;
 import com.wsms.entity.ServerStatus;
 import com.wsms.entity.User;
 // ...existing code...
+import com.wsms.service.AdminRuntimeConfigService;
 import com.wsms.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class UserController {
     //removed repository use directly into controller
     //added service layer for user module
     private final UserService userService;
+    private final AdminRuntimeConfigService adminRuntimeConfigService;
 
     /**
      * endpoint :- Get /api/users/search?username=xxx ;
@@ -92,4 +95,16 @@ public class UserController {
 
         return ResponseEntity.ok(isAdmin);
     }
+
+    /**
+     * endpoint :- Get /api/users/config ;
+     * req Body :- null;
+     * res Body :- return config ;
+     * Desc :- fetch ui config from db
+     */
+    @GetMapping("/config")
+    public ResponseEntity<AdminRuntimeConfigDto> getConfig() {
+        return ResponseEntity.ok(adminRuntimeConfigService.getConfig());
+    }
+
 }

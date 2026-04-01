@@ -15,8 +15,8 @@ import VerifySignup from "./pages/auth/signUp/VerifySignup";
 
 import Dashboard from "./pages/user/Dashboard";
 import AllServers from "./pages/server/AllServers/AllServers";
-  import ServerDetails from "./pages/server/ServerDetails";
-  import AddServer from "./pages/server/AddServer/AddServer";
+import ServerDetails from "./pages/server/ServerDetails";
+import AddServer from "./pages/server/AddServer/AddServer";
 import Profile from "./pages/profile/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Performance from "./pages/performance/Performance";
@@ -35,6 +35,7 @@ import MainLayout from "./pages/layout/MainLayout";
 
 import RequestLog from "./components/server/RequestLog";
 import IpBlocks from "./components/server/IpBlocks";
+import AdminConfig from "./pages/admin/config/AdminConfig";
 function App() {
   return (
     <Router>
@@ -81,22 +82,22 @@ function App() {
               </ProtectedRoute>
             }
           />
-           <Route
-                    path="/log"
-                    element={
-                      <ProtectedRoute>
-                        <RequestLog />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/ipBlocks"
-                    element={
-                      <ProtectedRoute>
-                        <IpBlocks />
-                      </ProtectedRoute>
-                    }
-                  />
+          <Route
+            path="/log"
+            element={
+              <ProtectedRoute>
+                <RequestLog />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ipBlocks"
+            element={
+              <ProtectedRoute>
+                <IpBlocks />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/add-server"
             element={
@@ -173,14 +174,23 @@ function App() {
           />
 
           <Route
-                    path="/admin/add-user"
-                    element={
-                      <ProtectedRoute requireAdmin>
-                        <AdminAddUser />
-                      </ProtectedRoute>
-                    }
-                  />
+            path="/admin/add-user"
+            element={
+              <ProtectedRoute requireAdmin>
+                <AdminAddUser />
+              </ProtectedRoute>
+            }
+          />
+          <Route 
+            path="/admin/config"
+            element={
+              <ProtectedRoute requireAdmin>
+                <AdminConfig />
+              </ProtectedRoute>
+            }
+          />
         </Route>
+
       </Routes>
 
       <ToastContainer
