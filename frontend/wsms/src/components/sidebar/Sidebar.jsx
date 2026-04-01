@@ -12,22 +12,40 @@ const Sidebar = ({ isOpen, toggleOpen }) => {
   const location = useLocation();
   const [expandedMenu, setExpandedMenu] = useState(null);
 
+  const [menuItems, setMenuItems] = useState([]);
 
-const [menuItems, setMenuItems] = useState([]);
+  useEffect(() => {
+    const loadMenu = async () => {
+      const isAdmin = await isAdminToken();
+      setMenuItems(isAdmin ? AdminMenuItems : UserMenuItems);
+    };
 
-useEffect(() => {
-  const loadMenu = async () => {
-    const isAdmin = await isAdminToken();
-    setMenuItems(isAdmin ? AdminMenuItems : UserMenuItems);
-  };
-
-  loadMenu();
-}, []);
+    loadMenu();
+  }, []);
 
   const isActive = (path) => {
     if (path === "#") return false;
     return location.pathname === path || location.pathname.startsWith(path);
   };
+
+  // Keep submenu open if current route matches any submenu item
+  useEffect(() => {
+    if (menuItems && menuItems.length > 0) {
+      const found = menuItems.find((item) => {
+        if (item.submenu) {
+          return item.submenu.some(
+            (sub) =>
+              location.pathname === sub.path ||
+              location.pathname.startsWith(sub.path),
+          );
+        }
+        return false;
+      });
+      if (found) {
+        setExpandedMenu(found.id);
+      }
+    }
+  }, [location.pathname, menuItems]);
 
   const toggleSubmenu = (id) => {
     setExpandedMenu(expandedMenu === id ? null : id);
@@ -41,20 +59,19 @@ useEffect(() => {
     <>
       {/* hamburger icon */}
       {!isOpen ? (
-        <>
-        </>
+        <></>
       ) : (
         <div
           className={`
-                        fixed md:relative left-0 top-0 h-screen w-64 z-50 md:z-0
-                        bg-linear-to-b from-slate-500 to-slate-300 dark:from-slate-900 dark:to-slate-950 bg-fixed
-                        border-r border-slate-200 dark:border-slate-700
-                        shadow-2xl md:shadow-none
-                        rounded-r-xl
-                        transform transition-transform duration-300 ease-in-out
-                        ${isOpen ? "translate-x-0" : "-translate-x-full"}
-                        flex flex-col overflow-y-auto
-                    `}
+            fixed md:relative left-0 top-0 h-screen w-64 z-50 md:z-0
+            bg-white dark:bg-slate-900
+            border-r border-slate-200 dark:border-slate-700
+            shadow-xl md:shadow-none
+            rounded-r-2xl
+            transform transition-transform duration-300 ease-in-out
+            ${isOpen ? "translate-x-0" : "-translate-x-full"}
+            flex flex-col overflow-y-auto
+          `}
         >
           <SidebarHeader toggleOpen={toggleOpen} />
           <SidebarMenu
@@ -64,7 +81,7 @@ useEffect(() => {
             isActive={isActive}
             handleLinkClick={handleLinkClick}
           />
-          <SidebarFooter/>
+          <SidebarFooter />
         </div>
       )}
     </>

@@ -34,7 +34,6 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const response = await api.get("/api/servers");
-      console.log(response.data[1]);
       const serverData = Array.isArray(response.data)
         ? response.data
         : response.data?.data || [];
@@ -61,9 +60,6 @@ const Dashboard = () => {
     return { total, active, inactive, blocked };
   }, [servers]);
 
-  /**
-   *  const which change it value when Server or searchTerm change
-   */
   const filteredServers = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) return servers;
@@ -110,7 +106,7 @@ const Dashboard = () => {
                 under control with a modern UI.
               </p>
             </div>
-            {/* add server button :- To Do - create buuton component addserver - reuseability :- DONE*/}
+        
             <AddButton
               title="New Server"
               onClick={() => navigate("/add-server")}

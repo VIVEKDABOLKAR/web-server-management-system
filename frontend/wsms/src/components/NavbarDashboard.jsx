@@ -9,7 +9,11 @@ import { isAdminToken } from "../utils/auth";
 import Sun from "./svg/Sun";
 import Moon from "./svg/Moon";
 
-const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = false }) => {
+const NavbarDashboard = ({
+  toggleOpenSidebar,
+  isOpenSidebar,
+  hideDashboard = false,
+}) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const { isDarkMode, toggleDarkMode } = useDarkMode();
@@ -21,10 +25,10 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
   useEffect(() => {
     const fetchAdmin = async () => {
       setIsAdmin(await isAdminToken());
-    }
+    };
 
-    fetchAdmin()
-  }, [])
+    fetchAdmin();
+  }, []);
 
   const dropdownRef = useRef(null);
 
@@ -65,25 +69,21 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
   const handleLogout = () => {
     localStorage.removeItem("token");
     setShowDropdown(false);
-    toast.success(
-      "You have been logged out successfully!",
-      {
-        autoClose: 500
-      }
-    )
+    toast.success("You have been logged out successfully!", {
+      autoClose: 500,
+    });
     setTimeout(() => {
       navigate("/login");
     }, 1100);
-  }
+  };
 
   const handleDashboardNavigation = () => {
-
-    if(isAdmin === null) {
-      navigate("/dashboard")
+    if (isAdmin === null) {
+      navigate("/dashboard");
     }
 
     try {
-      navigate(!isAdmin ?  "/dashboard" : "/admin/dashboard");
+      navigate(!isAdmin ? "/dashboard" : "/admin/dashboard");
     } catch {
       navigate("/dashboard");
     }
@@ -103,9 +103,8 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
           <div className="flex justify-between items-center h-16">
             {/* right side navbar */}
             <div className="flex items-center gap-5">
-
               {/* sidebar */}
-              {!isOpenSidebar &&
+              {!isOpenSidebar && (
                 <button
                   onClick={toggleOpenSidebar}
                   className="p-2 rounded-lg bg-gray-100 dark:bg-slate-800  border-2
@@ -116,17 +115,17 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
                 >
                   -
                 </button>
-              }
+              )}
 
               {/* Logo */}
               <div
-                className="flex items-center gap-3 cursor-pointer group"
+                className="flex items-center gap-2 cursor-pointer group"
                 onClick={handleDashboardNavigation}
               >
-                <div className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center shadow group-hover:shadow-lg transition">
-                  <span className="text-white font-bold text-xl">W</span>
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow transition">
+                  <span className="text-white font-bold text-lg">W</span>
                 </div>
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                <span className="text-xl font-bold text-blue-600 dark:text-blue-400 tracking-wide">
                   WSMS
                 </span>
               </div>
@@ -152,11 +151,7 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
                     isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
                   }
                 >
-                  {isDarkMode ? (
-                    <Sun />
-                  ) : (
-                    <Moon />
-                  )}
+                  {isDarkMode ? <Sun /> : <Moon />}
                 </button>
 
                 {/* Profile Dropdown */}
@@ -290,7 +285,6 @@ const NavbarDashboard = ({ toggleOpenSidebar, isOpenSidebar, hideDashboard = fal
       </nav>
     </>
   );
-
 };
 
 export default NavbarDashboard;

@@ -2,11 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import api from "../../services/api";
 
-const PAGE_BG = "min-h-screen p-4 md:p-6 bg-gradient-to-br from-slate-300 via-cyan-200 to-blue-300 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950";
-const PANEL_BG = "rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/95 dark:bg-slate-900 shadow-xl overflow-hidden";
+const PAGE_BG = "min-h-screen p-4 md:p-6 bg-slate-100 dark:bg-slate-900";
+const PANEL_BG =
+  "rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl overflow-hidden";
 
 const getMessageText = (alert) => {
-  if (typeof alert?.message === "string" && alert.message.trim()) return alert.message.trim();
+  if (typeof alert?.message === "string" && alert.message.trim())
+    return alert.message.trim();
   return "No message";
 };
 
@@ -19,7 +21,8 @@ const getMetricData = (alert) => {
 };
 
 const getSeverity = (alertType, hasMetrics, diff) => {
-  if (String(alertType || "").toUpperCase() === "SERVER_DOWN") return "critical";
+  if (String(alertType || "").toUpperCase() === "SERVER_DOWN")
+    return "critical";
   if (!hasMetrics) return "normal";
   if (diff > 20) return "critical";
   if (diff > 0) return "warning";
@@ -27,9 +30,12 @@ const getSeverity = (alertType, hasMetrics, diff) => {
 };
 
 const severityClassMap = {
-  critical: "bg-rose-200 border border-rose-400 text-rose-800 dark:bg-rose-900/30 dark:border-rose-700/60 dark:text-rose-300",
-  warning: "bg-amber-200 border border-amber-400 text-amber-800 dark:bg-amber-900/30 dark:border-amber-700/60 dark:text-amber-300",
-  normal: "bg-emerald-200 border border-emerald-400 text-emerald-800 dark:bg-emerald-900/30 dark:border-emerald-700/60 dark:text-emerald-300",
+  critical:
+    "bg-rose-200 border border-rose-400 text-rose-800 dark:bg-rose-900/30 dark:border-rose-700/60 dark:text-rose-300",
+  warning:
+    "bg-amber-200 border border-amber-400 text-amber-800 dark:bg-amber-900/30 dark:border-amber-700/60 dark:text-amber-300",
+  normal:
+    "bg-emerald-200 border border-emerald-400 text-emerald-800 dark:bg-emerald-900/30 dark:border-emerald-700/60 dark:text-emerald-300",
 };
 
 const statusPillMap = {
@@ -77,7 +83,10 @@ const AlertsPage = ({ serverId }) => {
   const [activeStatusFilter, setActiveStatusFilter] = useState("ALL");
   const [activeTypeFilter, setActiveTypeFilter] = useState("ALL");
 
-  const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search],
+  );
   const highlightedAlertId = searchParams.get("alertId");
   const queryServerId = searchParams.get("serverId");
 
@@ -86,12 +95,18 @@ const AlertsPage = ({ serverId }) => {
       ? (serverId.id ?? queryServerId ?? "")
       : (serverId ?? queryServerId ?? "");
 
-  const fetchAlerts = async ({ showLoader = false, showRefreshing = false, signal } = {}) => {
+  const fetchAlerts = async ({
+    showLoader = false,
+    showRefreshing = false,
+    signal,
+  } = {}) => {
     if (showLoader) setLoading(true);
     if (showRefreshing) setRefreshing(true);
 
     try {
-      const endpoint = resolvedServerId ? `/api/alerts/server/${resolvedServerId}` : "/api/alerts";
+      const endpoint = resolvedServerId
+        ? `/api/alerts/server/${resolvedServerId}`
+        : "/api/alerts";
       const response = await api.get(endpoint, { signal });
       const rows = Array.isArray(response.data) ? response.data : [];
       setAlerts(sortAlertsByNewest(rows));
@@ -166,12 +181,14 @@ const AlertsPage = ({ serverId }) => {
   let visibleAlerts = alerts;
   if (activeStatusFilter !== "ALL") {
     visibleAlerts = visibleAlerts.filter(
-      (alert) => String(alert?.status || "").toUpperCase() === activeStatusFilter,
+      (alert) =>
+        String(alert?.status || "").toUpperCase() === activeStatusFilter,
     );
   }
   if (activeTypeFilter !== "ALL") {
     visibleAlerts = visibleAlerts.filter(
-      (alert) => String(alert?.alertType || "").toUpperCase() === activeTypeFilter,
+      (alert) =>
+        String(alert?.alertType || "").toUpperCase() === activeTypeFilter,
     );
   }
 
@@ -196,8 +213,12 @@ const AlertsPage = ({ serverId }) => {
     return (
       <div className={PAGE_BG}>
         <div className="mx-auto max-w-7xl rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/95 dark:bg-slate-900 p-8 shadow-lg">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Alerts</h2>
-          <p className="text-slate-500 dark:text-slate-400">Loading alerts...</p>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+            Alerts
+          </h2>
+          <p className="text-slate-500 dark:text-slate-400">
+            Loading alerts...
+          </p>
         </div>
       </div>
     );
@@ -206,30 +227,48 @@ const AlertsPage = ({ serverId }) => {
   return (
     <div className={PAGE_BG}>
       <div className={`mx-auto max-w-7xl ${PANEL_BG}`}>
-        <div className="px-5 md:px-6 py-5 bg-gradient-to-r from-slate-800 via-cyan-700 to-blue-800 dark:from-slate-900 dark:via-slate-800 dark:to-cyan-900 text-white">
-          <h2 className="text-2xl font-bold tracking-tight">Alert Stream</h2>
-          <p className="text-sm text-cyan-100 dark:text-slate-200 mt-1">
+        <div className="px-5 md:px-6 py-5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Alert Stream
+          </h2>
+          <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
             Monitor CPU, memory, disk and server-down incidents in one place.
           </p>
         </div>
 
         <div className="p-4 md:p-5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-            <div className="rounded-xl border border-slate-300 dark:border-slate-700 p-3 bg-white dark:bg-slate-800">
-              <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Total</p>
-              <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{alerts.length}</p>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-3 bg-white dark:bg-slate-900">
+              <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Total
+              </p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                {alerts.length}
+              </p>
             </div>
-            <div className="rounded-xl border border-red-300 dark:border-red-700 p-3 bg-red-50 dark:bg-red-900/20">
-              <p className="text-xs uppercase tracking-wide text-red-700 dark:text-red-300">Open</p>
-              <p className="text-2xl font-bold text-red-700 dark:text-red-300">{statusCount.OPEN}</p>
+            <div className="rounded-xl border border-red-200 dark:border-red-800 p-3 bg-red-50 dark:bg-red-900/20">
+              <p className="text-xs uppercase tracking-wide text-red-700 dark:text-red-300">
+                Open
+              </p>
+              <p className="text-2xl font-bold text-red-700 dark:text-red-300">
+                {statusCount.OPEN}
+              </p>
             </div>
-            <div className="rounded-xl border border-amber-300 dark:border-amber-700 p-3 bg-amber-50 dark:bg-amber-900/20">
-              <p className="text-xs uppercase tracking-wide text-amber-700 dark:text-amber-300">Acknowledged</p>
-              <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">{statusCount.ACKNOWLEDGED}</p>
+            <div className="rounded-xl border border-amber-200 dark:border-amber-800 p-3 bg-amber-50 dark:bg-amber-900/20">
+              <p className="text-xs uppercase tracking-wide text-amber-700 dark:text-amber-300">
+                Acknowledged
+              </p>
+              <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">
+                {statusCount.ACKNOWLEDGED}
+              </p>
             </div>
-            <div className="rounded-xl border border-emerald-300 dark:border-emerald-700 p-3 bg-emerald-50 dark:bg-emerald-900/20">
-              <p className="text-xs uppercase tracking-wide text-emerald-700 dark:text-emerald-300">Closed</p>
-              <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{statusCount.CLOSED}</p>
+            <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 p-3 bg-emerald-50 dark:bg-emerald-900/20">
+              <p className="text-xs uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                Closed
+              </p>
+              <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
+                {statusCount.CLOSED}
+              </p>
             </div>
           </div>
 
@@ -290,20 +329,26 @@ const AlertsPage = ({ serverId }) => {
               </div>
 
               {visibleAlerts.map((alert) => {
-                const { hasMetrics, value, threshold, diff } = getMetricData(alert);
+                const { hasMetrics, value, threshold, diff } =
+                  getMetricData(alert);
                 const messageText = getMessageText(alert);
                 const severity = getSeverity(alert.alertType, hasMetrics, diff);
                 const severityClass = severityClassMap[severity];
                 const statusClass = getStatusClass(alert.status);
-                const alertTypeValue = String(alert?.alertType || "").toUpperCase();
-                const alertStatusValue = String(alert?.status || "").toUpperCase();
+                const alertTypeValue = String(
+                  alert?.alertType || "",
+                ).toUpperCase();
+                const alertStatusValue = String(
+                  alert?.status || "",
+                ).toUpperCase();
                 const isServerDown = alertTypeValue === "SERVER_DOWN";
                 const isUpdating = updatingAlertId === alert.id;
                 const isHighlighted =
-                  highlightedAlertId && String(alert.id) === String(highlightedAlertId);
+                  highlightedAlertId &&
+                  String(alert.id) === String(highlightedAlertId);
                 const cardClass = isServerDown
-                  ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20"
-                  : "border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/40 hover:bg-cyan-100 dark:hover:bg-slate-800";
+                  ? "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20"
+                  : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800";
 
                 return (
                   <div
@@ -323,12 +368,16 @@ const AlertsPage = ({ serverId }) => {
                       {normalizeTypeLabel(alert.alertType)}
                     </div>
                     <div className="col-span-6 md:col-span-1">
-                      <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${statusClass}`}>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${statusClass}`}
+                      >
                         {String(alert.status || "unknown").toUpperCase()}
                       </span>
                     </div>
                     <div className="col-span-6 md:col-span-1">
-                      <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase ${severityClass}`}>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase ${severityClass}`}
+                      >
                         {severity}
                       </span>
                     </div>
@@ -342,7 +391,12 @@ const AlertsPage = ({ serverId }) => {
                         </span>
                       ) : null}
                       {hasMetrics ? (
-                        <span className="text-slate-600 dark:text-slate-400"> | {value.toFixed(2)}/{threshold.toFixed(2)} ({diff > 0 ? "+" : ""}{diff.toFixed(2)})</span>
+                        <span className="text-slate-600 dark:text-slate-400">
+                          {" "}
+                          | {value.toFixed(2)}/{threshold.toFixed(2)} (
+                          {diff > 0 ? "+" : ""}
+                          {diff.toFixed(2)})
+                        </span>
                       ) : null}
                     </div>
 
@@ -384,6 +438,5 @@ const AlertsPage = ({ serverId }) => {
     </div>
   );
 };
-
 
 export default AlertsPage;
