@@ -36,16 +36,19 @@ const Profile = () => {
   };
 
   if (loading) {
-    return <div className="p-10 text-center text-gray-500">Loading profile...</div>;
+    return (
+      <div className="p-10 text-center text-gray-500">Loading profile...</div>
+    );
   }
 
   return (
     <DashboardLayout pageTitle="profile">
-      <div className="min-h-screen bg-gray-50">
-
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">User Profile</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+            User Profile
+          </h1>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">
             Manage your account information and security settings.
           </p>
         </div>
