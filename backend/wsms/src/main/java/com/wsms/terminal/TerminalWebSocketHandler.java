@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 @Component
@@ -68,15 +69,17 @@ public class TerminalWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        WebSocketSession safeSession = new ConcurrentWebSocketSessionDecorator(session, 5_000, 512 * 1024);
         PtyProcess process = createProcess();
         Thread outputReader = Thread.ofVirtual()
                 .name("terminal-output-" + session.getId())
-                .start(() -> pumpProcessOutput(session, process));
-        sessions.put(session.getId(), new TerminalSessionState(process, outputReader));
-        session.sendMessage(new TextMessage("WSMS Restricted Terminal — only setup commands are permitted.\r\n"));
+            .start(() -> pumpProcessOutput(safeSession, process));
+        TerminalSessionState state = new TerminalSessionState(process, outputReader, safeSession);
+        sessions.put(session.getId(), state);
+        sendToClient(state, "WSMS Restricted Terminal — only setup commands are permitted.\r\n");
         Object userEmail = session.getAttributes().get("userEmail");
         if (userEmail != null) {
-            session.sendMessage(new TextMessage("Authenticated as: " + userEmail + "\r\n\r\n"));
+            sendToClient(state, "Authenticated as: " + userEmail + "\r\n\r\n");
         }
     }
 
@@ -94,7 +97,7 @@ public class TerminalWebSocketHandler extends TextWebSocketHandler {
             if (!isCommandAllowed(cmd)) {
                 String warning = "\r\n\033[31m✖ Command blocked: \""
                         + cmd.trim() + "\" is not allowed in the restricted shell.\033[0m\r\n";
-                session.sendMessage(new TextMessage(warning));
+                sendToClient(state, warning);
                 return;
             }
         }
@@ -160,13 +163,17 @@ public class TerminalWebSocketHandler extends TextWebSocketHandler {
             int bytesRead;
             while (session.isOpen() && (bytesRead = inputStream.read(buffer)) != -1) {
                 String output = new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
-                synchronized (session) {
-                    if (session.isOpen()) session.sendMessage(new TextMessage(output));
-                }
+                if (session.isOpen()) session.sendMessage(new TextMessage(output));
             }
         } catch (IOException ignored) {
         } finally {
             cleanupSession(session.getId());
+        }
+    }
+
+    private void sendToClient(TerminalSessionState state, String payload) throws IOException {
+        if (state.session().isOpen()) {
+            state.session().sendMessage(new TextMessage(payload));
         }
     }
 
@@ -197,5 +204,5 @@ public class TerminalWebSocketHandler extends TextWebSocketHandler {
         return Integer.parseInt(payload.substring(valueStart, valueEnd));
     }
 
-    private record TerminalSessionState(PtyProcess process, Thread outputReader) {}
+    private record TerminalSessionState(PtyProcess process, Thread outputReader, WebSocketSession session) {}
 }   

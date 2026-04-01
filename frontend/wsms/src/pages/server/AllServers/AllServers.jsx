@@ -85,7 +85,7 @@ const AllServers = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6 bg-slate-100 dark:bg-slate-950 min-h-screen">
+      <div className="rounded-2xl border border-slate-200 bg-white/85 p-6 shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/75">
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">

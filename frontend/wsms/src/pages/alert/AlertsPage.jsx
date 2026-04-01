@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import api from "../../services/api";
 
-const PAGE_BG = "min-h-screen p-4 md:p-6 bg-gradient-to-br from-slate-300 via-cyan-200 to-blue-300 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950";
+const PAGE_BG = "min-h-full p-4 md:p-6 bg-gradient-to-br from-slate-100 via-cyan-50 to-blue-100 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950";
 const PANEL_BG = "rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/95 dark:bg-slate-900 shadow-xl overflow-hidden";
 
 const getMessageText = (alert) => {
@@ -206,7 +206,7 @@ const AlertsPage = ({ serverId }) => {
   return (
     <div className={PAGE_BG}>
       <div className={`mx-auto max-w-7xl ${PANEL_BG}`}>
-        <div className="px-5 md:px-6 py-5 bg-gradient-to-r from-slate-800 via-cyan-700 to-blue-800 dark:from-slate-900 dark:via-slate-800 dark:to-cyan-900 text-white">
+        <div className="px-5 md:px-6 py-5 bg-linear-to-r from-slate-800 via-cyan-700 to-blue-800 dark:from-slate-900 dark:via-slate-800 dark:to-cyan-900 text-white">
           <h2 className="text-2xl font-bold tracking-tight">Alert Stream</h2>
           <p className="text-sm text-cyan-100 dark:text-slate-200 mt-1">
             Monitor CPU, memory, disk and server-down incidents in one place.

@@ -95,7 +95,7 @@ const Performance = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-cyan-50 to-blue-100 px-4 py-8 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
+      <div className="min-h-full bg-linear-to-br from-slate-100 via-cyan-50 to-blue-100 px-4 py-8 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
         <div className="mx-auto max-w-7xl">
           <div className="rounded-2xl border border-slate-300 bg-white/80 p-10 text-center shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/70">
             <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300">
@@ -112,7 +112,7 @@ const Performance = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-cyan-50 to-blue-100 px-4 py-8 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
+      <div className="min-h-full bg-linear-to-br from-slate-100 via-cyan-50 to-blue-100 px-4 py-8 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
         <div className="mx-auto max-w-7xl">
           <div className="rounded-2xl border border-red-300 bg-red-50/90 p-8 text-center text-red-700 shadow-lg dark:border-red-700 dark:bg-red-900/20 dark:text-red-300">
             <p className="text-xl font-semibold">{error}</p>
@@ -124,7 +124,7 @@ const Performance = () => {
 
   if (servers.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-cyan-50 to-blue-100 px-4 py-8 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
+      <div className="min-h-full bg-linear-to-br from-slate-100 via-cyan-50 to-blue-100 px-4 py-8 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
         <div className="mx-auto flex h-full max-w-7xl flex-col items-center justify-center py-10">
           <h1 className="mb-8 text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">
             Performance Metrics
@@ -144,7 +144,7 @@ const Performance = () => {
 
   // Render latest metrics for each server
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-cyan-50 to-blue-100 px-4 py-8 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
+    <div className="min-h-full bg-linear-to-br from-slate-100 via-cyan-50 to-blue-100 px-4 py-8 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 rounded-3xl border border-slate-300 bg-white/75 p-6 shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/70">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

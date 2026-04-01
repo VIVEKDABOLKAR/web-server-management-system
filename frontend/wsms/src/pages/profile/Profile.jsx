@@ -36,16 +36,22 @@ const Profile = () => {
   };
 
   if (loading) {
-    return <div className="p-10 text-center text-gray-500">Loading profile...</div>;
+    return (
+      <DashboardLayout pageTitle="profile">
+        <div className="rounded-2xl border border-slate-200 bg-white/85 p-8 text-center text-slate-500 shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/75 dark:text-slate-300">
+          Loading profile...
+        </div>
+      </DashboardLayout>
+    );
   }
 
   return (
     <DashboardLayout pageTitle="profile">
-      <div className="min-h-screen bg-gray-50">
+      <div className="rounded-2xl border border-slate-200 bg-white/85 p-6 shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/75">
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">User Profile</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">User Profile</h1>
+          <p className="text-slate-600 dark:text-slate-300 mt-1">
             Manage your account information and security settings.
           </p>
         </div>
@@ -68,7 +74,9 @@ const Profile = () => {
 
         <AccountStats profile={profile} />
 
-        <SecuritySection showToast={showToast} />
+        {profile && 
+              <SecuritySection showToast={showToast} />
+        }
 
         {toast && (
           <Toast

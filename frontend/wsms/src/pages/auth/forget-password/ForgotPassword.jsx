@@ -118,71 +118,71 @@ const ForgotPassword = () => {
     switch (step) {
       case 1:
         return (
-          <form onSubmit={handleSendOtp}>
-            <div className="mb-4">
+          <form onSubmit={handleSendOtp} className="space-y-6">
+            <div>
               <label
                 htmlFor="email"
-                className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+                className="block text-slate-800 dark:text-slate-200 font-semibold mb-2 text-sm"
               >
-                Email
+                Email Address
               </label>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+                placeholder="Enter your registered email"
+                className="w-full px-4 py-3 border border-slate-300/80 bg-white/60 dark:bg-slate-700/50 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/50 focus:border-orange-500 dark:focus:ring-orange-500/50 dark:border-slate-600 transition backdrop-blur-sm"
                 required
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-md"
+              className="w-full bg-linear-to-r from-orange-600 to-red-700 py-3.5 text-white font-bold text-lg rounded-xl shadow-lg shadow-orange-500/30 transition hover:shadow-orange-500/40 hover:from-orange-700 hover:to-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              {loading ? "Sending OTP..." : "Send OTP"}
+              {loading ? "Sending..." : "Send OTP"}
             </button>
           </form>
         );
 
       case 2:
         return (
-          <form onSubmit={handleVerifyOtp}>
-            <div className="mb-4">
+          <form onSubmit={handleVerifyOtp} className="space-y-6">
+            <div>
               <label
                 htmlFor="otp"
-                className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+                className="block text-slate-800 dark:text-slate-200 font-semibold mb-2 text-sm"
               >
-                OTP
+                Verification Code
               </label>
               <input
                 id="otp"
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                placeholder="Enter the OTP"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+                placeholder="Enter the OTP from your email"
+                className="w-full px-4 py-3 border border-slate-300/80 bg-white/60 dark:bg-slate-700/50 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/50 focus:border-orange-500 dark:focus:ring-orange-500/50 dark:border-slate-600 transition backdrop-blur-sm text-center text-2xl tracking-widest"
                 required
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-md"
+              className="w-full bg-linear-to-r from-orange-600 to-red-700 py-3.5 text-white font-bold text-lg rounded-xl shadow-lg shadow-orange-500/30 transition hover:shadow-orange-500/40 hover:from-orange-700 hover:to-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              {loading ? "Verifying OTP..." : "Verify OTP"}
+              {loading ? "Verifying..." : "Verify Code"}
             </button>
 
-            <div className="text-center mt-4">
+            <div className="text-center">
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-sm font-medium text-orange-700 dark:text-orange-400 hover:underline transition"
               >
-                Back to email
+                ← Back to email
               </button>
             </div>
           </form>
@@ -190,11 +190,11 @@ const ForgotPassword = () => {
 
       case 3:
         return (
-          <form onSubmit={handleResetPassword}>
-            <div className="mb-4">
+          <form onSubmit={handleResetPassword} className="space-y-5">
+            <div>
               <label
                 htmlFor="newPassword"
-                className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+                className="block text-slate-800 dark:text-slate-200 font-semibold mb-2 text-sm"
               >
                 New Password
               </label>
@@ -203,15 +203,15 @@ const ForgotPassword = () => {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter new password"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+                placeholder="Enter new password (min 8 chars, uppercase, special char)"
+                className="w-full px-4 py-3 border border-slate-300/80 bg-white/60 dark:bg-slate-700/50 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/50 focus:border-orange-500 dark:focus:ring-orange-500/50 dark:border-slate-600 transition backdrop-blur-sm"
                 required
               />
             </div>
-            <div className="mb-6">
+            <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+                className="block text-slate-800 dark:text-slate-200 font-semibold mb-2 text-sm"
               >
                 Confirm Password
               </label>
@@ -220,27 +220,27 @@ const ForgotPassword = () => {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Re-enter new password"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+                placeholder="Re-enter your new password"
+                className="w-full px-4 py-3 border border-slate-300/80 bg-white/60 dark:bg-slate-700/50 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/50 focus:border-orange-500 dark:focus:ring-orange-500/50 dark:border-slate-600 transition backdrop-blur-sm"
                 required
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-md"
+              className="w-full bg-linear-to-r from-orange-600 to-red-700 py-3.5 text-white font-bold text-lg rounded-xl shadow-lg shadow-orange-500/30 transition hover:shadow-orange-500/40 hover:from-orange-700 hover:to-red-800 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
               disabled={loading}
             >
-              {loading ? "Resetting password..." : "Reset Password"}
+              {loading ? "Resetting..." : "Reset Password"}
             </button>
 
             <div className="text-center mt-4">
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-sm font-medium text-orange-700 dark:text-orange-400 hover:underline transition"
               >
-                Back to OTP
+                ← Back to verification
               </button>
             </div>
           </form>
@@ -252,23 +252,26 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors flex items-center justify-center px-4">
-      <div className="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm border-2 border-gray-200 dark:border-slate-700 p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-4xl font-bold text-gray-800 dark:text-white text-center mb-2">
-          Forgot Password
-        </h2>
-        <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
-          Enter your email to receive an OTP and reset your password.
-        </p>
+    <div className="min-h-screen bg-linear-to-br from-orange-100 via-amber-50 to-red-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-2xl rounded-3xl border border-white/30 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 p-8 md:p-10 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.25)] backdrop-blur-xl">
+        <div className="text-center mb-8">
+          
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2">
+            Forgot Password?
+          </h2>
+          <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base">
+            Enter your email to receive an OTP and reset your password.
+          </p>
+        </div>
 
         {error && (
-          <div className="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-4">
+          <div className="bg-red-100/90 dark:bg-red-900/40 border border-red-400 dark:border-red-700/80 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl mb-6 text-sm backdrop-blur-sm">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="bg-green-100 dark:bg-green-900/20 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded mb-4">
+          <div className="bg-green-100/90 dark:bg-green-900/40 border border-green-400 dark:border-green-700/80 text-green-700 dark:text-green-300 px-4 py-3 rounded-xl mb-6 text-sm backdrop-blur-sm">
             {success}
           </div>
         )}
