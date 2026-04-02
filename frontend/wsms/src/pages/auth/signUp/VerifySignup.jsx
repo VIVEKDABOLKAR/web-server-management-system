@@ -48,32 +48,37 @@ const VerifySignup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors flex items-center justify-center px-4">
-      <div className="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm border-2 border-gray-200 dark:border-slate-700 p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-4xl font-bold text-gray-800 dark:text-white text-center mb-2">
-          Verify your email
-        </h2>
-        <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
-          Enter the code that we sent to your email to finish creating your account.
-        </p>
+    <div className="min-h-screen bg-linear-to-br from-purple-100 via-pink-50 to-indigo-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-2xl rounded-3xl border border-white/30 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 p-8 md:p-10 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.25)] backdrop-blur-xl">
+        <div className="text-center mb-8">
+          <div className="flex w-16 h-16 rounded-full bg-linear-to-br from-purple-200 to-pink-200 dark:from-purple-900/30 dark:to-pink-900/30 items-center justify-center mb-4">
+            <p className="text-3xl">✉️</p>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2">
+            Verify your email
+          </h2>
+          <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base">
+            Enter the code sent to your email to complete account creation.
+          </p>
+        </div>
 
         {error && (
-          <div className="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-4">
+          <div className="bg-red-100/90 dark:bg-red-900/40 border border-red-400 dark:border-red-700/80 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl mb-6 text-sm backdrop-blur-sm">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="bg-green-100 dark:bg-green-900/20 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-400 px-4 py-3 rounded mb-4">
+          <div className="bg-green-100/90 dark:bg-green-900/40 border border-green-400 dark:border-green-700/80 text-green-700 dark:text-green-300 px-4 py-3 rounded-xl mb-6 text-sm backdrop-blur-sm">
             {success}
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
             <label
               htmlFor="email"
-              className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+              className="block text-slate-800 dark:text-slate-200 font-semibold mb-2 text-sm"
             >
               Email
             </label>
@@ -83,15 +88,15 @@ const VerifySignup = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-4 py-3 border border-slate-300/80 bg-white/60 dark:bg-slate-700/50 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-400/50 focus:border-purple-500 dark:focus:ring-purple-500/50 dark:border-slate-600 transition backdrop-blur-sm"
               required
             />
           </div>
 
-          <div className="mb-6">
+          <div>
             <label
               htmlFor="otp"
-              className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+              className="block text-slate-800 dark:text-slate-200 font-semibold mb-2 text-sm"
             >
               Verification Code
             </label>
@@ -100,27 +105,29 @@ const VerifySignup = () => {
               type="text"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              placeholder="Enter the code from your email"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
+              placeholder="Enter the code sent to your email"
+              className="w-full px-4 py-3 border border-slate-300/80 bg-white/60 dark:bg-slate-700/50 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-400/50 focus:border-purple-500 dark:focus:ring-purple-500/50 dark:border-slate-600 transition backdrop-blur-sm text-center text-2xl tracking-widest"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-md"
+            className="w-full bg-linear-to-r from-purple-600 to-pink-700 py-3.5 text-white font-bold text-lg rounded-xl shadow-lg shadow-purple-500/30 transition hover:shadow-purple-500/40 hover:from-purple-700 hover:to-pink-800 disabled:opacity-50 disabled:cursor-not-allowed mt-8"
             disabled={loading}
           >
             {loading ? "Verifying..." : "Verify Email"}
           </button>
         </form>
 
-        <p className="text-center text-gray-600 dark:text-gray-300 mt-6">
-          Already verified?{" "}
-          <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline">
-            Login here
-          </Link>
-        </p>
+        <div className="mt-8 border-t border-slate-200 dark:border-slate-700 pt-6 text-center">
+          <p className="text-slate-700 dark:text-slate-300 text-sm">
+            Already verified?{" "}
+            <Link to="/login" className="font-bold text-purple-700 dark:text-purple-400 hover:underline transition">
+              Login
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

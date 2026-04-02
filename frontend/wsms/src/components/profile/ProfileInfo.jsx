@@ -1,6 +1,12 @@
 import { FiUser, FiMail } from "react-icons/fi";
 
 const ProfileInfo = ({ profile }) => {
+  if(profile == null) {
+    return (
+      <>
+      </>
+    )
+  }
   return (
     <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-6 mb-6">
       <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">

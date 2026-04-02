@@ -1,6 +1,12 @@
 import { FiServer, FiShield, FiAlertCircle } from "react-icons/fi";
 
 const AccountStats = ({ profile }) => {
+  if(profile == null) {
+    return (
+      <>
+      </>
+    )
+  }
   return (
     <div className="grid md:grid-cols-3 gap-6 mb-6">
       <div className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white dark:from-blue-700 dark:to-indigo-800 p-6 rounded-xl shadow">

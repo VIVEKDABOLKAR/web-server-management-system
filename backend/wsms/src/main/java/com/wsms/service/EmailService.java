@@ -4,6 +4,7 @@ import com.wsms.entity.Alert;
 import com.wsms.entity.AlertType;
 import com.wsms.entity.Server;
 import com.wsms.entity.User;
+import com.wsms.exception.email.EmailServiceDisableException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -15,9 +16,7 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSender mailSender;
-
-    @Value("${app.mail.enabled}")
-    private boolean mailEnabled;
+    private final AdminRuntimeConfigService adminRuntimeConfigService;
 
     @Value("${app.mail.from}")
     private String from;
@@ -40,9 +39,10 @@ public class EmailService {
     }
 
     public void sendAlert(Alert alert, String email, String severity) {
-        if (!mailEnabled) {
+        if (!adminRuntimeConfigService.isEmailServiceEnabled()) {
             System.out.println("[EMAIL DISABLED] Alert :- " + alert.getMessage());
-            return;
+            //throw error
+            throw new EmailServiceDisableException("Email service is disabled By Administrator");
         }
 
         String subject = "WSMS :- ALERT OCCURED -- " + alert.getMessage();
@@ -78,9 +78,9 @@ public class EmailService {
         String subject = "WSMS Password Reset Code";
         String text = "Your password reset code is: " + otp + "\n\nThis code will expire in 1 minute.";
 
-        if (!mailEnabled) {
+        if (!adminRuntimeConfigService.isEmailServiceEnabled()) {
             System.out.println("[EMAIL DISABLED] OTP for " + to + ": " + otp);
-            return;
+            throw new EmailServiceDisableException("Email service is disabled By Administrator");
         }
 
         SimpleMailMessage message = new SimpleMailMessage();
@@ -96,9 +96,9 @@ public class EmailService {
         String subject = "WSMS Email Verification Code";
         String text = "Your verification code is: " + otp + "\n\nThis code will expire in 10 minutes.";
 
-        if (!mailEnabled) {
+        if (!adminRuntimeConfigService.isEmailServiceEnabled()) {
             System.out.println("[EMAIL DISABLED] Verification OTP for " + to + ": " + otp);
-            return;
+            throw new EmailServiceDisableException("Email service is disabled By Administrator");
         }
 
         SimpleMailMessage message = new SimpleMailMessage();

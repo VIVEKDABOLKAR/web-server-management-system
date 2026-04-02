@@ -213,12 +213,8 @@ const AlertsPage = ({ serverId }) => {
     return (
       <div className={PAGE_BG}>
         <div className="mx-auto max-w-7xl rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/95 dark:bg-slate-900 p-8 shadow-lg">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-            Alerts
-          </h2>
-          <p className="text-slate-500 dark:text-slate-400">
-            Loading alerts...
-          </p>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Alerts</h2>
+          <p className="text-slate-500 dark:text-slate-400">Loading alerts...</p>
         </div>
       </div>
     );
@@ -347,8 +343,8 @@ const AlertsPage = ({ serverId }) => {
                   highlightedAlertId &&
                   String(alert.id) === String(highlightedAlertId);
                 const cardClass = isServerDown
-                  ? "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20"
-                  : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800";
+                  ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20"
+                  : "border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/40 hover:bg-cyan-100 dark:hover:bg-slate-800";
 
                 return (
                   <div

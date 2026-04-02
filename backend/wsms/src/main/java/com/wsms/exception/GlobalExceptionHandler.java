@@ -1,15 +1,63 @@
 package com.wsms.exception;
 
+import com.wsms.exception.email.EmailServiceDisableException;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class    GlobalExceptionHandler {
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<?> handleResponseStatusException(ResponseStatusException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                "Response Not Found",
+                ex.getMessage()
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ServerNotFoundException.class)
+    public ResponseEntity<ErrorResponse> serverNotFoundException(ServerNotFoundException exception) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                "Server Not Found",
+                exception.getMessage()
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+
+
+    }
+
+    @ExceptionHandler(EmailServiceDisableException.class)
+    public ResponseEntity<?> handleEmailServiceDisableException(EmailServiceDisableException ex) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                "temporary email service disabled",
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<?> handleExpiredJwtException(ExpiredJwtException ex) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                "JWT Token is expired, login again... ",
+                ex.getMessage()
+        );
+        System.out.println("caugth the excption");
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, WebRequest request) {

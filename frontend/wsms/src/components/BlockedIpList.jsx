@@ -6,18 +6,17 @@ const BlockedIpList = ({ serverId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newIp, setNewIp] = useState({
-    ipAddress: "",
-    reason: "",
-  });
+  const [newIp, setNewIp] = useState({ ipAddress: "" });
 
   useEffect(() => {
     fetchBlockedIps();
   }, [serverId]);
 
   const fetchBlockedIps = async () => {
+    setLoading(true);
+    setError("");
     try {
-      const response = await api.get(`/api/blocked-ips/server/${serverId}`);
+      const response = await api.get(`/api/ip-blocks/${serverId}`);
       setBlockedIps(response.data);
     } catch (err) {
       setError("Failed to fetch blocked IPs");
@@ -29,11 +28,11 @@ const BlockedIpList = ({ serverId }) => {
   const handleBlockIp = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/api/blocked-ips", {
+      await api.post("/api/ip-blocks", {
         serverId,
-        ...newIp,
+        clientIp: newIp.ipAddress,
       });
-      setNewIp({ ipAddress: "", reason: "" });
+      setNewIp({ ipAddress: "" });
       setShowAddForm(false);
       fetchBlockedIps();
     } catch (err) {
@@ -41,9 +40,9 @@ const BlockedIpList = ({ serverId }) => {
     }
   };
 
-  const handleUnblockIp = async (ipId) => {
+  const handleUnblockIp = async (clientIp) => {
     try {
-      await api.delete(`/api/blocked-ips/${ipId}`);
+      await api.patch(`/api/ip-blocks/${serverId}/${encodeURIComponent(clientIp)}`);
       fetchBlockedIps();
     } catch (err) {
       setError("Failed to unblock IP");
@@ -103,18 +102,6 @@ const BlockedIpList = ({ serverId }) => {
               required
             />
           </div>
-          <div className="mb-3">
-            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
-              Reason (Optional)
-            </label>
-            <input
-              type="text"
-              value={newIp.reason}
-              onChange={(e) => setNewIp({ ...newIp, reason: e.target.value })}
-              placeholder="e.g., Suspicious activity detected"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            />
-          </div>
           <button
             type="submit"
             className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition font-medium"
@@ -137,23 +124,23 @@ const BlockedIpList = ({ serverId }) => {
             >
               <div className="flex justify-between items-start mb-2">
                 <span className="font-mono text-lg font-semibold text-red-600 dark:text-red-400">
-                  {ip.ipAddress}
+                  {ip.clientIp}
                 </span>
                 <button
-                  onClick={() => handleUnblockIp(ip.id)}
+                  onClick={() => handleUnblockIp(ip.clientIp)}
                   className="px-4 py-1.5 rounded-lg text-sm font-semibold bg-green-500 text-white hover:bg-green-600 transition"
                 >
-                  Unblock
+                  Toggle
                 </button>
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
-                <span className="font-medium">Reason:</span>{" "}
-                {ip.reason || "No reason provided"}
+                <span className="font-medium">Status:</span>{" "}
+                {ip.status || "UNBLOCK"}
               </p>
               <p className="text-xs text-gray-400 dark:text-gray-500">
                 Blocked on:{" "}
-                {ip.blockedAt
-                  ? new Date(ip.blockedAt).toLocaleString()
+                {ip.lastRequest
+                  ? new Date(ip.lastRequest).toLocaleString()
                   : "Unknown"}
               </p>
             </div>

@@ -41,8 +41,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String jwt = authHeader.substring(7);
         String email ;
-        email = jwtService.extractEmail(jwt);
-
+        try {
+            email = jwtService.extractEmail(jwt);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid JWT token, Login again...");
+            return;
+        }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);

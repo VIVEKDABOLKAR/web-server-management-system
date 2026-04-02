@@ -16,7 +16,7 @@ const Button = ({ text, to, onClick, isDarkMode, className, title }) => {
       className={`rounded transition shadow
       ${
         isDarkMode
-          ? "bg-[rgb(80,82,88)] text-white hover:bg-[rgb(70,72,78)]"
+          ? "bg-[rgb(22,23,24)] text-white hover:bg-[rgb(70,72,78)]"
           : "bg-[rgb(173,203,251)] text-black hover:bg-[rgb(150,185,245)]"
       }
       ${className}`}

@@ -5,10 +5,10 @@ import "./RequestLog.css";
 const methods = ["ALL", "GET", "POST", "PUT", "DELETE"];
 
 export default function RequestLog() {
-  const [serverId, setServerId] = useState(1);
+  const [serverId, setServerId] = useState(null);
   const [logs, setLogs] = useState([]);
   const [page, setPage] = useState(0);
-  const [size] = useState(2);
+  const [size] = useState(7);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [loading, setLoading] = useState(false);
