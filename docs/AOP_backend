@@ -1,0 +1,9 @@
+execution(modifier? return-type declaring-type? method-name(param) throws-pattern?)
+
+    -decalring-type - class_name com.expmle.demo.account
+
+			--pattern 
+				- * -wildcard
+				- () - no arg
+				- (*) - one arg of any anytype
+				- (..) - 0 or more agr anytype
