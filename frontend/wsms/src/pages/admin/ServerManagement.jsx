@@ -44,47 +44,43 @@ const serverColumns = (navigate, onDelete) => [
 const ServerManagement = () => {
   const navigate = useNavigate();
   const { servers, loading, error } = useAdminDashboard();
-
   const [serversData, setServersData] = useState([]);
+  const { deleteDialog, openDeleteDialog, closeDeleteDialog, confirmDelete } =
+    useDeleteServer(setServersData);
 
   useEffect(() => {
     setServersData(servers);
   }, [servers]);
 
-  const { deleteDialog, openDeleteDialog, closeDeleteDialog, confirmDelete } =
-    useDeleteServer(setServersData);
-
   return (
     <DashboardLayout pageTitle="Admin Dashboard">
       <div className="space-y-6">
-        {/* ERROR */}
         {error && (
           <div className="rounded-lg px-4 py-3 bg-amber-50 border border-amber-200 text-amber-800">
             {error}
           </div>
         )}
-
-        {/* LOADING */}
         {loading ? (
           <div className="p-8 text-center text-slate-600 dark:text-slate-300">
             Loading...
           </div>
         ) : (
-          <>
-            <SectionCard
-              title="Servers"
-              actionButton={
-                <button
-                  onClick={() => navigate("/add-server")}
-                  className="px-4 py-2 rounded-lg bg-sky-600 text-white hover:bg-sky-700 transition font-medium"
-                >
-                  Add servers
-                </button>
-              }
-            >
-              <Table columns={serverColumns(navigate, openDeleteDialog)} data={serversData} />
-            </SectionCard>
-          </>
+          <SectionCard
+            title="Servers"
+            actionButton={
+              <button
+                onClick={() => navigate("/add-server")}
+                className="px-4 py-2 rounded-lg bg-sky-600 text-white hover:bg-sky-700 transition font-medium"
+              >
+                Add servers
+              </button>
+            }
+          >
+            <Table 
+              columns={serverColumns(navigate, openDeleteDialog)}
+              data={serversData}
+            />
+          </SectionCard>
         )}
         <ConfirmDialog
           isOpen={deleteDialog.isOpen}

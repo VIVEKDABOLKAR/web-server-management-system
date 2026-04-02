@@ -7,6 +7,14 @@ import useAdminDashboard from "../../hooks/useAdminDashboard";
 import api from "../../services/api";
 import { toast } from "react-toastify";
 
+// ✅ Centralized normalization
+const normalizeUser = (u) => ({
+  ...u,
+  isActive: u.status === "ACTIVE",
+  fullName: u.fullName || u.username || "-",
+  statusText: u.status === "ACTIVE" ? "Active" : "Blocked",
+});
+
 const UserManagement = () => {
   const navigate = useNavigate();
   const { users, loading, error } = useAdminDashboard();
@@ -15,15 +23,12 @@ const UserManagement = () => {
   const [updatingUserId, setUpdatingUserId] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
 
+  // ✅ Normalize users once
   useEffect(() => {
-    const normalizedUsers = users.map((u) => ({
-      ...u,
-      isActive: u.status === "ACTIVE", 
-    }));
-
-    setUserList(normalizedUsers);
+    setUserList(users.map(normalizeUser));
   }, [users]);
 
+  // ✅ Load current user
   useEffect(() => {
     const loadCurrentUser = async () => {
       try {
@@ -38,11 +43,10 @@ const UserManagement = () => {
   }, []);
 
   const handleAddUser = () => {
-       navigate(
-        `/admin/add-user`
-      );
+    navigate(`/admin/add-user`);
   };
 
+  // ✅ Toggle Active
   const handleToggleActive = async (userId) => {
     try {
       setUpdatingUserId(userId);
@@ -56,7 +60,13 @@ const UserManagement = () => {
 
       setUserList((prev) =>
         prev.map((u) =>
-          u.id === userId ? { ...u, isActive: newStatus } : u,
+          u.id === userId
+            ? {
+                ...u,
+                isActive: newStatus,
+                statusText: newStatus ? "Active" : "Blocked",
+              }
+            : u,
         ),
       );
 
@@ -71,31 +81,30 @@ const UserManagement = () => {
     }
   };
 
+  // ✅ Delete User (with confirmation)
   const handleDeleteUser = async (userId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this user?",
+    );
+    if (!confirmDelete) return;
+
     try {
       setUpdatingUserId(userId);
 
-      // const user = userList.find((u) => u.id === userId);
-
       await api.delete(`/api/admin/users/${userId}`);
 
-      setUserList((prev) =>
-        prev.filter((u) =>
-          u.id !== userId
-        ),
-      );
+      setUserList((prev) => prev.filter((u) => u.id !== userId));
 
-      toast.success(
-        `User Deleted successfully`,
-      );
+      toast.success("User deleted successfully");
     } catch (err) {
       console.error(err);
       toast.error("Failed to delete user");
     } finally {
       setUpdatingUserId(null);
     }
-  }
+  };
 
+  // ✅ Toggle Role
   const handleToggleRole = async (userId) => {
     try {
       setUpdatingUserId(userId);
@@ -122,45 +131,34 @@ const UserManagement = () => {
     }
   };
 
-  const renderDeleteUser = (isUpdating, isSelf,  user) => {
-
-    return (
-      <button
-              disabled={isUpdating || isSelf}
-              className={`px-3 py-1 rounded border font-medium transition
-                ${
-                  isUpdating || isSelf
-                    ? "opacity-50 cursor-not-allowed"
-                    :  "border-red-400 text-red-600 bg-white hover:bg-red-50"
-                }`}
-              onClick={() => handleDeleteUser(user.id)}
-            >
-              {isUpdating
-                ? "Updating..."
-                : "delete"}
-            </button>
-    )
-  }
+  // ✅ Table Columns
   const userColumns = [
     { header: "Username", accessor: "username" },
     {
       header: "Name",
-      render: (user) => user.fullName || user.username || "-",
+      accessor: "fullName",
+      render: (user) => user.fullName,
+      filterValue: (user) => user.fullName,
     },
     { header: "Email", accessor: "email" },
     {
       header: "Status",
-      render: (user) => (
-        <span
-          className={`px-2 py-1 rounded text-xs font-semibold ${
-            user.isActive
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {user.isActive ? "Active" : "Blocked"}
-        </span>
-      ),
+      accessor: "statusText",
+      render: (user) => {
+        const isActive = user.isActive;
+        return (
+          <span
+            className={`px-2 py-1 rounded text-xs font-semibold ${
+              isActive
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
+            {user.statusText}
+          </span>
+        );
+      },
+      filterValue: (user) => user.statusText, // ✅ important fix
     },
     { header: "Role", accessor: "role" },
     {
@@ -173,6 +171,7 @@ const UserManagement = () => {
 
         return (
           <div className="flex justify-center gap-3">
+            {/* Toggle Active */}
             <button
               disabled={isUpdating || isSelf}
               className={`px-3 py-1 rounded border font-medium transition
@@ -180,8 +179,8 @@ const UserManagement = () => {
                   isUpdating || isSelf
                     ? "opacity-50 cursor-not-allowed"
                     : user.isActive
-                      ? "border-red-400 text-red-600 bg-white hover:bg-red-50"
-                      : "border-green-400 text-green-600 bg-white hover:bg-green-50"
+                    ? "border-red-400 text-red-600 bg-white hover:bg-red-50"
+                    : "border-green-400 text-green-600 bg-white hover:bg-green-50"
                 }`}
               title={isSelf ? "You cannot block yourself" : ""}
               onClick={() => handleToggleActive(userId)}
@@ -189,10 +188,11 @@ const UserManagement = () => {
               {isUpdating
                 ? "Updating..."
                 : user.isActive
-                  ? "Block"
-                  : "Activate"}
+                ? "Block"
+                : "Activate"}
             </button>
 
+            {/* Toggle Role */}
             <button
               disabled={isUpdating || isSelf}
               className={`px-3 py-1 rounded border font-medium transition
@@ -200,20 +200,34 @@ const UserManagement = () => {
                   isUpdating || isSelf
                     ? "opacity-50 cursor-not-allowed"
                     : user.role === "ADMIN"
-                      ? "border-amber-400 text-amber-700 bg-white hover:bg-amber-50"
-                      : "border-indigo-400 text-indigo-700 bg-white hover:bg-indigo-50"
+                    ? "border-amber-400 text-amber-700 bg-white hover:bg-amber-50"
+                    : "border-indigo-400 text-indigo-700 bg-white hover:bg-indigo-50"
                 }`}
-              title={isSelf ? "You cannot change your own role from this page" : ""}
+              title={
+                isSelf ? "You cannot change your own role from this page" : ""
+              }
               onClick={() => handleToggleRole(userId)}
             >
               {isUpdating
                 ? "Updating..."
                 : user.role === "ADMIN"
-                  ? "Make User"
-                  : "Make Admin"}
+                ? "Make User"
+                : "Make Admin"}
             </button>
 
-            {renderDeleteUser(isUpdating, isSelf, user)}
+            {/* Delete */}
+            <button
+              disabled={isUpdating || isSelf}
+              className={`px-3 py-1 rounded border font-medium transition
+                ${
+                  isUpdating || isSelf
+                    ? "opacity-50 cursor-not-allowed"
+                    : "border-red-400 text-red-600 bg-white hover:bg-red-50"
+                }`}
+              onClick={() => handleDeleteUser(userId)}
+            >
+              {isUpdating ? "Updating..." : "Delete"}
+            </button>
           </div>
         );
       },
@@ -241,7 +255,7 @@ const UserManagement = () => {
                 onClick={handleAddUser}
                 className="px-4 py-2 rounded-lg bg-sky-600 text-white hover:bg-sky-700 transition font-medium"
               >
-                Add user
+                Add User
               </button>
             }
           >

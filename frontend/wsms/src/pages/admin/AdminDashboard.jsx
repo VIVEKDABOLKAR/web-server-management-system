@@ -18,12 +18,14 @@ const userColumns = [
   { header: "User ID", accessor: "id" },
   {
     header: "Name",
+    accessor: "fullName",
     render: (user) => user.fullName || "-",
   },
   { header: "Email", accessor: "email" },
   {
     header: "Status",
-    render: (user) => (user.status),
+    accessor: "statusText",
+    render: (user) => user.statusText,
   },
   { header: "Role", accessor: "role" },
 ];
@@ -32,18 +34,22 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { servers, users, loading, error } = useAdminDashboard();
 
-  const stats = useMemo(() => {
-    const totalServers = servers.length;
-    const activeServers = servers.filter(
-      (s) => s.status?.toLowerCase() === "active",
-    ).length;
-    const inactiveServers = servers.filter(
-      (s) => s.status?.toLowerCase() === "inactive",
-    ).length;
-    const totalUsers = users.length;
+const stats = useMemo(() => {
+  let activeServers = 0;
+  let inactiveServers = 0;
 
-    return { totalServers, activeServers, inactiveServers, totalUsers };
-  }, [servers, users]);
+  servers.forEach((s) => {
+    if (s.status?.toLowerCase() === "active") activeServers++;
+    else if (s.status?.toLowerCase() === "inactive") inactiveServers++;
+  });
+
+  return {
+    totalServers: servers.length,
+    activeServers,
+    inactiveServers,
+    totalUsers: users.length,
+  };
+}, [servers, users]);
 
   return (
     <DashboardLayout pageTitle="Admin Dashboard">
@@ -58,7 +64,6 @@ const AdminDashboard = () => {
               Master overview for platform users and servers.
             </p>
           </div>
-
         </div>
 
         {/* ERROR */}
@@ -112,7 +117,14 @@ const AdminDashboard = () => {
                 </button>
               }
             >
-              <Table columns={userColumns} data={users} />
+              <Table
+                columns={userColumns}
+                data={users.map((u) => ({
+                  ...u,
+                  fullName: u.fullName || u.username || "-",
+                  statusText: u.status === "ACTIVE" ? "Active" : "Blocked",
+                }))}
+              />
             </SectionCard>
           </>
         )}
@@ -122,3 +134,5 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+
