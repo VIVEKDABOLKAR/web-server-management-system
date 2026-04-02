@@ -53,8 +53,8 @@ const useServerForm = (navigate) => {
         const response = await api.post("/api/servers", payload);
         const serverId = response.data.id;
         console.log(serverId);
-        
-        navigate(`/server-setup/${serverId}`);
+
+        navigate(`/servers/${serverId}`);
       }
 
 

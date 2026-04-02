@@ -1,12 +1,12 @@
 package com.wsms.service;
 
-import com.wsms.dto.ipblock.IPBlockResponse;
 import com.wsms.entity.IPBlock;
-import com.wsms.entity.Server;
 import com.wsms.repository.IPBlockRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,7 +28,7 @@ public class IPBlockService {
 
     @Transactional
     public IPBlock update(Long serverId,String clientIp) {
-        IPBlock ipBlock1 = ipBlockRepo.findByServerIdAndClientIp(serverId,clientIp);
+        IPBlock ipBlock1 = getRequiredIpBlock(serverId, clientIp);
         ipBlock1.setLastRequest(LocalDateTime.now());
         ipBlockRepo.save(ipBlock1);
         return ipBlock1;
@@ -40,24 +40,49 @@ public class IPBlockService {
     }
 
     public List<IPBlock> getAllIPBlock(Long serverId) {
-            List<IPBlock> ipBlocks = ipBlockRepo.findByServerId(serverId);
-            return ipBlocks;
+        return ipBlockRepo.findByServerId(serverId);
+    }
+
+    @Transactional
+    public IPBlock blockIp(Long serverId, String clientIp) {
+        IPBlock existing = ipBlockRepo.findByServerIdAndClientIp(serverId, clientIp);
+        if (existing != null) {
+            existing.setStatus("BLOCK");
+            existing.setLastRequest(LocalDateTime.now());
+            return ipBlockRepo.save(existing);
+        }
+
+        IPBlock newIpBlock = IPBlock.builder()
+                .serverId(serverId)
+                .clientIp(clientIp)
+                .status("BLOCK")
+                .lastRequest(LocalDateTime.now())
+                .build();
+
+        return ipBlockRepo.save(newIpBlock);
     }
 
 
     public IPBlock updateIPBlock(Long serverId, String clientIp) {
-        IPBlock ipBlock1 = ipBlockRepo.findByServerIdAndClientIp(serverId,clientIp);
-        ipBlock1.setStatus(ipBlock1.getStatus().equals("UNBLOCK") ?  "BLOCK" : "UNBLOCK");
+        IPBlock ipBlock1 = getRequiredIpBlock(serverId, clientIp);
+        ipBlock1.setStatus("UNBLOCK".equals(ipBlock1.getStatus()) ? "BLOCK" : "UNBLOCK");
         ipBlockRepo.save(ipBlock1);
         return ipBlock1;
     }
 
     public Boolean isUserVerified(Long serverId, String clientIp) {
         IPBlock ipBlock1 = ipBlockRepo.findByServerIdAndClientIp(serverId,clientIp);
-        System.out.println(ipBlock1);
         if(ipBlock1==null){
-            return  true;
+            return true;
         }
-       return  ipBlock1.getStatus().equals("UNBLOCK") ?  true : false;
+       return "UNBLOCK".equals(ipBlock1.getStatus());
+    }
+
+    private IPBlock getRequiredIpBlock(Long serverId, String clientIp) {
+        IPBlock ipBlock = ipBlockRepo.findByServerIdAndClientIp(serverId, clientIp);
+        if (ipBlock == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "IP block record not found");
+        }
+        return ipBlock;
     }
 }
