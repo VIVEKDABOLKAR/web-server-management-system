@@ -17,7 +17,7 @@ public class LoggingAspect {
 
         long start = System.currentTimeMillis();
 
-        String className = joinPoint.getTarget().getClass().getName();
+        String className = joinPoint.getSignature().getDeclaringTypeName();
         String methodName = joinPoint.getSignature().getName();
 
 
@@ -27,8 +27,8 @@ public class LoggingAspect {
             long duration = System.currentTimeMillis() - start;
 
             log.info(
-                    "event=controller_call layer=controller class={} method={}  outcome=SUCCESS statusCode=200 durationMs={} message=\"Success\"",
-                    className, methodName, duration
+                    "event=controller_call layer=controller class={} method={}  outcome=SUCCESS statusCode={} durationMs={} message=\"Success\"",
+                    className, methodName, 200, duration
             );
 
             return result;
@@ -38,9 +38,10 @@ public class LoggingAspect {
             long duration = System.currentTimeMillis() - start;
 
             log.error(
-                    "event=controller_call layer=controller class={} method={} outcome=FAILURE statusCode=500 durationMs={} errorType={} message=\"{}\"",
+                    "event=controller_call layer=controller class={} method={} outcome=FAILURE statusCode={} durationMs={} errorType={} message=\"{}\"",
                     className,
                     methodName,
+                    500,
                     duration,
                     ex.getClass().getSimpleName(),
                     ex.getMessage()
