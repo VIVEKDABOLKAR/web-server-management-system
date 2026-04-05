@@ -22,8 +22,9 @@ const AddServer = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      if(await isAdminToken()) 
-     setIsAdmin();
+      if(await isAdminToken()){
+        setIsAdmin(true);
+      }
 
     }
     

@@ -132,7 +132,7 @@ const Login = () => {
         </div> */}
 
         {/* Right: Login Form */}
-        <div className="w-full rounded-3xl border border-white/30 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 p-8 md:p-10 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.25)] backdrop-blur-xl">
+        <div className="w-full rounded-3xl border border-white/30 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 p-8 md:p-10 shadow-xl backdrop-blur-xl">
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white text-center mb-2">
             Welcome Back
           </h2>
@@ -202,7 +202,7 @@ const Login = () => {
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-linear-to-r from-cyan-600 to-blue-700 py-3.5 text-white font-bold text-lg shadow-lg shadow-cyan-500/30 transition hover:shadow-cyan-500/40 hover:from-cyan-700 hover:to-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full rounded-xl bg-linear-to-r from-cyan-600 to-blue-700 py-3.5 text-white font-bold text-lg shadow-lg shadow-slate-700/80 transition hover:shadow-cyan-500/40 hover:from-cyan-700 hover:to-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
               disabled={isLoading}
             >
               {isLoading ? "Logging in..." : "Login"}

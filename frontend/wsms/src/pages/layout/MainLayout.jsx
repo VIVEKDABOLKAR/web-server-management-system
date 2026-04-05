@@ -17,7 +17,7 @@ const MainLayout = () => {
             {/* Sidebar */}
             {sidebarOpen &&
             <div className=" inset-y-0 left-0 z-60">
-                <Sidebar isOpen={sidebarOpen} toggleOpen={handleToggleOpenSidbar} />
+                <Sidebar isOpen={sidebarOpen} toggleOpen={handleToggleOpenSidbar} className="transition-transform duration-500 ease-in"/>
 
             </div> 
             }

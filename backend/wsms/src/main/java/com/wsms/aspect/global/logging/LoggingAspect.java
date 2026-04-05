@@ -5,6 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,6 +21,9 @@ public class LoggingAspect {
         String className = joinPoint.getSignature().getDeclaringTypeName();
         String methodName = joinPoint.getSignature().getName();
 
+        String traceId = MDC.get("traceId");
+        String requestId = MDC.get("requestId");
+
 
         try {
             Object result = joinPoint.proceed();
@@ -27,8 +31,8 @@ public class LoggingAspect {
             long duration = System.currentTimeMillis() - start;
 
             log.info(
-                    "event=controller_call layer=controller class={} method={}  outcome=SUCCESS statusCode={} durationMs={} message=\"Success\"",
-                    className, methodName, 200, duration
+                    "traceId={} requestId={} event=controller_call layer=controller class={} method={}  outcome=SUCCESS statusCode={} durationMs={} message=\"Success\"",
+                    traceId, requestId, className, methodName, 200, duration
             );
 
             return result;
@@ -38,7 +42,9 @@ public class LoggingAspect {
             long duration = System.currentTimeMillis() - start;
 
             log.error(
-                    "event=controller_call layer=controller class={} method={} outcome=FAILURE statusCode={} durationMs={} errorType={} message=\"{}\"",
+                    "traceId={} requestId={} event=controller_call layer=controller class={} method={} outcome=FAILURE statusCode={} durationMs={} errorType={} message=\"{}\"",
+                    traceId,
+                    requestId,
                     className,
                     methodName,
                     500,

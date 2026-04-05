@@ -1,5 +1,6 @@
 package com.wsms.filter;
 
+import com.github.f4b6a3.ulid.UlidCreator;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,11 +34,11 @@ private static final String TRACE_ID = "traceId";
         //get r create traceid
         String traceId = request.getHeader(TRACE_HEADER);
         if (traceId == null || traceId.isEmpty()) {
-            traceId = UUID.randomUUID().toString();
+            traceId = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         }
 
         //genrate reqId
-        String requestId = request.getHeader(REQUEST_HEADER);
+        String requestId = generateRequestId() ;
 
         // Put into MDC (for logging)
         MDC.put(TRACE_ID, traceId);
@@ -52,5 +53,9 @@ private static final String TRACE_ID = "traceId";
         } finally {
             MDC.clear(); // prevent memory leaks
         }
+    }
+
+    private String generateRequestId() {
+        return UlidCreator.getUlid().toString();
     }
 }
