@@ -14,9 +14,10 @@ import com.wsms.entity.UserRole;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
 import com.wsms.entity.UserStatus;
+import com.wsms.service.interfaces.AdminServiceInterface;
 
 @Service
-public class AdminService {
+public class AdminService implements AdminServiceInterface {
 
     @Autowired
     private UserRepository userRepository;

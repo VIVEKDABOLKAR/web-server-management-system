@@ -5,6 +5,7 @@ import com.wsms.entity.AlertType;
 import com.wsms.entity.Server;
 import com.wsms.entity.User;
 import com.wsms.exception.email.EmailServiceDisableException;
+import com.wsms.service.interfaces.EmailServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EmailService {
+public class EmailService implements EmailServiceInterface {
 
     private final JavaMailSender mailSender;
     private final AdminRuntimeConfigService adminRuntimeConfigService;

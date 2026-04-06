@@ -18,11 +18,12 @@ import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
 
 import com.wsms.repository.WebServerTypeRepo;
+import com.wsms.service.interfaces.ServerServiceInterface;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ServerService {
+public class ServerService implements ServerServiceInterface {
 
     private final ServerRepository serverRepository;
     private final UserRepository userRepository;

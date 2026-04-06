@@ -3,12 +3,13 @@ package com.wsms.service;
 import com.wsms.dto.admin.AdminRuntimeConfigDto;
 import com.wsms.entity.AdminRuntimeConfig;
 import com.wsms.repository.AdminRuntimeConfigRepository;
+import com.wsms.service.interfaces.AdminRuntimeConfigServiceInterface;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class AdminRuntimeConfigService {
+public class AdminRuntimeConfigService implements AdminRuntimeConfigServiceInterface {
 
     private static final long SINGLETON_CONFIG_ID = 1L;
 

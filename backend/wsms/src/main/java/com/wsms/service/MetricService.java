@@ -15,6 +15,7 @@ import com.wsms.entity.Server;
 import com.wsms.entity.ServerStatus;
 import com.wsms.repository.MetricRepository;
 import com.wsms.repository.ServerRepository;
+import com.wsms.service.interfaces.MetricServiceInterface;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MetricService {
+public class MetricService implements MetricServiceInterface {
 
     private final MetricRepository metricRepository;
     private final ServerRepository serverRepository;

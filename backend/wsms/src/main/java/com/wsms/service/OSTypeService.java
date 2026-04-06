@@ -2,6 +2,7 @@ package com.wsms.service;
 
 import com.wsms.entity.OSType;
 import com.wsms.repository.OSTypeRepo;
+import com.wsms.service.interfaces.OSTypeServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class OSTypeService {
+public class OSTypeService implements OSTypeServiceInterface {
 
     private final OSTypeRepo osTypeRepo;
     public OSType createOSType(OSType osType) {

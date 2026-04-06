@@ -2,6 +2,7 @@ package com.wsms.service;
 
 import com.wsms.entity.IPBlock;
 import com.wsms.repository.IPBlockRepo;
+import com.wsms.service.interfaces.IPBlockServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class IPBlockService {
+public class IPBlockService implements IPBlockServiceInterface {
 
     private final IPBlockRepo ipBlockRepo;
 

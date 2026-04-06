@@ -5,6 +5,7 @@ import com.wsms.entity.User;
 import com.wsms.entity.VerificationOtp;
 import com.wsms.repository.UserRepository;
 import com.wsms.repository.VerificationOtpRepository;
+import com.wsms.service.interfaces.PasswordResetServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +19,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class PasswordResetService {
+public class PasswordResetService implements PasswordResetServiceInterface {
 
     private final UserRepository userRepository;
     private final VerificationOtpRepository tokenRepository;

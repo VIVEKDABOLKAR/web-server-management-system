@@ -19,12 +19,13 @@ import com.wsms.entity.User;
 import com.wsms.repository.AlertRepository;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
+import com.wsms.service.interfaces.UserServiceInterface;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserServiceInterface {
 
     // DI
     private final UserRepository userRepository;
