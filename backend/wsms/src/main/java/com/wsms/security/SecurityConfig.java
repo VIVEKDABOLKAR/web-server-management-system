@@ -70,6 +70,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/auth/**", "/api/agent/**", "/error", "/ws/terminal/**").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(clientTypeFilter, UsernamePasswordAuthenticationFilter.class)

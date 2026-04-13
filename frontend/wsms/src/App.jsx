@@ -36,6 +36,7 @@ import MainLayout from "./pages/layout/MainLayout";
 import RequestLog from "./components/server/RequestLog";
 import IpBlocks from "./components/server/IpBlocks";
 import AdminConfig from "./pages/admin/config/AdminConfig";
+import SwaggerDocs from "./pages/admin/config/SwaggerDocs";
 function App() {
   return (
     <Router>
@@ -186,6 +187,14 @@ function App() {
             element={
               <ProtectedRoute requireAdmin>
                 <AdminConfig />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/swagger"
+            element={
+              <ProtectedRoute requireAdmin>
+                <SwaggerDocs />
               </ProtectedRoute>
             }
           />

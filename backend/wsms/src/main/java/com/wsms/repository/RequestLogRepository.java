@@ -68,5 +68,7 @@ public interface RequestLogRepository extends JpaRepository<RequestLog, Long> {
     @Query("SELECT DISTINCT r.clientIP FROM RequestLog r WHERE r.server.id = :serverId ORDER BY r.clientIP")
     List<String> findDistinctClientIPsByServerId(@Param("serverId") Long serverId);
 
+        long deleteByServerId(Long serverId);
+
 
 }

@@ -101,7 +101,7 @@ public class Agent {
         logger.infof("Server ID: %s", config.getServerId());
         logger.infof("Interval: %d sec", config.getCollectionInterval().getSeconds());
         //hardcode made it dynamic
-        logger.infof("Web Application Public Url %s ", ("http://localhost" + ":" + config.getWebServerPort()));
+        logger.infof("Web Application Public Url %s ", ("http://localhost" + ":" + config.getPublishPort()));
         logger.info("========================================");
 
         try {

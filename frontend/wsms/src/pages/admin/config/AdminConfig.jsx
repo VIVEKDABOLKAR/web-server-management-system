@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../../components/dashboard/DashboardLayout";
 import SectionCard from "../../../components/SectionCard";
 import api from "../../../services/api";
@@ -36,10 +37,15 @@ const ToggleField = ({ id, title, description, checked, onChange }) => (
 );
 
 const AdminConfig = () => {
+  const navigate = useNavigate();
   const [config, setConfig] = useState(defaultConfig);
   const [initialConfig, setInitialConfig] = useState(defaultConfig);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  const handleOpenSwaggerUi = () => {
+    navigate("/admin/swagger");
+  };
 
   useEffect(() => {
     const loadConfig = async () => {
@@ -168,6 +174,13 @@ const AdminConfig = () => {
             </SectionCard>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-end">
+              <button
+                onClick={handleOpenSwaggerUi}
+                className="px-5 py-2.5 rounded-lg border border-sky-300 dark:border-sky-700 text-sky-700 dark:text-sky-200 bg-sky-50 dark:bg-sky-900/30 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition font-medium"
+              >
+                Open Swagger UI
+              </button>
+
               <button
                 onClick={handleReset}
                 disabled={saving || !hasUnsavedChanges}

@@ -66,7 +66,7 @@ public class IPBlockController {
                 .clientIp(ipBlock.getClientIp())
                 .status(ipBlock.getStatus())
                 .lastRequest(ipBlock.getLastRequest())
-                .serverId(ipBlock.getServerId())
+                .serverId(ipBlock.getServer().getId())
                 .build();
         return  ipBlockResponse;
     }

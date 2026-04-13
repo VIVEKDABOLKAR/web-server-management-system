@@ -1,0 +1,14 @@
+{
+  "serverId" : "1",
+  "serverName" : null,
+  "authToken" : "f937cb35-db8f-429d-a848-255e5098af73",
+  "configPath" : "config.json",
+  "backendUrl" : "http://localhost:8080",
+  "webSocketUrl" : null,
+  "webServerHost" : "::1",
+  "webServerPort" : 5173,
+  "publishPort" : 4017,
+  "collectionInterval" : 5.000000000,
+  "blockListRefreshInterval" : 60.000000000,
+  "webApplicationMonitor" : true
+}

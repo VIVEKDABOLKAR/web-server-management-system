@@ -118,7 +118,7 @@
                                     <mainClass>wsms.agent.Main</mainClass>
                                 </transformer>
                             </transformers>
-                            <finalName>server-agent-v4.0.2</finalName>
+                            <finalName>server-agent-v4.1.0</finalName>
                         </configuration>
                     </execution>
                 </executions>

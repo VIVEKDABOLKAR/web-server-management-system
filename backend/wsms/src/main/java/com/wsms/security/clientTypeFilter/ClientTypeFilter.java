@@ -31,14 +31,12 @@ public class ClientTypeFilter extends OncePerRequestFilter {
         boolean isWebClient = !"WEB".equals(clientType);
         boolean webClientAllowed = adminRuntimeConfigService.isAllowWebClientRequests();
         String uri = request.getRequestURI();
- 
-        System.out.println("[Incoming request]" + "Client Type :- "+ clientType + "Api EndPoint :- " + uri);
 
-        if (!webClientAllowed && isWebClient ) {
-           response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-           response.getWriter().write("Web client requests are disabled by admin configuration");
-           return;
-       }
+//        if (!webClientAllowed && isWebClient ) {
+//            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+//            response.getWriter().write("Web client requests are disabled by admin configuration");
+//            return;
+//        }
 
         filterChain.doFilter(request, response);
     }

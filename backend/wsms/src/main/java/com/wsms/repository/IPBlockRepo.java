@@ -14,5 +14,9 @@ public interface IPBlockRepo extends JpaRepository<IPBlock,Long> {
 
     List<IPBlock> findByServerId(Long id);
 
-    IPBlock findByServerIdAndClientIp(Long serverId, String clientIp);
+    IPBlock findTopByServerIdAndClientIpOrderByIdDesc(Long serverId, String clientIp);
+
+    List<IPBlock> findAllByServerIdAndClientIpOrderByIdDesc(Long serverId, String clientIp);
+
+    void deleteAllByServerId(Long serverId);
 }

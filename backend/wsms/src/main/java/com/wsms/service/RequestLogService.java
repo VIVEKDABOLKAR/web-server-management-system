@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,25 +48,8 @@ public class RequestLogService implements RequestLogServiceInterface {
                 .statusCode(request.getStatusCode())
                 .build();
 
-        //create ipblock and save in the ipblock table for the first time
-        String clientIP = requestLog.getClientIP();
-        if(ipBlockService.isClientIP(clientIP,server.getId())){
-             IPBlock ipBlock = ipBlockService.update(server.getId(),clientIP);
-            log.info("Request IPBlock lastRequest updated successfully -ID : {} ",ipBlock.getId());
-
-        }
-        else{
-            IPBlock ipBlock = IPBlock.builder()
-                    .serverId(requestLog.getId())
-                    .clientIp(requestLog.getClientIP())
-                    .serverId(requestLog.getServer().getId())
-                    .status("UNBLOCK")
-                    .lastRequest(LocalDateTime.now())
-                    .build();
-
-            IPBlock savedIPBlock = ipBlockService.save(ipBlock);
-            log.info("Request IPBlock saved successfully -ID : {}",savedIPBlock.getId());
-        }
+                IPBlock ipBlock = ipBlockService.touchOrCreateForRequest(server.getId(), requestLog.getClientIP());
+                log.info("Request IPBlock touched successfully -ID : {}", ipBlock.getId());
 
 
         RequestLog savedLog = requestLogRepository.save(requestLog);

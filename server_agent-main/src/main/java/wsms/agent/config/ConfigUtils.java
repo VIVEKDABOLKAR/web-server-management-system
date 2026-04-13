@@ -77,6 +77,10 @@ public class ConfigUtils {
             );
         }
 
+        if (args.containsKey("webApplicationMonitor")) {
+            config.setWebApplicationMonitor(Boolean.parseBoolean(args.get("webApplicationMonitor")));
+        }
+
         try {
             mapper.writerWithDefaultPrettyPrinter()
                     .writeValue(Paths.get(path).toFile(), config);

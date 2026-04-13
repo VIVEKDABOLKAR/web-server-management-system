@@ -29,6 +29,8 @@ public class ServerService implements ServerServiceInterface {
     private final UserRepository userRepository;
     private final OSTypeRepo osTypeRepo;
     private final WebServerTypeRepo webServerTypeRepo;
+    private final RequestLogRepository requestLogRepository;
+    private final IPBlockRepo ipBlockRepo;
 
     /**
      * add server to the db
@@ -158,6 +160,8 @@ public class ServerService implements ServerServiceInterface {
     @Transactional
     public void deleteServer(Long serverId, Long userId) {
         Server server = getServerByIdForUser(serverId, userId);
+        requestLogRepository.deleteByServerId(serverId);
+        ipBlockRepo.deleteAllByServerId(serverId);
         serverRepository.delete(server);
     }
 

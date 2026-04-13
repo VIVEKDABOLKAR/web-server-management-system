@@ -123,7 +123,7 @@ public class Server {
         @com.fasterxml.jackson.annotation.JsonIgnore
         @ToString.Exclude
         @EqualsAndHashCode.Exclude
-        private List<BlockedIp> blockedIps = new ArrayList<>();
+        private List<IPBlock> blockedIps = new ArrayList<>();
 
         @Builder.Default
         @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -131,4 +131,11 @@ public class Server {
         @ToString.Exclude
         @EqualsAndHashCode.Exclude
         private List<Alert> alerts = new ArrayList<>();
+
+        @Builder.Default
+        @OneToMany(mappedBy = "server", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        @ToString.Exclude
+        @EqualsAndHashCode.Exclude
+        private List<RequestLog> requestLogs = new ArrayList<>();
 }
