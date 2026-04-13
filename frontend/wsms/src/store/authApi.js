@@ -11,7 +11,7 @@ export const authApi = createApi({
       }
 
       headers.set("Content-Type", "application/json");
-      headers.set("X-Client-Type", "WEB")
+      headers.set("Y-Client-Type", "WEB")
       return headers;
     },
   }),

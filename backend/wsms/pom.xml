@@ -63,6 +63,11 @@
 			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.github.f4b6a3</groupId>
+			<artifactId>ulid-creator</artifactId>
+			<version>5.2.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jetbrains.pty4j</groupId>
 			<artifactId>pty4j</artifactId>
 			<version>0.13.4</version>

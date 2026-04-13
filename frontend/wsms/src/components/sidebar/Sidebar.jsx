@@ -63,12 +63,12 @@ const Sidebar = ({ isOpen, toggleOpen }) => {
       ) : (
         <div
           className={`
-            fixed md:relative left-0 top-0 h-screen w-64 z-50 md:z-0
+            fixed md:relative left-0 top-0 h-screen w-68 z- md:z-00
             bg-white dark:bg-slate-900
             border-r border-slate-200 dark:border-slate-700
             shadow-xl md:shadow-none
             rounded-r-2xl
-            transform transition-transform duration-300 ease-in-out
+            transform transition-transform duration-500 ease-in
             ${isOpen ? "translate-x-0" : "-translate-x-full"}
             flex flex-col overflow-y-auto
           `}

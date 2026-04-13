@@ -6,6 +6,7 @@ import com.wsms.entity.AlertType;
 import com.wsms.entity.Server;
 import com.wsms.repository.AlertRepository;
 import com.wsms.repository.ServerRepository;
+import com.wsms.service.interfaces.AlertServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AlertService {
+public class AlertService implements AlertServiceInterface {
 
     //DI
     private final AlertRepository alertRepository;

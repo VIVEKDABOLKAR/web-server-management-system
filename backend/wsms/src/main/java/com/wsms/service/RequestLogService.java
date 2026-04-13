@@ -8,6 +8,7 @@ import com.wsms.entity.RequestLog;
 import com.wsms.entity.Server;
 import com.wsms.repository.RequestLogRepository;
 import com.wsms.repository.ServerRepository;
+import com.wsms.service.interfaces.RequestLogServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RequestLogService {
+public class RequestLogService implements RequestLogServiceInterface {
 
     private final RequestLogRepository requestLogRepository;
     private final ServerRepository serverRepository;

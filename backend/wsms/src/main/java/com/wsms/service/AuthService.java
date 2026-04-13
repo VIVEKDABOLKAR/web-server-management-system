@@ -18,12 +18,13 @@ import com.wsms.entity.User;
 import com.wsms.entity.UserRole;
 import com.wsms.repository.UserRepository;
 import com.wsms.security.JwtService;
+import com.wsms.service.interfaces.AuthServiceInterface;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthService implements AuthServiceInterface {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
