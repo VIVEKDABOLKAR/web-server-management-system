@@ -34,3 +34,7 @@ build/
 
 # Ensure the sensitive properties file is not committed
 application-secret.properties
+
+#Log file
+*.log
+*.log.gz

@@ -1,0 +1,54 @@
+Goal
+Implement reliable automated backend tests for services, repositories, controllers, security, and critical integrations.
+
+Scope
+Included: backend/wsms Spring Boot module
+Excluded: frontend tests
+Checklist
+Foundation
+        Standardize Maven test dependencies
+        Add JUnit 5 + Mockito stack
+        Add coverage tooling and thresholds
+        Add test profile configuration
+        Define test naming conventions
+Unit Tests
+        AuthService tests
+        UserService tests
+        ServerService tests
+        PasswordResetService tests
+        SignupVerificationService tests
+        AlertService tests
+        MetricService tests
+Repository Tests
+        UserRepository query tests
+        ServerRepository query tests
+        MetricRepository query tests
+        RequestLogRepository query tests
+Controller Tests
+        AuthController
+        UserController
+        ServerController
+        MetricController
+        AlertController
+        RequestLogController
+        Admin controllers
+Security Tests
+        SecurityConfig authorization matrix
+        JwtAuthenticationFilter token behavior
+        CustomUserDetailsService user loading
+Integration Tests
+        Signup to login flow
+        Server management flow
+        Metric ingest and fetch flow
+        AOP logging smoke coverage
+        WebSocket terminal auth handshake
+CI and Quality
+        CI runs tests on every PR
+        Coverage threshold enforced
+        Flaky test handling policy
+        Bugfix requires regression test
+Success Criteria
+        Critical endpoints and services covered
+        Security paths verified
+        CI green and stable
+        Coverage target achieved
