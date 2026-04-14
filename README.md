@@ -59,3 +59,30 @@ mvn exec:java
 - Set backend database credentials in `backend/wsms/src/main/resources/application.properties`
 - Set frontend API base URL in `frontend/wsms/src/services/api.js`
 - Set agent server ID and token in `server_agent-main/config.json`
+
+## Deploy backend on Render (Free Plan)
+
+The backend is dockerized with:
+- `backend/wsms/Dockerfile`
+- `backend/wsms/.dockerignore`
+- `backend/wsms/render.yaml` (optional blueprint)
+
+### Option A: Deploy from Render Dashboard
+1. Push this repository to GitHub.
+2. In Render, create a new **Web Service** from your repo.
+3. Set **Root Directory** to `backend/wsms`.
+4. Set **Runtime** to `Docker` and plan to **Free**.
+5. Add environment variables:
+	- `SPRING_DATASOURCE_URL`
+	- `SPRING_DATASOURCE_USERNAME`
+	- `SPRING_DATASOURCE_PASSWORD`
+	- `APP_JWT_SECRET`
+	- `APP_CORS_ALLOWED_ORIGINS` (your frontend URL)
+	- `APP_BACKEND_URL` (your Render backend URL)
+6. Deploy.
+
+### Option B: Render Blueprint
+Use the `backend/wsms/render.yaml` blueprint while creating Blueprint service in Render.
+
+The container reads Render's `PORT` automatically via:
+- `server.port=${PORT:8080}`
