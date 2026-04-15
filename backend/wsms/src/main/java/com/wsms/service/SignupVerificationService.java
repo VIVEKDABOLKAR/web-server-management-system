@@ -5,6 +5,7 @@ import com.wsms.entity.User;
 import com.wsms.entity.VerificationOtp;
 import com.wsms.repository.UserRepository;
 import com.wsms.repository.VerificationOtpRepository;
+import com.wsms.service.interfaces.SignupVerificationServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class SignupVerificationService {
+public class SignupVerificationService implements SignupVerificationServiceInterface {
 
     private final UserRepository userRepository;
     private final VerificationOtpRepository tokenRepository;
@@ -56,7 +57,7 @@ public class SignupVerificationService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OTP has expired");
         }
 
-        user.setIsVerified(true);
+        user.setVerified(true);
         userRepository.save(user);
 
         token.setUsed(true);

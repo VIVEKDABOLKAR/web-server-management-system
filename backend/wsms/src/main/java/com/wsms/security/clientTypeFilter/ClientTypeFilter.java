@@ -1,16 +1,24 @@
 package com.wsms.security.clientTypeFilter;
 
+import com.wsms.service.AdminRuntimeConfigService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class ClientTypeFilter extends OncePerRequestFilter {
+
+//    constant
+    private static final String CLIENT_TYPE_HEADER = "Y-Client-Type";
+
+    private final AdminRuntimeConfigService adminRuntimeConfigService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -18,16 +26,15 @@ public class ClientTypeFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String clientType = request.getHeader("X-Client-Type");
-        //for testing blocking - client type
-        System.out.println("Client Type : " + clientType);
+        String clientType = request.getHeader(CLIENT_TYPE_HEADER);
 
-        //vallidate client type
-        // Cmt for now
-//        if (!"WEB".equals(clientType)) {
+        boolean isWebClient = !"WEB".equals(clientType);
+        boolean webClientAllowed = adminRuntimeConfigService.isAllowWebClientRequests();
+        String uri = request.getRequestURI();
+
+//        if (!webClientAllowed && isWebClient ) {
 //            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-//            response.getWriter().write("Invalid client type");
-//            System.out.println("Blocked request from IP: " + request.getRemoteAddr());
+//            response.getWriter().write("Web client requests are disabled by admin configuration");
 //            return;
 //        }
 

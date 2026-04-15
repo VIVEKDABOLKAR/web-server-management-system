@@ -34,7 +34,6 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const response = await api.get("/api/servers");
-      console.log(response.data[1]);
       const serverData = Array.isArray(response.data)
         ? response.data
         : response.data?.data || [];
@@ -61,9 +60,6 @@ const Dashboard = () => {
     return { total, active, inactive, blocked };
   }, [servers]);
 
-  /**
-   *  const which change it value when Server or searchTerm change
-   */
   const filteredServers = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) return servers;
@@ -72,8 +68,7 @@ const Dashboard = () => {
         server.serverName?.toLowerCase().includes(term) ||
         server.ipAddress?.toLowerCase().includes(term) ||
         server.osType?.name?.toLowerCase().includes(term) ||
-        server.webServerType?.name?.toLowerCase().includes(term) ||
-        server.webServerPortNo?.toLowerCase().includes(term),
+        server.webServerType?.name?.toLowerCase().includes(term)
     );
   }, [servers, searchTerm]);
 
@@ -98,7 +93,7 @@ const Dashboard = () => {
     <>
       {/* <Navbar hideDashboard={true} /> */}
       <DashboardLayout>
-        <div className=" bg-slate-100 dark:bg-slate-950 transition-colors">
+        <div className="transition-colors">
           {/* <div className="max-w-7xl mx-auto px-4 py-8"> */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             {/* dashboard title */}
@@ -111,7 +106,7 @@ const Dashboard = () => {
                 under control with a modern UI.
               </p>
             </div>
-            {/* add server button :- To Do - create buuton component addserver - reuseability :- DONE*/}
+        
             <AddButton
               title="New Server"
               onClick={() => navigate("/add-server")}
@@ -166,6 +161,7 @@ const Dashboard = () => {
             onAdd={() => navigate("/add-server")}
           />
         </div>
+        {/* </div> */}
 
         <ConfirmDialog
           isOpen={deleteDialog.isOpen}

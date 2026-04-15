@@ -42,7 +42,7 @@ public class Agent {
 
     public Agent(Config config) {
         this.config = config;
-        this.logger = new Logger(config.getConfigPath());
+        this.logger = new Logger("");
         this.cpuCollector = new CPUCollector();
         this.memoryCollector = new MemoryCollector();
         this.diskCollector = new DiskCollector("/");
@@ -101,7 +101,7 @@ public class Agent {
         logger.infof("Server ID: %s", config.getServerId());
         logger.infof("Interval: %d sec", config.getCollectionInterval().getSeconds());
         //hardcode made it dynamic
-        logger.infof("Web Application Public Url %s ", ("http://localhost" + ":" + config.getWebServerPort()));
+        logger.infof("Web Application Public Url %s ", ("http://localhost" + ":" + config.getPublishPort()));
         logger.info("========================================");
 
         try {
@@ -209,10 +209,11 @@ public class Agent {
         m.setServerStatus("ACTIVE");
 
         if (metricSender != null) {
+
             metricSender.sendMetrics(m);
+
+            metricSender.sendHeartbeat();
         }
-
-
     }
 
     private void print(Metrics m) {

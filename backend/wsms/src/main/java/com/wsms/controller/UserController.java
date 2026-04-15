@@ -1,25 +1,27 @@
 package com.wsms.controller;
 
+import com.wsms.dto.admin.AdminRuntimeConfigDto;
 import com.wsms.dto.user.ChangePasswordRequest;
 import com.wsms.dto.user.UpdateProfileRequest;
 import com.wsms.dto.user.UserProfileResponse;
 import com.wsms.entity.ServerStatus;
 import com.wsms.entity.User;
-import com.wsms.repository.AlertRepository;
-import com.wsms.repository.ServerRepository;
-import com.wsms.repository.UserRepository;
+// ...existing code...
+import com.wsms.service.AdminRuntimeConfigService;
 import com.wsms.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import com.wsms.exception.UserNotFoundException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -29,6 +31,23 @@ public class UserController {
     //removed repository use directly into controller
     //added service layer for user module
     private final UserService userService;
+    private final AdminRuntimeConfigService adminRuntimeConfigService;
+
+    /**
+     * endpoint :- Get /api/users/search?username=xxx ;
+     * req Body :- query parameter username;
+     * res Body :- list of matching users with id, username, email;
+     * Desc :- search users by username for admin server assignment;
+     */
+    @GetMapping("/search")
+    public ResponseEntity<List<Map<String, Object>>> searchUsers(
+            @RequestParam(value = "username", defaultValue = "") String username) {
+        List<Map<String, Object>> users = userService.searchUsersByUsername(username);
+        if (users.isEmpty()) {
+            throw new UserNotFoundException("No users found with username: " + username);
+        }
+        return ResponseEntity.ok(users);
+    }
 
     /**
      * endpoint :- Get /api/users/profile ;
@@ -62,5 +81,30 @@ public class UserController {
         return ResponseEntity.ok(userService.changePassword(request));
     }
 
+    /**
+     * endpoint :- Get /api/users/is_admin ;
+     * req Body :- null;
+     * res Body :- if admin return true or return false ;
+     * Desc :- vaild-test for user is admin or not
+     */
+    @GetMapping("/is_admin")
+    public ResponseEntity<Boolean> isAdmin(Authentication authentication) {
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        return ResponseEntity.ok(isAdmin);
+    }
+
+    /**
+     * endpoint :- Get /api/users/config ;
+     * req Body :- null;
+     * res Body :- return config ;
+     * Desc :- fetch ui config from db
+     */
+    @GetMapping("/config")
+    public ResponseEntity<AdminRuntimeConfigDto> getConfig() {
+        return ResponseEntity.ok(adminRuntimeConfigService.getConfig());
+    }
 
 }

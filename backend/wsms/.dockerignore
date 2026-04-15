@@ -1,0 +1,9 @@
+target
+logs
+.idea
+.vscode
+*.iml
+application-secret.properties
+.git
+.gitignore
+README.md

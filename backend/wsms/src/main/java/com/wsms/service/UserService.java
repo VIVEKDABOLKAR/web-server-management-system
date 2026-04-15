@@ -1,6 +1,7 @@
 package com.wsms.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -18,18 +19,43 @@ import com.wsms.entity.User;
 import com.wsms.repository.AlertRepository;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
+import com.wsms.service.interfaces.UserServiceInterface;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserServiceInterface {
 
     // DI
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;
     private final AlertRepository alertRepository;
     private final PasswordEncoder passwordEncoder;
+
+    /**
+     * Search users by username for admin user assignment
+     * Returns list of verified users matching the search term
+     */
+    public List<Map<String, Object>> searchUsersByUsername(String username) {
+        if (username == null || username.trim().isEmpty()) {
+            return List.of();
+        }
+
+        List<User> users = userRepository.searchByUsernameContainingIgnoreCase(username);
+
+        return users.stream()
+                .limit(10) // Limit to 10 results
+                .map(user -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", user.getId());
+                    map.put("username", user.getUsername());
+                    map.put("email", user.getEmail());
+                    map.put("fullName", user.getFullName());
+                    return map;
+                })
+                .toList();
+    }
 
     /**
      * fetch user profile and server details base on user email
@@ -53,7 +79,7 @@ public class UserService {
                 .email(user.getEmail())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
-                .isVerified(user.getIsVerified())
+                .isVerified(user.isVerified())
                 .totalServers(totalServers)
                 .activeServers(activeServers)
                 .totalAlerts(totalAlerts)
@@ -126,5 +152,16 @@ public class UserService {
 
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
+
+    public User getUserByServerId(Long serverId) {
+
+        return userRepository.findByServersId(serverId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found By server ID"));
+    }
+
+    public void delete(Long userId) {
+
+        userRepository.deleteById(userId);
     }
 }

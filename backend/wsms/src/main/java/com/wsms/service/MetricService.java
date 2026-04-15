@@ -15,6 +15,7 @@ import com.wsms.entity.Server;
 import com.wsms.entity.ServerStatus;
 import com.wsms.repository.MetricRepository;
 import com.wsms.repository.ServerRepository;
+import com.wsms.service.interfaces.MetricServiceInterface;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MetricService {
+public class MetricService implements MetricServiceInterface {
 
     private final MetricRepository metricRepository;
     private final ServerRepository serverRepository;
@@ -32,8 +33,7 @@ public class MetricService {
      */
     @Transactional
     public MetricResponse submitMetric(MetricSubmitRequest request) {
-
-        log.info("Receiving metric from server ID: {}", request.getServerId());
+//        log.info("Receiving metric from server ID: {}", request.getServerId());
 
         // 1. Validate server
         Server server = serverRepository.findById(request.getServerId())
@@ -42,16 +42,16 @@ public class MetricService {
                         "Server not found with ID: " + request.getServerId()
                 ));
 
-        // 2. Update server status
-        ServerStatus status = ServerStatus.ACTIVE;
-
-        if (server.getStatus() != status) {
-            server.setStatus(status);
-            server.setLastHeartbeat(LocalDateTime.now()); 
+//        // 2. Update server status
+//        ServerStatus status = ServerStatus.ACTIVE;
+//
+//        if (server.getStatus() != status) {
+//            server.setStatus(status);
+            server.setLastHeartbeat(LocalDateTime.now());
             serverRepository.save(server);
-
-            log.info("Server {} status updated to {}", server.getServerName(), status);
-        }
+//
+//            log.info("Server {} status updated to {}", server.getServerName(), status);
+//        }
 
         // 3. Map request → entity (FIXED)
         Metric metric = Metric.builder()
@@ -68,7 +68,6 @@ public class MetricService {
                 .blockedProcesses(request.getBlockedProcesses())
                 .totalProcesses(request.getTotalProcesses())
                 .requestCount(request.getRequestCount())
-
                 .build();
 
         // 4. Save metric

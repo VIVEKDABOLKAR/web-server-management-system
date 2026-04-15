@@ -39,11 +39,12 @@ const AdminMenuItems = [
   {
     id: "settings",
     label: "Settings",
-    path: "/admin/settings",
+    path: "#",
     icon: <SettingsIcon className="w-5 h-5" />,
+    badge: null,
     submenu: [
-      { label: "Profile", path: "/admin/profile" },
-      { label: "Preferences", path: "/admin/preferences" },
+      { label: "Profile", path: "/profile" },
+       { label: "Configuration", path: "/admin/config" },
     ],
   },
 ];

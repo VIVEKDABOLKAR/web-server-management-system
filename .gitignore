@@ -4,3 +4,6 @@ keys/
 
 *.sh text eol=
 *.sh.template text eol=lf
+
+.env.development
+.env.production

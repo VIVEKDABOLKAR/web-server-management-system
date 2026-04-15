@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 /** Single menu item */
 const SidebarMenuItem = ({
@@ -8,6 +8,11 @@ const SidebarMenuItem = ({
   isActive,
   handleLinkClick,
 }) => {
+  const location = useLocation();
+  // For submenu highlighting, match full path + search
+  const isSubActive = (subPath) => {
+    return location.pathname + location.search === subPath;
+  };
   return (
     <div>
       <button
@@ -18,7 +23,10 @@ const SidebarMenuItem = ({
           w-full flex items-center justify-between px-4 py-3 rounded-lg
           transition-all duration-200 font-medium text-sm
           ${
-            isActive(item.path)
+            // Highlight parent only if its path matches exactly and it has no submenu
+            item.path !== "#" &&
+            location.pathname === item.path &&
+            !item.submenu
               ? "bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300"
               : "text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800"
           }
@@ -50,11 +58,11 @@ const SidebarMenuItem = ({
             <Link
               key={i}
               to={subitem.path}
-              onClick={handleLinkClick}
+              // Highlight submenu if full path+search matches
               className={`
                 block px-4 py-2 rounded-lg text-sm
                 ${
-                  isActive(subitem.path)
+                  isSubActive(subitem.path)
                     ? "bg-sky-100 dark:bg-sky-900 text-sky-700"
                     : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                 }

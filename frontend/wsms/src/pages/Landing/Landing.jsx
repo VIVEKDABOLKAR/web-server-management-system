@@ -16,11 +16,14 @@ import alertIcon from  "../../assets/svg/alert.svg"
 import ipManageIcon from  "../../assets/svg/ipManage.svg"
 import multiIcon from  "../../assets/svg/multi.svg"
 import trackIcon from  "../../assets/svg/track.svg"
+import Moon from "../../components/svg/Moon";
+import Sun from "../../components/svg/Sun";
 
 const Landing = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // If user is already logged in, redirect to dashboard
@@ -29,10 +32,15 @@ const Landing = () => {
     }
   }, [token, navigate]);
 
+  useEffect(() => {
+    document.title = "Web Server Management System";
+  }, []);
+
   const scrollToSection = (id) => {
     const section = document.getElementById(id);
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
+      setIsMobileMenuOpen(false);
     }
   };
 
@@ -76,23 +84,23 @@ const Landing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[rgb(80,82,88)] transition-colors">
+    <div className="min-h-screen bg-linear-to-r from-blue-300 via-cyan-200 to-indigo-300 dark:bg-linear-to-r dark:from-black/80 dark:via-gray-800 dark:to-gray-600 transition-colors">
       {/* Navigation */}
-      <nav className="sticky top-0 left-0 w-full z-50 bg-black/80 backdrop-blur border-b border-white/10  ">
+      <nav className="sticky top-0 left-0 w-full z-50 border-b border-white/20 bg-white/10 dark:bg-slate-900/30 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.15)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center shadow">
-                <span className="text-white font-bold text-xl">W</span>
+                <span className="dark:text-white font-bold text-xl">W</span>
               </div>
-              <span className="text-2xl font-bold text-white tracking-wide">
+              <span className="text-xl font-bold dark:text-white tracking-wide">
                 WSMS
               </span>
             </div>
 
             {/* Section Links */}
-            <div className="hidden md:flex items-center gap-12 text-white text-lg font-semibold tracking-wide ml-8">
+            <div className="hidden md:flex items-center gap-7 text-black dark:text-white text-sm font-medium tracking-wide ml-8">
               <NavLinkButton label="Home" section="home" scrollToSection={scrollToSection} />
               <NavLinkButton label="Features" section="features" scrollToSection={scrollToSection} />
               <NavLinkButton label="Stats" section="stats" scrollToSection={scrollToSection} />
@@ -101,18 +109,58 @@ const Landing = () => {
             </div>
 
             {/* Auth Buttons */}
-            <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-2">
               <Button
-                text={isDarkMode ? "☀️" : "🌙"}
+                text={isDarkMode ? <Sun /> : <Moon />}
                 onClick={toggleDarkMode}
                 title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                className="p-2 text-2xl bg-white/10 hover:bg-white/20"
+                className="p-2 rounded-md hover:bg-white/20 dark:hover:bg-slate-700/40 transition"
                 isDarkMode={isDarkMode}
               />
-              <Button text="Login" to="/login" isDarkMode={isDarkMode} className="px-6 py-2  rounded  font-medium text-sm transition" />
-              <Button text="Sign Up" to="/signup" isDarkMode={isDarkMode} className="px-6 py-2  rounded  transition font-medium text-sm shadow" />
+              <Button text="Login" to="/login" isDarkMode={isDarkMode} className="px-4 py-2 rounded-md font-medium text-xs transition" />
+              <Button text="Sign Up" to="/signup" isDarkMode={isDarkMode} className="px-4 py-2 rounded-md transition font-medium text-xs shadow" />
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-white/20 dark:hover:bg-slate-700/40 transition"
+              aria-label="Toggle menu"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
+
+          {/* Mobile Menu */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden pb-4">
+              <div className="rounded-xl border border-white/20 bg-black/35 dark:bg-slate-900/45 backdrop-blur-xl p-3 space-y-2 text-sm text-white shadow-lg">
+                <button type="button" onClick={() => scrollToSection("home")} className="w-full text-left rounded-md px-3 py-2 hover:bg-white/15 transition">Home</button>
+                <button type="button" onClick={() => scrollToSection("features")} className="w-full text-left rounded-md px-3 py-2 hover:bg-white/15 transition">Features</button>
+                <button type="button" onClick={() => scrollToSection("stats")} className="w-full text-left rounded-md px-3 py-2 hover:bg-white/15 transition">Stats</button>
+                <button type="button" onClick={() => scrollToSection("how")} className="w-full text-left rounded-md px-3 py-2 hover:bg-white/15 transition">How It Works</button>
+                <button type="button" onClick={() => scrollToSection("cta")} className="w-full text-left rounded-md px-3 py-2 hover:bg-white/15 transition">Get Started</button>
+                <div className="pt-2 border-t border-white/20 flex items-center gap-2">
+                  <Button
+                    text={isDarkMode ? <Sun /> : <Moon />}
+                    onClick={toggleDarkMode}
+                    title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                    className="p-2 rounded-md hover:bg-white/20 dark:hover:bg-slate-700/40 transition"
+                    isDarkMode={isDarkMode}
+                  />
+                  <Button text="Login" to="/login" isDarkMode={isDarkMode} className="px-4 py-2 rounded-md font-medium text-xs transition" />
+                  <Button text="Sign Up" to="/signup" isDarkMode={isDarkMode} className="px-4 py-2 rounded-md transition font-medium text-xs shadow" />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -125,17 +173,17 @@ const Landing = () => {
             <h1 className="text-6xl font-bold mb-10 tracking-tight">
               <span
                 className={`bg-clip-text text-transparent ${isDarkMode
-                  ? "bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-400"
-                  : "bg-gradient-to-r from-black via-gray-800 to-gray-600"
+                  ? "bg-linear-to-r from-blue-400 via-cyan-300 to-indigo-400"
+                  : "bg-linear-to-r from-black/80 via-gray-800 to-gray-600"
                   }`}
               >
-                Web Server Monitoring
+                Web Server Managment System
               </span>
               <br />
               <span
-                className={`bg-clip-text text-transparent mt-6 ${isDarkMode
-                  ? "bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400"
-                  : "bg-gradient-to-r from-gray-900 via-gray-700 to-gray-500"
+                className={`bg-clip-text text-transparent mt-6 text-5xl ${isDarkMode
+                  ? "bg-linear-to-r from-purple-400 via-blue-400 to-cyan-400"
+                  : "bg-linear-to-r from-gray-900 via-gray-700 to-gray-500"
                   }`}
               >
                 Made Simple
@@ -146,14 +194,14 @@ const Landing = () => {
               className={`text-xl mb-8 max-w-3xl mx-auto leading-relaxed ${isDarkMode ? "text-white" : "text-black"
                 }`}
             >
-              Monitor, manage, and optimize your web servers with real-time
-              metrics, intelligent alerts, and comprehensive performance
-              analytics—all from one powerful dashboard.
+              Manage, monitor, and optimize your web servers with real-time
+              metrics, intelligent alerts, and complete server operations
+              controls from one powerful dashboard.
 
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-              <Button text="Start Moitoring Free" to="/signup" isDarkMode={isDarkMode} className="px-8 py-4 rounded transition font-bold shadow text-lg" />
+              <Button text="Start Managing Free" to="/signup" isDarkMode={isDarkMode} className="px-8 py-4 rounded transition font-bold shadow text-lg" />
             </div>
           </div>
         </div>
@@ -167,11 +215,11 @@ const Landing = () => {
         </div>
       </div>
 
-      <div className="h-8 bg-white/10" />
+      <div className="h-1 bg-white/5" />
 
       <div
         id="features"
-        className={`features-section scroll-mt-28 ${isDarkMode ? "features-dark" : "features-light"
+        className={`features-section scroll-mt-1 ${isDarkMode ? "features-dark" : "features-light"
           }`}
       >
         <div className="features-content">
@@ -208,22 +256,22 @@ const Landing = () => {
       </div>
 
 
-      <div className="h-6 bg-white/10" />
+      <div className="h-1 bg-white/5" />
       {/* Stats Section */}
       <div
         id="stats"
-        className={`scroll-mt-28 rounded-2xl p-10 shadow-xl hero-bg ${isDarkMode ? "dark-mode text-white" : "light-mode text-black"
+        className={`scroll-mt-10 rounded-2xl p-10 shadow-xl hero-bg ${isDarkMode ? "dark-mode text-white" : "light-mode text-black"
           }`}
       >
         <h2 className="text-4xl font-bold text-center mb-3">
-          System Monitoring at Scale
+          Server Management at Scale
         </h2>
 
         <p
           className={`text-center mb-10 text-base max-w-2xl mx-auto ${isDarkMode ? "text-slate-200" : "text-black"
             }`}
         >
-          Powerful insights and real-time monitoring for all your servers
+          Powerful insights, real-time observability, and active management for all your servers
         </p>
 
         {/* Large Cards */}
@@ -331,7 +379,7 @@ const Landing = () => {
       <>
         <div
           id="how"
-          className={`how-section mt-16 scroll-mt-28 ${isDarkMode ? "how-dark" : "how-light"
+          className={`how-section mt-1 scroll-mt-5 ${isDarkMode ? "how-dark" : "how-light"
             }`}
         >
           <div className="how-content">
@@ -372,9 +420,9 @@ const Landing = () => {
 
               <div className="how-card">
                 <div className="how-step blue">4</div>
-                <h3 className="how-card-title">Monitor</h3>
+                <h3 className="how-card-title">Manage & Monitor</h3>
                 <p className="how-card-desc">
-                  Watch real-time metrics on your dashboard
+                  Manage server operations with live health and performance data
                 </p>
               </div>
 
@@ -385,12 +433,11 @@ const Landing = () => {
       </>
 
 
-      <div className="h-6 bg-white/10" />
-
+      <div className="h-1 bg-white/5" />
 
       <>
         {/* Final CTA */}
-        <div id="cta" className={`cta-section ${isDarkMode ? "cta-dark" : "cta-light"}`}>
+        <div id="cta" className={`cta-section mt-16 scroll-mt-20 ${isDarkMode ? "cta-dark" : "cta-light"}`}>
 
           <div className="cta-content">
             <h2 className="cta-title">
@@ -398,7 +445,7 @@ const Landing = () => {
             </h2>
 
             <p className="cta-text">
-              Join now and start monitoring your servers in minutes
+              Join now and start managing your servers in minutes
             </p>
 
             {/* <button
@@ -419,19 +466,27 @@ const Landing = () => {
 
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 mt-20 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+      <footer className="mt-16 border-t border-white/25 bg-white/35 dark:bg-slate-900/45 backdrop-blur-xl transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center shadow">
+              <div className="w-9 h-9 bg-blue-600 rounded-md flex items-center justify-center shadow">
                 <span className="text-white font-bold text-sm">W</span>
               </div>
-              <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                WSMS
-              </span>
+              <div>
+                <p className="text-lg font-bold text-slate-900 dark:text-slate-100">WSMS</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Web Server Management System</p>
+              </div>
             </div>
-            <div className="text-gray-600 dark:text-gray-400 text-sm">
-              © 2026 Web Server Monitoring System. All rights reserved.
+
+            <div className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              Unified platform for server management, monitoring, security actions,
+              and operational visibility in one dashboard.
+            </div>
+
+            <div className="md:text-right text-sm text-slate-600 dark:text-slate-400">
+              <p>Built for modern infrastructure teams.</p>
+              <p className="mt-2">© 2026 Web Server Management System</p>
             </div>
           </div>
         </div>

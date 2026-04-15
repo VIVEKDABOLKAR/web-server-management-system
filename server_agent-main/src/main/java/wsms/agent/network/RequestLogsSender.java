@@ -35,12 +35,12 @@ public class RequestLogsSender {
             payload.put("clientIP", requestLog.getClientIP());
             payload.put("method", requestLog.getMethod());
             payload.put("url", requestLog.getUrl());
-            payload.put("port", requestLog.getPort());
+            payload.put("statusCode", requestLog.getStatusCode());
 
             String jsonPayload = JsonUtils.toJson(payload);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(backendUrl + "/api/agent/submitRequest"))
+                    .uri(URI.create(backendUrl + "/api/agent/request"))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + authToken)
                     .timeout(Duration.ofSeconds(10))
@@ -59,5 +59,36 @@ public class RequestLogsSender {
             logger.errorf("Error sending request log: %s", ex.getMessage());
             return false;
         }
+    }
+
+    public boolean isUserVerified(String serverId, String clientIp) {
+        try{
+                Map<String,Object> payload = new HashMap<>();
+                payload.put("serverId",serverId);
+                payload.put("clientIp",clientIp);
+
+                String jsonPayload = JsonUtils.toJson(payload);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(backendUrl+"/api/agent/isBlock"))
+                        .header("Content-Type","application/json")
+                        .header("Authorization","Bearer "+authToken)
+                        .timeout(Duration.ofSeconds(5))
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                        .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            //logger.info("response" + response.body());
+
+            boolean isVerified = Boolean.parseBoolean(response.body());
+            return  isVerified;
+
+
+        }
+        catch(Exception e){
+            logger.errorf("Error in verification", e.getMessage());
+            return false;
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 package com.wsms.service;
 
+import com.wsms.service.interfaces.S3ServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Service
 @RequiredArgsConstructor
-public class S3Service {
+public class S3Service implements S3ServiceInterface {
 
     private final S3Client s3Client;
 

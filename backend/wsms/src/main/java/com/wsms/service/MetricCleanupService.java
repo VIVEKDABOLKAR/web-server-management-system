@@ -1,6 +1,7 @@
 package com.wsms.service;
 
 import com.wsms.repository.MetricRepository;
+import com.wsms.service.interfaces.MetricCleanupServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MetricCleanupService {
+public class MetricCleanupService implements MetricCleanupServiceInterface {
 
     private final MetricRepository metricRepository;
 

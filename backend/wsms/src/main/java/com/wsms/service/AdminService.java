@@ -4,16 +4,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.wsms.entity.Server;
 import com.wsms.entity.User;
+import com.wsms.entity.UserRole;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
+import com.wsms.entity.UserStatus;
+import com.wsms.service.interfaces.AdminServiceInterface;
 
 @Service
-public class AdminService {
+public class AdminService implements AdminServiceInterface {
 
     @Autowired
     private UserRepository userRepository;
@@ -21,9 +25,6 @@ public class AdminService {
     @Autowired
     private ServerRepository serverRepository;
 
-    /**
-     * Fetch all users and all servers for admin dashboard
-     */
     public Map<String, Object> getDashboardData() {
         Map<String, Object> data = new HashMap<>();
         List<User> users = userRepository.findAll();
@@ -31,5 +32,33 @@ public class AdminService {
         data.put("users", users);
         data.put("servers", servers);
         return data;
+    }
+
+        @Transactional
+        public void updateUserStatus(Long userId, boolean isActive) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        user.setStatus(isActive ? UserStatus.ACTIVE : UserStatus.BLOCKED);
+        userRepository.saveAndFlush(user);
+    }
+
+    @Transactional
+    public void updateUserRole(Long userId, String roleValue) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        if (roleValue == null || roleValue.isBlank()) {
+            throw new RuntimeException("Role is required");
+        }
+
+        UserRole role;
+        try {
+            role = UserRole.valueOf(roleValue.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException("Invalid role: " + roleValue);
+        }
+
+        user.setRole(role);
+        userRepository.saveAndFlush(user);
     }
 }

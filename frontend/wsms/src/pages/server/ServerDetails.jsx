@@ -8,7 +8,6 @@ import ServerInfoCard from "../../components/server/server_details/ServerInfoCar
 import AgentStatusCard from "../../components/server/server_details/AgentStatusCard";
 import MetricsOverview from "../../components/server/MetricsOverview";
 import PerformanceTrends from "../../components/server/PerformanceTrends";
-import MetricsHistoryTable from "../../components/server/server_details/MetricsHistoryTable";
 
 const ServerDetails = () => {
   const { id } = useParams();
@@ -95,7 +94,7 @@ const ServerDetails = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+      <div className="min-h-full bg-linear-to-br from-slate-100 via-cyan-50 to-blue-100 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
@@ -104,7 +103,7 @@ const ServerDetails = () => {
             </h1>
             <button
               onClick={handleDeleteServer}
-              className="bg-white dark:bg-slate-800 text-red-600 dark:text-red-400 border border-red-300 dark:border-red-600 px-4 py-2 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition text-sm font-medium"
+              className="bg-white/85 dark:bg-slate-800/85 text-red-600 dark:text-red-400 border border-red-300 dark:border-red-600 px-4 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition text-sm font-medium shadow-sm"
             >
               Delete Server
             </button>
@@ -121,15 +120,19 @@ const ServerDetails = () => {
 
           {/* Performance Trends Charts */}
           {latestMetrics && (
-            <>
+          
               <PerformanceTrends metrics={metrics} />
-              <MetricsHistoryTable metrics={metrics} latestMetrics={latestMetrics} />
-            </>
+          
           )}
 
           {/* Alerts and Blocked IPs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <AlertList serverId={id} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <AlertList
+              serverId={id}
+              maxItems={10}
+              fixedHeightClass="h-[420px]"
+              navigateToAlertOnClick
+            />
             <BlockedIpList serverId={id} />
           </div>
         </div>

@@ -30,10 +30,13 @@ public class InstallScript {
     @Value("${app.agent.jar-url}")
     private String jarUrl;
 
+    @Value("${app.agent.jar-name}")
+    private String jarName;
+
     private final S3Service s3Service;
 
     public String generatePublicTemplate() {
-        return renderTemplate("", "", "", "", DEFAULT_COLLECTION_INTERVAL);
+        return renderTemplate("", "", "", "", DEFAULT_COLLECTION_INTERVAL, 7088, 4017, true);
     }
 
     public String generateScript(Server server, String backendUrl) {
@@ -42,17 +45,33 @@ public class InstallScript {
                 server.getAgentToken(),
                 server.getServerName(),
                 backendUrl,
-                DEFAULT_COLLECTION_INTERVAL
+                DEFAULT_COLLECTION_INTERVAL,
+                7088,
+                4017,
+                true
         );
     }
 
-    public String generateScriptAndUpload(Server server, String backendUrl) {
+    public String generateScriptAndUpload(
+            Server server,
+            String backendUrl,
+            int webServerPort,
+            int publishPort,
+            String jarName,
+            String jarUrl,
+            boolean webApplicationMonitor) {
+        System.out.println(jarUrl + " " + jarName);
          String renderedTemplate = renderTemplate(
+                 jarName,
+                jarUrl,
                 String.valueOf(server.getId()),
                 server.getAgentToken(),
                 server.getServerName(),
                 backendUrl,
-                DEFAULT_COLLECTION_INTERVAL
+                DEFAULT_COLLECTION_INTERVAL,
+                webServerPort,
+                publishPort,
+                webApplicationMonitor
         );
 
          //save renderTemplate as install-script-{server.id}.sh
@@ -73,17 +92,66 @@ public class InstallScript {
             String agentToken,
             String serverName,
             String backendUrl,
-            String collectionInterval
+            String collectionInterval,
+            int webServerPort,
+            int publishPort,
+            boolean webApplicationMonitor
     ) {
         String template = readTemplate();
 
         return template
                 .replace("__JAR_URL__", escapeForDoubleQuotes(jarUrl))
+                .replace("__JAR_NAME__", escapeForDoubleQuotes(jarName))
                 .replace("__SERVER_ID__", escapeForDoubleQuotes(serverId))
                 .replace("__AGENT_TOKEN__", escapeForDoubleQuotes(agentToken))
                 .replace("__SERVER_NAME__", escapeForDoubleQuotes(serverName))
                 .replace("__BACKEND_URL__", escapeForDoubleQuotes(backendUrl))
-                .replace("__COLLECTION_INTERVAL__", escapeForDoubleQuotes(collectionInterval));
+                .replace("__COLLECTION_INTERVAL__", escapeForDoubleQuotes(collectionInterval))
+                .replace("__WEB_SERVER_HOST__", escapeForDoubleQuotes("::1"))
+                .replace("__WEB_SERVER_PORT__", escapeForDoubleQuotes(String.valueOf(webServerPort)))
+                .replace("__PUBLISH_PORT__", escapeForDoubleQuotes(String.valueOf(publishPort)))
+                .replace("__WEB_APPLICATION_MONITOR__", escapeForDoubleQuotes(String.valueOf(webApplicationMonitor)));
+    }
+
+    private String renderTemplate(
+            String jarName,
+            String jarUrl,
+            String serverId,
+            String agentToken,
+            String serverName,
+            String backendUrl,
+            String collectionInterval,
+            int webServerPort,
+            int publishPort,
+            boolean webApplicationMonitor
+    ) {
+        if(jarName == null || jarUrl == null) {
+            renderTemplate(
+                    serverId,
+                    agentToken,
+                    serverName,
+                    backendUrl,
+                    collectionInterval,
+                    webServerPort,
+                    publishPort,
+                    webApplicationMonitor
+            );
+        }
+
+        String template = readTemplate();
+
+        return template
+                .replace("__JAR_URL__", escapeForDoubleQuotes(jarUrl))
+                .replace("__JAR_NAME__", escapeForDoubleQuotes(jarName))
+                .replace("__SERVER_ID__", escapeForDoubleQuotes(serverId))
+                .replace("__AGENT_TOKEN__", escapeForDoubleQuotes(agentToken))
+                .replace("__SERVER_NAME__", escapeForDoubleQuotes(serverName))
+                .replace("__BACKEND_URL__", escapeForDoubleQuotes(backendUrl))
+                .replace("__COLLECTION_INTERVAL__", escapeForDoubleQuotes(collectionInterval))
+                .replace("__WEB_SERVER_HOST__", escapeForDoubleQuotes("::1"))
+                .replace("__WEB_SERVER_PORT__", escapeForDoubleQuotes(String.valueOf(webServerPort)))
+                .replace("__PUBLISH_PORT__", escapeForDoubleQuotes(String.valueOf(publishPort)))
+                .replace("__WEB_APPLICATION_MONITOR__", escapeForDoubleQuotes(String.valueOf(webApplicationMonitor)));
     }
 
     private String readTemplate() {

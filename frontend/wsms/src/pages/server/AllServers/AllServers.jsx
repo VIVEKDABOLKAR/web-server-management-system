@@ -24,20 +24,16 @@ const AllServers = () => {
     serverName: "",
   });
 
- 
   const handleSearchChange = (term) => setSearchTerm(term);
-
 
   const handleView = (id) => {
     navigate(`/servers/${id}`);
   };
 
-
   const handleAdd = () => {
     navigate("/add-server");
   };
 
- 
   const handleDelete = (id, name) => {
     setDeleteDialog({
       isOpen: true,
@@ -45,7 +41,6 @@ const AllServers = () => {
       serverName: name,
     });
   };
-
 
   const confirmDelete = async () => {
     try {
@@ -60,7 +55,6 @@ const AllServers = () => {
       alert("Failed to delete server");
     }
   };
-
 
   const filteredServers = servers.filter((server) => {
     const term = searchTerm.toLowerCase();
@@ -85,14 +79,22 @@ const AllServers = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6 bg-slate-100 dark:bg-slate-950 min-h-screen">
+      <div className="rounded-2xl border border-slate-200 bg-white/85 p-6 shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/75">
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-            All Servers
+            {statusFilter === "active"
+              ? "Active Servers"
+              : statusFilter === "inactive"
+                ? "Inactive Servers"
+                : "All Servers"}
           </h1>
           <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
-            View, search, and manage all your servers in one place.
+            {statusFilter === "active"
+              ? "View, search, and manage all your active servers."
+              : statusFilter === "inactive"
+                ? "View, search, and manage all your inactive servers."
+                : "View, search, and manage all your servers in one place."}
           </p>
         </div>
 

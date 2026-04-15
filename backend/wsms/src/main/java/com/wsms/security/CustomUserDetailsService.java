@@ -1,5 +1,6 @@
 package com.wsms.security;
 
+import com.wsms.entity.UserStatus;
 import com.wsms.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
@@ -23,6 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .username(appUser.getEmail())
                 .password(appUser.getPassword())
                 .authorities("ROLE_" + appUser.getRole().name())
+                .accountLocked(appUser.getStatus().equals(UserStatus.BLOCKED))
                 .build();
     }
 }

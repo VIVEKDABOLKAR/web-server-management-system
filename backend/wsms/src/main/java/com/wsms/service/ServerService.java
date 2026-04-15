@@ -3,32 +3,34 @@ package com.wsms.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.wsms.repository.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.wsms.dto.server.AddServerRequest;
-import com.wsms.entity.OSType;
-import com.wsms.entity.Server;
-import com.wsms.entity.ServerStatus;
-import com.wsms.entity.User;
-import com.wsms.entity.WebServerType;
+import com.wsms.entity.*;
 import com.wsms.repository.OSTypeRepo;
 import com.wsms.repository.ServerRepository;
 import com.wsms.repository.UserRepository;
-import com.wsms.repository.WebServerTypeRepo;
 
+import com.wsms.repository.WebServerTypeRepo;
+import com.wsms.service.interfaces.ServerServiceInterface;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ServerService {
+public class ServerService implements ServerServiceInterface {
 
     private final ServerRepository serverRepository;
     private final UserRepository userRepository;
     private final OSTypeRepo osTypeRepo;
     private final WebServerTypeRepo webServerTypeRepo;
+    private final RequestLogRepository requestLogRepository;
+    private final IPBlockRepo ipBlockRepo;
 
     /**
      * add server to the db
@@ -45,6 +47,21 @@ public class ServerService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        System.out.println("DTO userId: " + dto.getUserId());
+        // ✅ If ADMIN + userId provided → override user
+        if (isAdmin && dto.getUserId() != null) {
+            user = userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Target user not found"
+                    ));
+        }
         OSType osType = osTypeRepo.findById(dto.getOsType().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OS Type not found"));
 
@@ -67,6 +84,7 @@ public class ServerService {
         return serverRepository.save(server);
     }
 
+
     @Transactional
     public Server updateServer(Long id, AddServerRequest dto) {
 
@@ -85,6 +103,7 @@ public class ServerService {
         WebServerType webServerType = webServerTypeRepo.findById(dto.getWebServerType().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Web Server Type not found"));
 
+        // ✅ update fields
         server.setServerName(dto.getServerName());
         server.setIpAddress(dto.getIpAddress());
         server.setDescription(dto.getDescription());
@@ -119,7 +138,9 @@ public class ServerService {
     }
 
     /**
-     * get server object based on serverId and userId (it use to resolve duplicted serverId but unique userId)
+     * get server object based on serverId and userId (it use to resolve duplicted
+     * serverId but unique userId)
+     * 
      * @param serverId
      * @param userId
      * @return Server
@@ -139,6 +160,41 @@ public class ServerService {
     @Transactional
     public void deleteServer(Long serverId, Long userId) {
         Server server = getServerByIdForUser(serverId, userId);
+        requestLogRepository.deleteByServerId(serverId);
+        ipBlockRepo.deleteAllByServerId(serverId);
         serverRepository.delete(server);
+    }
+
+    public boolean existsByIdAndUserId(Long serverId, Long userId) {
+        boolean exists = serverRepository.existsByIdAndUser_Id(serverId, userId);
+        return  exists;
+    }
+    /**
+     * get all of the server from db , only need id and lastHeartBeat
+     *
+     */
+    @Transactional(readOnly = true)
+    public List<Server> getAllServer(){
+
+        return serverRepository.findAll();
+    }
+
+    /**
+     * get all of the server from db , only need id and lastHeartBeat
+     *
+     */
+    @Transactional(readOnly = true)
+    public List<ServerHeartbeatView> getAllServerHeartBeat(){
+
+        return serverRepository.findAllProjectedBy();
+    }
+
+    @Transactional
+    public void updateServerStatus(Long serverId, ServerStatus status) {
+
+        Server server = serverRepository.findById(serverId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Server not found"));
+
+        serverRepository.updateServerStatus(server.getId(), status);
     }
 }

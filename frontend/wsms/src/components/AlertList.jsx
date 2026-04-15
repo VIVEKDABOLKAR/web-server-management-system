@@ -1,10 +1,27 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
-const AlertList = ({ serverId }) => {
+const statusPillMap = {
+  OPEN: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
+  ACKNOWLEDGED: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
+  CLOSED: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
+};
+
+const AlertList = ({
+  serverId,
+  maxItems = null,
+  fixedHeightClass = "",
+  navigateToAlertOnClick = false,
+}) => {
+  const navigate = useNavigate();
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [updatingAlertId, setUpdatingAlertId] = useState(null);
+
+  const parsedMaxItems = Number(maxItems);
+  const hasLimit = Number.isFinite(parsedMaxItems) && parsedMaxItems > 0;
 
   useEffect(() => {
     fetchAlerts();
@@ -12,15 +29,53 @@ const AlertList = ({ serverId }) => {
 
   const fetchAlerts = async () => {
     try {
-      const response = await api.get(`/api/alerts/server/${serverId}`);
-      console.log(response);
-      
-      setAlerts(response.data);
+      const endpoint = hasLimit
+        ? `/api/alerts/server/${serverId}?limit=${parsedMaxItems}`
+        : `/api/alerts/server/${serverId}`;
+      const response = await api.get(endpoint);
+      const rows = Array.isArray(response.data) ? response.data : [];
+      const sortedRows = [...rows].sort(
+        (a, b) =>
+          new Date(b?.createdAt || 0).getTime() -
+          new Date(a?.createdAt || 0).getTime(),
+      );
+      setAlerts(hasLimit ? sortedRows.slice(0, parsedMaxItems) : sortedRows);
+      setError("");
     } catch (err) {
       setError("Failed to fetch alerts");
     } finally {
       setLoading(false);
     }
+  };
+
+  const updateAlertStatus = async (alertId, nextStatus) => {
+    const statusEndpointMap = {
+      OPEN: "open",
+      ACKNOWLEDGED: "acknowledged",
+      CLOSED: "closed",
+    };
+    const endpointValue = statusEndpointMap[nextStatus];
+    if (!endpointValue) return;
+
+    try {
+      setUpdatingAlertId(alertId);
+      await api.put(`/api/alerts/${alertId}/${endpointValue}`);
+      setAlerts((prev) =>
+        prev.map((alert) =>
+          alert.id === alertId ? { ...alert, status: nextStatus } : alert,
+        ),
+      );
+      setError("");
+    } catch (err) {
+      setError(err?.response?.data?.message || "Failed to update alert status");
+    } finally {
+      setUpdatingAlertId(null);
+    }
+  };
+
+  const openAlertDetails = (alertId) => {
+    if (!navigateToAlertOnClick || !alertId) return;
+    navigate(`/alerts?alertId=${encodeURIComponent(alertId)}&serverId=${encodeURIComponent(serverId)}`);
   };
 
   if (loading) {
@@ -37,7 +92,7 @@ const AlertList = ({ serverId }) => {
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg dark:shadow-gray-900/30">
       <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-        Alerts
+        Alerts {hasLimit ? `(latest ${parsedMaxItems})` : ""}
       </h2>
 
       {error && (
@@ -51,32 +106,83 @@ const AlertList = ({ serverId }) => {
           No alerts found
         </p>
       ) : (
-        <div className="space-y-3">
+        <div
+          className={`space-y-3 ${fixedHeightClass ? `${fixedHeightClass} overflow-y-auto pr-1` : ""}`}
+        >
           {alerts.map((alert) => (
             <div
               key={alert.id}
-              className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+              onClick={() => openAlertDetails(alert.id)}
+              role={navigateToAlertOnClick ? "button" : undefined}
+              title={navigateToAlertOnClick ? "Open this alert in Alerts page" : undefined}
+              className={`border rounded-lg p-4 transition ${navigateToAlertOnClick ? "cursor-pointer" : ""} ${String(alert?.alertType || "").toUpperCase() === "SERVER_DOWN" ? "border-red-300 dark:border-red-700 bg-red-50/70 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30" : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"}`}
             >
               <div className="flex justify-between items-start mb-2">
                 <span className="font-semibold text-gray-800 dark:text-gray-200">
-                  {alert.alertType}
+                  {String(alert.alertType || "UNKNOWN").replaceAll("_", " ")}
                 </span>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                    alert.status === "active"
-                      ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
-                      : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                    statusPillMap[String(alert.status || "").toUpperCase()] ||
+                    "bg-slate-100 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300"
                   }`}
                 >
-                  {alert.status}
+                  {String(alert.status || "unknown").toUpperCase()}
                 </span>
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
-                {alert.message +" "+ alert.value}
+                {alert.message || "No message"}
+                {Number.isFinite(Number(alert?.value)) && Number.isFinite(Number(alert?.threshold))
+                  ? ` (${Number(alert.value).toFixed(2)}/${Number(alert.threshold).toFixed(2)})`
+                  : ""}
               </p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">
-                {new Date(alert.createdAt).toLocaleString()}
-              </p>
+              <div className="flex flex-wrap justify-between items-center gap-2">
+                <p className="text-xs text-gray-400 dark:text-gray-500">
+                  {new Date(alert.createdAt).toLocaleString()}
+                </p>
+
+                <div className="flex gap-2">
+                  {String(alert.status || "").toUpperCase() !== "OPEN" && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateAlertStatus(alert.id, "OPEN");
+                      }}
+                      disabled={updatingAlertId === alert.id}
+                      className="px-2.5 py-1 rounded text-xs border border-red-400 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50"
+                    >
+                      Reopen
+                    </button>
+                  )}
+                  {String(alert.status || "").toUpperCase() === "OPEN" && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateAlertStatus(alert.id, "ACKNOWLEDGED");
+                      }}
+                      disabled={updatingAlertId === alert.id}
+                      className="px-2.5 py-1 rounded text-xs border border-amber-400 text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 disabled:opacity-50"
+                    >
+                      Acknowledge
+                    </button>
+                  )}
+                  {String(alert.status || "").toUpperCase() !== "CLOSED" && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateAlertStatus(alert.id, "CLOSED");
+                      }}
+                      disabled={updatingAlertId === alert.id}
+                      className="px-2.5 py-1 rounded text-xs border border-green-400 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 disabled:opacity-50"
+                    >
+                      Close
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           ))}
         </div>

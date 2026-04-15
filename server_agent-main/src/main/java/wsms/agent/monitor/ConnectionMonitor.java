@@ -16,6 +16,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConnectionMonitor {
+    private static final int SOCKET_TIMEOUT_MS = 30000;
+    private static final int CONNECT_TIMEOUT_MS = 5000;
+
     private final int publishPort;
     private final String webServerHost;
     private final int webServerPort;
@@ -85,7 +88,7 @@ public class ConnectionMonitor {
         while (active.get()) {
             try {
                 Socket conn = listener.accept();
-                conn.setSoTimeout(30000);
+                conn.setSoTimeout(SOCKET_TIMEOUT_MS);
                 reqCount.incrementAndGet();
                 connectionPool.submit(() -> handleConnection(conn));
             } catch (Exception ex) {
@@ -101,8 +104,33 @@ public class ConnectionMonitor {
         String clientIp = conn.getInetAddress().getHostAddress();
         String method = "UNKNOWN";
         String url = "/";
+        int statusCode = 0;
 
         logger.info("========================================");
+
+//        check the client
+
+        if (!requestLogsSender.isUserVerified(serverId, clientIp)) {
+            logger.error("you cannot access");
+
+            try (OutputStream out = conn.getOutputStream()) {
+                String body = "You are blocked by server";
+                String response =
+                        "HTTP/1.1 403 Forbidden\r\n" +
+                                "Content-Type: text/plain\r\n" +
+                                "Content-Length: " + body.length() + "\r\n" +
+                                "\r\n" +
+                                body;
+
+                out.write(response.getBytes());
+                out.flush();
+            } catch (Exception e) {
+                logger.error("Failed to send blocked response", e);
+            } finally {
+                closeSocketQuietly(conn);
+            }
+            return;
+        }
 
         try (Socket sourceConn = conn;
              //input output stream for our publishing port
@@ -129,13 +157,11 @@ public class ConnectionMonitor {
                 }
             }
 
-            logger.infoWebof("Incoming Request - IP: %s, Method: %s, URL: %s", clientIp, method, url);
-            sendRequestLog(clientIp, method, url, conn.getPort());
 
             /// Danger :- if hostname is localhost :- then try this addres localhost , 127.0.0.1, ::1, :::1
             /// we can chaekc which localhost connection is accepting by application we can put check at init pass one which we got success
-            targetConn.connect(new InetSocketAddress(webServerHost, webServerPort), 5000);
-            targetConn.setSoTimeout(30000);
+            targetConn.connect(new InetSocketAddress(webServerHost, webServerPort), CONNECT_TIMEOUT_MS);
+            targetConn.setSoTimeout(SOCKET_TIMEOUT_MS);
 
 //            System.out.println("getting connection :- " + targetConn.getLocalAddress().toString());
 
@@ -146,6 +172,22 @@ public class ConnectionMonitor {
             targetOut.write(buffer, 0, n);
             targetOut.flush();
 
+            byte[] responseBuffer = new byte[4096];
+            int responseBytes = targetIn.read(responseBuffer);
+            if (responseBytes > 0) {
+                statusCode = parseStatusCode(responseBuffer, responseBytes);
+                sourceOut.write(responseBuffer, 0, responseBytes);
+                sourceOut.flush();
+            }
+
+            logger.infoWebof("Incoming Request - IP: %s, Method: %s, StatusCode: %s, URL: %s",
+                    clientIp,
+                    method,
+                    statusCode,
+                    url);
+
+            sendRequestLog(clientIp, method, url, statusCode);
+
             //two thread for sending req to 5173, and getting response to 4017 response stream
             Thread uplink = new Thread(() -> streamCopy(sourceIn, targetOut), "uplink");
             Thread downlink = new Thread(() -> streamCopy(targetIn, sourceOut), "downlink");
@@ -153,8 +195,7 @@ public class ConnectionMonitor {
             uplink.start();
             downlink.start();
 
-            uplink.join();
-            downlink.join();
+            flushAndDeallocateTransfer(uplink, downlink, sourceOut, targetOut, sourceConn, targetConn, remoteAddr);
         } catch (Exception ex) {
             logger.errorf("Failed to handle connection %s: %s", remoteAddr, ex.getMessage());
         } finally {
@@ -163,7 +204,56 @@ public class ConnectionMonitor {
         }
     }
 
-    private void sendRequestLog(String clientIp, String method, String url, int port) {
+    private void flushAndDeallocateTransfer(Thread uplink,
+                                            Thread downlink,
+                                            OutputStream sourceOut,
+                                            OutputStream targetOut,
+                                            Socket sourceConn,
+                                            Socket targetConn,
+                                            String remoteAddr) {
+        try {
+            uplink.join(SOCKET_TIMEOUT_MS);
+            downlink.join(SOCKET_TIMEOUT_MS);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        } finally {
+            try {
+                sourceOut.flush();
+            } catch (Exception ignored) {
+            }
+            try {
+                targetOut.flush();
+            } catch (Exception ignored) {
+            }
+
+            uplink.interrupt();
+            downlink.interrupt();
+            closeSocketQuietly(sourceConn);
+            closeSocketQuietly(targetConn);
+            logger.infof("Transfer flushed and deallocated for %s", remoteAddr);
+        }
+    }
+
+    private int parseStatusCode(byte[] responseBuffer, int responseBytes) {
+        try {
+            String responseData = new String(responseBuffer, 0, responseBytes);
+            String[] lines = responseData.split("\\r?\\n");
+            if (lines.length == 0) {
+                return 0;
+            }
+
+            String statusLine = lines[0].trim();
+            String[] parts = statusLine.split("\\s+");
+            if (parts.length >= 2) {
+                return Integer.parseInt(parts[1]);
+            }
+        } catch (Exception ex) {
+            logger.errorf("Unable to parse response status code: %s", ex.getMessage());
+        }
+        return 0;
+    }
+
+    private void sendRequestLog(String clientIp, String method, String url, int statusCode) {
         if (requestLogsSender == null || serverId == null || serverId.isBlank()) {
             return;
         }
@@ -174,7 +264,7 @@ public class ConnectionMonitor {
         requestLog.setClientIP(clientIp);
         requestLog.setMethod(method);
         requestLog.setUrl(url);
-        requestLog.setPort(port);
+        requestLog.setStatusCode(statusCode);
 
         requestLogsSender.sendRequestLog(requestLog);
     }
@@ -187,6 +277,16 @@ public class ConnectionMonitor {
                 out.write(data, 0, read);
                 out.flush();
             }
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void closeSocketQuietly(Socket socket) {
+        if (socket == null || socket.isClosed()) {
+            return;
+        }
+        try {
+            socket.close();
         } catch (Exception ignored) {
         }
     }

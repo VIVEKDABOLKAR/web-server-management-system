@@ -1,43 +1,47 @@
-import { useState } from "react";
 import { Navigate } from "react-router-dom";
-import Sidebar from "./sidebar/Sidebar";
-import NavbarDashboard from "./NavbarDashboard";
+import { useEffect, useState } from "react";
 import { isAdminToken } from "../utils/auth";
-
 
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
   const token = localStorage.getItem("token");
-      const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
+  useEffect(() => {
+    const checkAccess = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      if (requireAdmin) {
+        const admin = await isAdminToken();
+        setIsAdmin(admin);
+      }
+
+      setLoading(false);
+    };
+
+    checkAccess();
+  }, [token, requireAdmin]);
+
+  //Wait until async check finishes
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  //No token → redirect to login
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  if (requireAdmin && !isAdminToken(token)) {
+  //Admin required but not admin
+  if (requireAdmin && !isAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  // return children;
-
-  return (
-    // To Do :- later we shift sidebar to dashbar layout in route ; 
-    <div className="flex h-screen bg-slate-100 dark:bg-slate-950 overflow-hidden">
-            {/* Sidebar */}
-            <div className=" inset-y-0 left-0 z-60">
-                <Sidebar isOpen={sidebarOpen} toggleOpen={() => setSidebarOpen(!sidebarOpen)} />
-            </div>
-            
-
-            {/* Main Content */}
-            <main className="flex-1 flex flex-col ">
-                  <NavbarDashboard />
-                {/* Content Area */}
-                <div className="flex-1 overflow-y-auto">
-                    {children}
-                </div>
-            </main>
-        </div>
-  )
+  //Authorized
+  return children;
 };
 
 export default ProtectedRoute;

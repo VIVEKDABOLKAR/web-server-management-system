@@ -7,40 +7,46 @@ const useAdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      setError("");
+useEffect(() => {
+  const loadData = async () => {
+    setLoading(true);
+    setError("");
 
-      try {
-        const [serversRes, usersRes] = await Promise.allSettled([
-          api.get("/api/admin/servers"),
-          api.get("/api/admin/users"),
-        ]);
+    try {
+      const [serversRes, usersRes] = await Promise.all([
+        api.get("/api/admin/servers"),
+        api.get("/api/admin/users"),
+      ]);
 
-        const serversData =
-          serversRes.status === "fulfilled"
-            ? serversRes.value.data
-            : (await api.get("/api/servers")).data;
+      const safeServers = Array.isArray(serversRes.data) ? serversRes.data : [];
+      const safeUsers = Array.isArray(usersRes.data) ? usersRes.data : [];
 
-        const usersData =
-          usersRes.status === "fulfilled"
-            ? usersRes.value.data
-            : [(await api.get("/api/users/profile")).data];
+      const userMap = {};
+      safeUsers.forEach((user) => {
+        userMap[user.id] = user.username;
+      });
 
-        setServers(Array.isArray(serversData) ? serversData : []);
-        setUsers(Array.isArray(usersData) ? usersData : []);
-      } catch (err) {
-        setError(
-          err.response?.data?.message || "Failed to load admin dashboard data"
-        );
-      } finally {
-        setLoading(false);
+      const serversWithUsername = safeServers.map((server) => ({
+        ...server,
+        username: userMap[server.userId] || "Unknown",
+      }));
+
+      setServers(serversWithUsername);
+      setUsers(safeUsers);
+
+    } catch (err) {
+      if (err.response?.status === 403) {
+        setError("Unauthorized: Admin access required");
+      } else {
+        setError("Failed to load admin dashboard");
       }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    loadData();
-  }, []);
+  loadData();
+}, []);
 
   return { servers, users, loading, error };
 };

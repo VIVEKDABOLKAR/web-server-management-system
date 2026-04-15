@@ -3,14 +3,33 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Toast from "./Toast";
 import { useDarkMode } from "../context/DarkModeContext";
+import { toast } from "react-toastify";
+import Sidebar from "./sidebar/Sidebar";
+import { isAdminToken } from "../utils/auth";
+import Sun from "./svg/Sun";
+import Moon from "./svg/Moon";
 
-const NavbarDashboard = ({ hideDashboard = false }) => {
+const NavbarDashboard = ({
+  toggleOpenSidebar,
+  isOpenSidebar,
+  hideDashboard = false,
+}) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [showToast, setShowToast] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(null);
+
+  useEffect(() => {
+    const fetchAdmin = async () => {
+      setIsAdmin(await isAdminToken());
+    };
+
+    fetchAdmin();
+  }, []);
+
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -49,11 +68,25 @@ const NavbarDashboard = ({ hideDashboard = false }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    setShowToast(true);
     setShowDropdown(false);
+    toast.success("You have been logged out successfully!", {
+      autoClose: 500,
+    });
     setTimeout(() => {
       navigate("/login");
-    }, 1000);
+    }, 1100);
+  };
+
+  const handleDashboardNavigation = () => {
+    if (isAdmin === null) {
+      navigate("/dashboard");
+    }
+
+    try {
+      navigate(!isAdmin ? "/dashboard" : "/admin/dashboard");
+    } catch {
+      navigate("/dashboard");
+    }
   };
 
   return (
@@ -68,17 +101,44 @@ const NavbarDashboard = ({ hideDashboard = false }) => {
       <nav className="bg-white dark:bg-slate-900 shadow-md border-b border-gray-200 dark:border-slate-700 sticky top-0 z-50 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div
-              className="flex items-center gap-3 cursor-pointer group"
-              onClick={() => navigate("/dashboard")}
-            >
-              <div className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center shadow group-hover:shadow-lg transition">
-                <span className="text-white font-bold text-xl">W</span>
+            {/* right side navbar */}
+            <div className="flex items-center gap-5">
+              {/* sidebar */}
+              {!isOpenSidebar && (
+                <button
+                  onClick={toggleOpenSidebar}
+                  aria-label="Open sidebar"
+                  className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-700 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2.2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                </button>
+              )}
+
+              {/* Logo */}
+              <div
+                className="flex items-center gap-2 cursor-pointer group"
+                onClick={handleDashboardNavigation}
+              >
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow transition">
+                  <span className="text-white font-bold text-lg">W</span>
+                </div>
+                <span className="text-xl font-bold text-blue-600 dark:text-blue-400 tracking-wide">
+                  WSMS
+                </span>
               </div>
-              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                WSMS
-              </span>
             </div>
 
             {/* Right side - Dashboard & Profile */}
@@ -86,7 +146,7 @@ const NavbarDashboard = ({ hideDashboard = false }) => {
               <div className="flex items-center gap-4">
                 {!hideDashboard && (
                   <button
-                    onClick={() => navigate("/dashboard")}
+                    onClick={handleDashboardNavigation}
                     className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition hover:bg-blue-50 dark:hover:bg-slate-800 rounded"
                   >
                     Dashboard
@@ -101,35 +161,7 @@ const NavbarDashboard = ({ hideDashboard = false }) => {
                     isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
                   }
                 >
-                  {isDarkMode ? (
-                    <svg
-                      className="w-5 h-5 text-gray-700 dark:text-gray-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="w-5 h-5 text-gray-700 dark:text-gray-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                      />
-                    </svg>
-                  )}
+                  {isDarkMode ? <Sun /> : <Moon />}
                 </button>
 
                 {/* Profile Dropdown */}
@@ -196,50 +228,6 @@ const NavbarDashboard = ({ hideDashboard = false }) => {
                         </div>
                       </div>
 
-                      {/* Stats */}
-                      {userProfile && (
-                        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-slate-800">
-                          <div className="grid grid-cols-3 gap-2 text-center">
-                            <div>
-                              <button
-                                className="text-xl font-bold text-blue-600 hover:underline focus:outline-none"
-                                onClick={() => {
-                                  setShowDropdown(false);
-                                  navigate("/all-servers");
-                                }}
-                              >
-                                {userProfile.totalServers || 0}
-                              </button>
-                              <button
-                                className="text-xs text-gray-600 dark:text-gray-400 hover:underline focus:outline-none"
-                                onClick={() => {
-                                  setShowDropdown(false);
-                                  navigate("/all-servers");
-                                }}
-                              >
-                                Servers
-                              </button>
-                            </div>
-                            <div>
-                              <div className="text-xl font-bold text-green-600 dark:text-green-400">
-                                {userProfile.activeServers || 0}
-                              </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">
-                                Active
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-xl font-bold text-amber-600 dark:text-amber-400">
-                                {userProfile.totalAlerts || 0}
-                              </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">
-                                Alerts
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
                       {/* Menu Items */}
                       <div className="py-2">
                         <button
@@ -270,7 +258,10 @@ const NavbarDashboard = ({ hideDashboard = false }) => {
                           </div>
                         </button>
                         <button
-                          onClick={handleLogout}
+                          onClick={() => {
+                            navigate("/logout");
+                            setShowDropdown(false);
+                          }}
                           className="w-full px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/20 transition flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400"
                         >
                           <svg
