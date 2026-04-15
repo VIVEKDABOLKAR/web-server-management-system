@@ -14,11 +14,20 @@ npm install
 npm run dev
 ```
 
-## 🔧 Setup
+## 🔧 Environment Setup
 
-1. Update API URL in `src/services/api.js`:
-```javascript
-baseURL: 'http://localhost:5000'  // Your backend URL
+1. Configure environment values in `.env.development` and `.env.production`:
+
+```env
+VITE_API_BASE_URL=http://localhost:8080
+VITE_WS_BASE_URL=ws://localhost:8080
+```
+
+2. For production builds, set values in `.env.production` (already configured for Render):
+
+```env
+VITE_API_BASE_URL=https://web-server-management-system.onrender.com
+VITE_WS_BASE_URL=wss://web-server-management-system.onrender.com
 ```
 
 ## 📁 Structure

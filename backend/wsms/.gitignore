@@ -34,6 +34,8 @@ build/
 
 # Ensure the sensitive properties file is not committed
 application-secret.properties
+application-dev.properties
+application-prod.properties
 
 #Log file
 *.log

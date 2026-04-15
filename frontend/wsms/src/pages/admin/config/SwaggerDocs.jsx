@@ -1,4 +1,5 @@
 import DashboardLayout from "../../../components/dashboard/DashboardLayout";
+import { API_BASE_URL } from "../../../config/runtime";
 
 const SwaggerDocs = () => {
   return (
@@ -16,7 +17,7 @@ const SwaggerDocs = () => {
         <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
           <iframe
             title="Swagger UI"
-            src="http://localhost:8080/swagger-ui.html"
+            src={`${API_BASE_URL}/swagger-ui.html`}
             className="h-[calc(100vh-14rem)] w-full"
           />
         </div>

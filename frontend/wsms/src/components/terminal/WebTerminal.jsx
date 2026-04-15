@@ -10,6 +10,7 @@ import {
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "xterm/css/xterm.css";
+import { WS_BASE_URL } from "../../config/runtime";
 
 const BLOCKED_PATTERNS = [
   /^\s*rm\s+(-[a-z]*f[a-z]*|-[a-z]*r[a-z]*)\s+.*\/\s*$/i,
@@ -56,8 +57,7 @@ const WebTerminal = forwardRef(({ serverId }, ref) => {
 
   const socketUrl = useMemo(() => {
     const token = localStorage.getItem("token");
-    const base = import.meta.env.VITE_WS_URL || "ws://localhost:8080";
-    const url = new URL("/ws/terminal", base.replace(/^http/, "ws"));
+    const url = new URL("/ws/terminal", WS_BASE_URL);
     if (token) url.searchParams.set("token", token);
     return url.toString();
   }, []);

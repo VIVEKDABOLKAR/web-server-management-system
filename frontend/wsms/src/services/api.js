@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_BASE_URL } from "../config/runtime";
 
 const api = axios.create({
-  baseURL: "https://web-server-management-system.onrender.com",
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
     "X-Client-Type": "WEB",
