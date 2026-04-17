@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import api from "../../../services/api";
 
 const ForgotPassword = () => {
@@ -13,6 +14,11 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  const isEmailServiceUnavailableError = (err) => {
+    const code = err?.response?.data?.message;
+    return code === "EMAIL_SERVICE_DOWN" || code === "EMAIL_SERVICE_NOT_FOUND";
+  };
 
   const validateEmail = () => {
     if (!email) {
@@ -43,6 +49,9 @@ const ForgotPassword = () => {
       setStep(2);
     } catch (err) {
       console.error("Send OTP error:", err);
+      if (isEmailServiceUnavailableError(err)) {
+        toast.error("Email service is down. Try again after some time.");
+      }
       setError(err.response?.data?.message || "Failed to send OTP. Please try again.");
     } finally {
       setLoading(false);

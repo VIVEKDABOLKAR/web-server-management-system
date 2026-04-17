@@ -1,6 +1,6 @@
 package com.wsms.dto.admin;
 
-public class AdminRuntimeConfigDto {
+public class AppConfigDto {
     private boolean allowWebClientRequests;
     private boolean emailServiceEnabled;
     private String serverAgentJarUrl;

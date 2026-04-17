@@ -11,20 +11,20 @@ import lombok.Setter;
 @Table(name = "admin_runtime_config")
 @Getter
 @Setter
-public class AdminRuntimeConfig {
+public class AppConfig {
 
     @Id
-    private Long id;
+    private Long id = 1L; // enforce single row
 
     @Column(nullable = false)
-    private boolean allowWebClientRequests = true;
+    private boolean allowWebClientRequests;
 
     @Column(nullable = false)
-    private boolean emailServiceEnabled = true;
+    private boolean emailServiceEnabled;
 
     @Column(nullable = false, length = 2000)
-    private String serverAgentJarUrl = "";
+    private String serverAgentJarUrl;
 
     @Column(nullable = false)
-    private boolean showTerminalOnServerSetup = true;
+    private boolean showTerminalOnServerSetup;
 }

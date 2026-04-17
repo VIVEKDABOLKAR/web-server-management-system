@@ -35,8 +35,15 @@
             String methodName = joinPoint.getSignature().getName();
 
             log.info(
-                    "traceId={} requestId={} event=controller_call stage=ENTRY layer=controller class={} method={} message=\"Started\"",
-                    traceId, requestId, className, methodName);
+                    "traceId={} requestId={} event={} stage={} layer={} class={} method={} message=\"Started\"",
+                    traceId,
+                    requestId,
+                    pad("controller_call", 16),
+                    pad("ENTRY", 7),
+                    pad("controller", 14),
+                    pad(className, 20),
+                    pad(methodName, 14)
+            );
 
             try {
                 Object result = joinPoint.proceed();
@@ -44,8 +51,18 @@
                 long duration = System.currentTimeMillis() - start;
 
                 log.info(
-                        "traceId={} requestId={} event=controller_call stage=EXIT layer=controller class={} method={}  outcome=SUCCESS statusCode={} durationMs={} message=\"Success\"",
-                        traceId, requestId, className, methodName, 200, duration);
+                        "traceId={} requestId={} event={} stage={} layer={} class={} method={} outcome={} statusCode={} durationMs={} message=\"Success\"",
+                        traceId,
+                        requestId,
+                        pad("controller_call", 16),
+                        pad("EXIT", 7),
+                        pad("controller", 14),
+                        pad(className, 20),
+                        pad(methodName, 14),
+                        pad("SUCCESS", 9),
+                        pad("200", 4),
+                        pad(duration, 3)
+                );
 
                 return result;
 
@@ -54,13 +71,17 @@
                 long duration = System.currentTimeMillis() - start;
 
                 log.error(
-                        "traceId={} requestId={} event=controller_call stage=EXIT layer=controller class={} method={} outcome=FAILURE statusCode={} durationMs={} errorType={} message=\"{}\"",
+                        "traceId={} requestId={} event={} stage={} layer={} class={} method={} outcome={} statusCode={} durationMs={} errorType={} message=\"{}\"",
                         traceId,
                         requestId,
-                        className,
-                        methodName,
-                        500,
-                        duration,
+                        pad("controller_call", 16),
+                        pad("EXIT", 7),
+                        pad("controller", 14),
+                        pad(className, 20),
+                        pad(methodName, 14),
+                        pad("FAILURE", 9),
+                        pad("500", 4),
+                        pad(duration, 3),
                         ex.getClass().getSimpleName(),
                         ex.getMessage());
 
@@ -86,16 +107,20 @@
             String traceId = resolveTraceId();
             String requestId = resolveRequestId();
 
-            // TODO :- this is not production grid, later we will print this log into
-            // internal call
-            // for now we are just ignoring internally calls
             if (DEFAULT_TRACE_ID.equals(traceId) || DEFAULT_REQUEST_ID.equals(requestId)) {
                 return joinPoint.proceed();
             }
 
             log.info(
-                    "traceId={} requestId={} event=service_call stage=ENTRY layer=service class={} method={} message=\"Started\"",
-                    traceId, requestId, className, methodName);
+                    "traceId={} requestId={} event={} stage={} layer={} class={} method={} message=\"Started\"",
+                    traceId,
+                    requestId,
+                    pad("service_call", 16),
+                    pad("ENTRY", 7),
+                    pad("service", 14),
+                    pad(className, 20),
+                    pad(methodName, 14)
+            );
 
             try {
                 Object result = joinPoint.proceed();
@@ -103,8 +128,18 @@
                 long duration = System.currentTimeMillis() - start;
 
                 log.info(
-                        "traceId={} requestId={} event=service_call stage=EXIT layer=service class={} method={} outcome=SUCCESS statusCode={} durationMs={} message=\"Success\"",
-                        traceId, requestId, className, methodName, 200, duration);
+                        "traceId={} requestId={} event={} stage={} layer={} class={} method={} outcome={} statusCode={} durationMs={} message=\"Success\"",
+                        traceId,
+                        requestId,
+                        pad("service_call", 16),
+                        pad("EXIT", 7),
+                        pad("service", 14),
+                        pad(className, 20),
+                        pad(methodName, 14),
+                        pad("SUCCESS", 9),
+                        pad("200", 4),
+                        pad(duration, 3)
+                );
 
                 return result;
 
@@ -113,15 +148,20 @@
                 long duration = System.currentTimeMillis() - start;
 
                 log.error(
-                        "traceId={} requestId={} event=service_call stage=EXIT layer=service class={} method={} outcome=FAILURE statusCode={} durationMs={} errorType={} message=\"{}\"",
+                        "traceId={} requestId={} event={} stage={} layer={} class={} method={} outcome={} statusCode={} durationMs={} errorType={} message=\"{}\"",
                         traceId,
                         requestId,
-                        className,
-                        methodName,
-                        500,
-                        duration,
+                        pad("service_call", 16),
+                        pad("EXIT", 7),
+                        pad("service", 14),
+                        pad(className, 20),
+                        pad(methodName, 14),
+                        pad("FAILURE", 9),
+                        pad("500", 4),
+                        pad(duration, 3),
                         ex.getClass().getSimpleName(),
-                        ex.getMessage());
+                        ex.getMessage()
+                );
 
                 throw ex;
             }
@@ -145,16 +185,20 @@
             String traceId = resolveTraceId();
             String requestId = resolveRequestId();
 
-            // TODO :- this is not production grid, later we will print this log into
-            // internal call
-            // for now we are just ignoring internally calls
             if (DEFAULT_TRACE_ID.equals(traceId) || DEFAULT_REQUEST_ID.equals(requestId)) {
                 return joinPoint.proceed();
             }
 
             log.info(
-                    "traceId={} requestId={} event=repository_call stage=ENTRY layer=repository class={} method={} message=\"Started\"",
-                    traceId, requestId, className, methodName);
+                    "traceId={} requestId={} event={} stage={} layer={} class={} method={} message=\"Started\"",
+                    traceId,
+                    requestId,
+                    pad("repository_call", 16),
+                    pad("ENTRY", 7),
+                    pad("repository", 14),
+                    pad(className, 20),
+                    pad(methodName, 14)
+            );
 
             try {
                 Object result = joinPoint.proceed();
@@ -162,8 +206,18 @@
                 long duration = System.currentTimeMillis() - start;
 
                 log.info(
-                        "traceId={} requestId={} event=repository_call stage=EXIT layer=repository class={} method={} outcome=SUCCESS statusCode={} durationMs={} message=\"Success\"",
-                        traceId, requestId, className, methodName, 200, duration);
+                        "traceId={} requestId={} event={} stage={} layer={} class={} method={} outcome={} statusCode={} durationMs={} message=\"Success\"",
+                        traceId,
+                        requestId,
+                        pad("repository_call", 16),
+                        pad("EXIT", 7),
+                        pad("repository", 14),
+                        pad(className, 20),
+                        pad(methodName, 14),
+                        pad("SUCCESS", 9),
+                        pad("200", 4),
+                        pad(duration, 3)
+                );
 
                 return result;
 
@@ -172,20 +226,24 @@
                 long duration = System.currentTimeMillis() - start;
 
                 log.error(
-                        "traceId={} requestId={} event=repository_call stage=EXIT layer=repository class={} method={} outcome=FAILURE statusCode={} durationMs={} errorType={} message=\"{}\"",
+                        "traceId={} requestId={} event={} stage={} layer={} class={} method={} outcome={} statusCode={} durationMs={} errorType={} message=\"{}\"",
                         traceId,
                         requestId,
-                        className,
-                        methodName,
-                        500,
-                        duration,
+                        pad("repository_call", 16),
+                        pad("EXIT", 7),
+                        pad("repository", 14),
+                        pad(className, 20),
+                        pad(methodName, 14),
+                        pad("FAILURE", 9),
+                        pad("500", 4),
+                        pad(duration, 3),
                         ex.getClass().getSimpleName(),
-                        ex.getMessage());
+                        ex.getMessage()
+                );
 
                 throw ex;
             }
         }
-
         private String resolveTraceId() {
             String traceId = MDC.get("traceId");
             if (traceId == null || traceId.isBlank()) {
@@ -200,5 +258,17 @@
                 return DEFAULT_REQUEST_ID;
             }
             return requestId;
+        }
+
+        private String pad(Object value, int paddding) {
+            String strValue = String.valueOf(value);
+            if (strValue.length() > paddding) {
+                return strValue.substring(0, paddding);
+            }
+            return String.format("%-"+paddding+"s", value); // left align
+        }
+
+        private String pad(String value) {
+            return pad(value, 16); // left align, 16 chars
         }
     }

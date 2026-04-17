@@ -32,6 +32,9 @@ public class AuthService implements AuthServiceInterface {
     private final JwtService jwtService;
     private final SignupVerificationService signupVerificationService;
 
+    @Value("${app.auth.signup.auto-verify-on-email-failure:false}")
+    private boolean autoVerifyOnEmailFailure;
+
     public AuthResponse signup(SignupRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already registered");
@@ -48,12 +51,28 @@ public class AuthService implements AuthServiceInterface {
                 .build();
 
         userRepository.save(user);
-        signupVerificationService.sendVerificationCode(user);
 
-        return AuthResponse.builder()
-                .message("Signup successful, verification code sent to your email")
-                .token(null)
-                .build();
+        try {
+            signupVerificationService.sendVerificationCode(user);
+
+            return AuthResponse.builder()
+                    .message("Signup successful, verification code sent to your email")
+                    .token(null)
+                    .build();
+        } catch (EmailServiceDownException ex) {
+            if (!autoVerifyOnEmailFailure) {
+                throw ex;
+            }
+
+            user.setVerified(true);
+            user.setVerificationToken("true");
+            userRepository.save(user);
+
+            return AuthResponse.builder()
+                    .message("Signup successful. Email service is down, account auto-verified")
+                    .token(null)
+                    .build();
+        }
     }
 
     public AuthResponse login(LoginRequest request) {

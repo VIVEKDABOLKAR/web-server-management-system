@@ -73,6 +73,11 @@ const Signup = ({
       ? "Signup failed. Please try again."
       : "Failed to create user.";
 
+    const code = err?.data?.message;
+    if (code === "EMAIL_SERVICE_DOWN" || code === "EMAIL_SERVICE_NOT_FOUND") {
+      return "Email service is down. Try again after some time.";
+    }
+
     if (!err) return defaultMessage;
 
     if (err.status === "FETCH_ERROR") {

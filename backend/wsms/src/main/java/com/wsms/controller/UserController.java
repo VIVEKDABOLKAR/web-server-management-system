@@ -1,26 +1,19 @@
 package com.wsms.controller;
 
-import com.wsms.dto.admin.AdminRuntimeConfigDto;
+import com.wsms.dto.admin.AppConfigDto;
 import com.wsms.dto.user.ChangePasswordRequest;
 import com.wsms.dto.user.UpdateProfileRequest;
 import com.wsms.dto.user.UserProfileResponse;
-import com.wsms.entity.ServerStatus;
-import com.wsms.entity.User;
 // ...existing code...
-import com.wsms.service.AdminRuntimeConfigService;
+import com.wsms.service.AppConfigService;
 import com.wsms.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.wsms.exception.UserNotFoundException;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +24,7 @@ public class UserController {
     //removed repository use directly into controller
     //added service layer for user module
     private final UserService userService;
-    private final AdminRuntimeConfigService adminRuntimeConfigService;
+    private final AppConfigService appConfigService;
 
     /**
      * endpoint :- Get /api/users/search?username=xxx ;
@@ -103,8 +96,8 @@ public class UserController {
      * Desc :- fetch ui config from db
      */
     @GetMapping("/config")
-    public ResponseEntity<AdminRuntimeConfigDto> getConfig() {
-        return ResponseEntity.ok(adminRuntimeConfigService.getConfig());
+    public ResponseEntity<AppConfigDto> getConfig() {
+        return ResponseEntity.ok(appConfigService.getConfig());
     }
 
 }

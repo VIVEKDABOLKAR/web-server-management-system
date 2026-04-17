@@ -2,7 +2,7 @@ package com.wsms.controller;
 
 import java.util.List;
 
-import com.wsms.service.AdminRuntimeConfigService;
+import com.wsms.service.AppConfigService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 public class ServerController {
 
     private final ServerService serverService;
-    private final AdminRuntimeConfigService adminRuntimeConfigService;
+    private final AppConfigService appConfigService;
     private final UserService userService;
     private final InstallScript installScript;
 
@@ -105,7 +105,7 @@ public class ServerController {
         Long userId = getLoggedInUserId();
         Server server = serverService.getServerByIdForUser(serverId, userId);
 
-        String jarUrl = adminRuntimeConfigService.getConfig().getServerAgentJarUrl();
+        String jarUrl = appConfigService.getConfig().getServerAgentJarUrl();
 
         //convert jarurl to jar name
         String jarname = null;

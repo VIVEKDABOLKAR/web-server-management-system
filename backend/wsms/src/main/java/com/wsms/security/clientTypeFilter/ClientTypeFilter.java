@@ -1,6 +1,6 @@
 package com.wsms.security.clientTypeFilter;
 
-import com.wsms.service.AdminRuntimeConfigService;
+import com.wsms.service.AppConfigService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +18,7 @@ public class ClientTypeFilter extends OncePerRequestFilter {
 //    constant
     private static final String CLIENT_TYPE_HEADER = "Y-Client-Type";
 
-    private final AdminRuntimeConfigService adminRuntimeConfigService;
+    private final AppConfigService appConfigService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -29,7 +29,7 @@ public class ClientTypeFilter extends OncePerRequestFilter {
         String clientType = request.getHeader(CLIENT_TYPE_HEADER);
 
         boolean isWebClient = !"WEB".equals(clientType);
-        boolean webClientAllowed = adminRuntimeConfigService.isAllowWebClientRequests();
+        boolean webClientAllowed = appConfigService.isAllowWebClientRequests();
         String uri = request.getRequestURI();
 
 //        if (!webClientAllowed && isWebClient ) {

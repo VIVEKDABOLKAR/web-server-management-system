@@ -1,4 +1,6 @@
 package com.wsms.config;
+import com.wsms.entity.AppConfig;
+import com.wsms.repository.AppConfigRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,10 +16,12 @@ public class DataSeeder {
     @Bean
     CommandLineRunner seedData(
             OSTypeRepo osRepo,
-            WebServerTypeRepo webRepo
+            WebServerTypeRepo webRepo,
+            AppConfigRepository appConfigRepositoryonfig
     ) {
         return args -> {
 
+            //os-type seeder
             if (osRepo.count() == 0) {
 
                 OSType linux = new OSType();
@@ -32,6 +36,7 @@ public class DataSeeder {
                 osRepo.save(windows);
             }
 
+            //web-type seeder
             if (webRepo.count() == 0) {
 
                 WebServerType apache = new WebServerType();
@@ -55,6 +60,9 @@ public class DataSeeder {
                 webRepo.save(iis);
                 webRepo.save(tomcat);
             }
+
+            //appConfig seeder
+            appConfigRepositoryonfig.seeds();
         };
     }
 }

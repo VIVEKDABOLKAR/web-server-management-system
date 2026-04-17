@@ -1,6 +1,8 @@
 package com.wsms.exception;
 
 import com.wsms.exception.email.EmailServiceDisableException;
+import com.wsms.exception.email.EmailServiceDownException;
+import com.wsms.exception.email.EmailServiceNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +48,26 @@ public class    GlobalExceptionHandler {
                 ex.getMessage()
         );
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EmailServiceDownException.class)
+    public ResponseEntity<?> handleEmailServiceDownException(EmailServiceDownException ex) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                "EMAIL_SERVICE_DOWN",
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @ExceptionHandler(EmailServiceNotFoundException.class)
+    public ResponseEntity<?> handleEmailServiceNotFoundException(EmailServiceNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                "EMAIL_SERVICE_NOT_FOUND",
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
