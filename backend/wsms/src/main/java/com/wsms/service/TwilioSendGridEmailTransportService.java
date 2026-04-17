@@ -27,7 +27,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TwilioSendGridEmailTransportService implements EmailTransportServiceInterface {
 
-    @Value("${twilio.sendgrid.api-key}")
+    @Value("${twilio.sendgrid.api-key:}")
     private String apiKey;
 
     @Value("${twilio.sendgrid.base-url:https://api.sendgrid.com}")

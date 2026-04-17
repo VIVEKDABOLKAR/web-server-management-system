@@ -1,6 +1,4 @@
 package com.wsms.config;
-import com.wsms.entity.AppConfig;
-import com.wsms.repository.AppConfigRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +7,7 @@ import com.wsms.repository.OSTypeRepo;
 import com.wsms.repository.WebServerTypeRepo;
 import com.wsms.entity.OSType;
 import com.wsms.entity.WebServerType;
+import com.wsms.service.AppConfigService;
 
 @Configuration
 public class DataSeeder {
@@ -17,7 +16,7 @@ public class DataSeeder {
     CommandLineRunner seedData(
             OSTypeRepo osRepo,
             WebServerTypeRepo webRepo,
-            AppConfigRepository appConfigRepositoryonfig
+            AppConfigService appConfigService
     ) {
         return args -> {
 
@@ -61,8 +60,8 @@ public class DataSeeder {
                 webRepo.save(tomcat);
             }
 
-            //appConfig seeder
-            appConfigRepositoryonfig.seeds();
+            // app config seeder (creates singleton row via service if missing)
+            appConfigService.getConfig();
         };
     }
 }

@@ -3,6 +3,8 @@ package com.wsms.service;
 import java.util.Map;
 
 import com.wsms.entity.UserStatus;
+import com.wsms.exception.email.EmailServiceDownException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
