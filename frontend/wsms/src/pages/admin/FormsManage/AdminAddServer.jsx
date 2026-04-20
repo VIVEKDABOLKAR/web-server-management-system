@@ -402,7 +402,7 @@ const AddServerAdmin = () => {
                   <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">
                     Web Server Types
                   </h3>
-                  <span className={`text-xl text-slate-500 transition-transform ${isManageOsTypeOpen ? 'rotate-180' : ''}`}>
+                  <span className={`text-xl text-slate-500 transition-transform ${isManageWebServerTypeOpen ? 'rotate-180' : ''}`}>
                     ▼
                   </span>
                 </button>

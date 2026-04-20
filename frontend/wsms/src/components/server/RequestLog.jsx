@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import api from "../../services/api";
 import "./RequestLog.css";
+import { FiFileText } from "react-icons/fi";
+import PageSectionHeader from "../ui/PageSectionHeader";
 
 const methods = ["ALL", "GET", "POST", "PUT", "DELETE"];
 
@@ -50,22 +52,21 @@ export default function RequestLog() {
   useEffect(() => { fetchServers(); }, []);
 
   return (
-    <div className="rl-root">
+      <div className="min-h-full bg-linear-to-br from-slate-100 via-cyan-50 to-blue-100 px-4 py-8 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
+      <div className="mx-auto max-w-7xl">
 
-      {/* Top bar */}
-      <div className="rl-topbar">
-        <div>
-          <p className="rl-eyebrow">Monitoring</p>
-          <h2 className="rl-title">Request Logs</h2>
-          <p className="rl-subtitle">
-            Showing <strong>{totalElements}</strong> total records
-          </p>
-        </div>
-        <div className="rl-total-pill">
-          <span className="rl-total-pill-label">Total</span>
-          <span className="rl-total-pill-number">{totalElements}</span>
-        </div>
-      </div>
+      <PageSectionHeader
+        className="mb-8"
+        eyebrow="Monitoring"
+        title="Request Logs"
+        description="Inspect inbound API traffic, methods, status codes, and client sources."
+        icon={<FiFileText className="text-xl" />}
+        badges={[
+          { label: "Total", value: totalElements, tone: "indigo" },
+          { label: "Page", value: totalPages >= 1 ? `${page + 1}/${totalPages}` : "0/0", tone: "cyan" },
+          { label: "Method", value: method, tone: "neutral" },
+        ]}
+      />
 
       {/* Toolbar */}
       <div className="rl-toolbar">
@@ -180,7 +181,7 @@ export default function RequestLog() {
           <button className="rl-page-btn" onClick={() => setPage(totalPages - 1)} disabled={page + 1 >= totalPages}>»</button>
         </div>
       </div>
-
+      </div>
     </div>
   );
 }

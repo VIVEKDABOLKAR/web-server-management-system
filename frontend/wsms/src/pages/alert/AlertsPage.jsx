@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import api from "../../services/api";
+import { FiAlertTriangle, FiRefreshCw } from "react-icons/fi";
+import PageSectionHeader from "../../components/ui/PageSectionHeader";
 
-const PAGE_BG = "min-h-screen p-4 md:p-6 bg-slate-100 dark:bg-slate-900";
+const PAGE_BG = "min-h-screen bg-slate-100 dark:bg-slate-900";
 const PANEL_BG =
   "rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl overflow-hidden";
 
@@ -221,16 +223,33 @@ const AlertsPage = ({ serverId }) => {
   }
 
   return (
-    <div className={PAGE_BG}>
-      <div className={`mx-auto max-w-7xl ${PANEL_BG}`}>
-        <div className="px-5 md:px-6 py-5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Alert Stream
-          </h2>
-          <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
-            Monitor CPU, memory, disk and server-down incidents in one place.
-          </p>
-        </div>
+    <div className="min-h-full bg-linear-to-br from-slate-100 via-cyan-50 to-blue-100 px-4 py-8 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
+      <div className="mx-auto max-w-7xl">
+        
+          <PageSectionHeader
+          className="mb-8"
+            eyebrow="Monitoring"
+            title="Alert Stream"
+            description="Monitor CPU, memory, disk and server-down incidents in one place."
+            icon={<FiAlertTriangle className="text-xl" />}
+            badges={[
+              { label: "Total", value: alerts.length, tone: "indigo" },
+              { label: "Open", value: statusCount.OPEN, tone: "rose" },
+              { label: "Ack", value: statusCount.ACKNOWLEDGED, tone: "amber" },
+              { label: "Closed", value: statusCount.CLOSED, tone: "emerald" },
+            ]}
+            actions={(
+              <button
+                onClick={() => fetchAlerts({ showRefreshing: true })}
+                disabled={refreshing}
+                className="inline-flex items-center gap-2 rounded-xl border border-cyan-400 px-3 py-2 text-sm font-medium text-cyan-700 hover:bg-cyan-50 disabled:opacity-60 dark:text-cyan-300 dark:hover:bg-slate-800"
+              >
+                <FiRefreshCw className={refreshing ? "animate-spin" : ""} />
+                {refreshing ? "Refreshing..." : "Refresh"}
+              </button>
+            )}
+          />
+        
 
         <div className="p-4 md:p-5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
@@ -293,13 +312,6 @@ const AlertsPage = ({ serverId }) => {
               ))}
             </select>
 
-            <button
-              onClick={() => fetchAlerts({ showRefreshing: true })}
-              disabled={refreshing}
-              className="rounded-lg border border-cyan-400 text-cyan-700 dark:text-cyan-300 px-3 py-2 text-sm font-medium hover:bg-cyan-50 dark:hover:bg-slate-800 disabled:opacity-60"
-            >
-              {refreshing ? "Refreshing..." : "Refresh"}
-            </button>
           </div>
 
           {error && (

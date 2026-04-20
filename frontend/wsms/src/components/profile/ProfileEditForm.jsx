@@ -4,19 +4,23 @@ import api from "../../services/api";
 const ProfileEditForm = ({ profile, onCancel, refresh, showToast }) => {
 
   const [fullName, setFullName] = useState(profile.fullName);
+  const [userName, setUserName] = useState(profile.userName);
   const [email, setEmail] = useState(profile.email);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await api.put("/api/users/profile", { fullName, email });
+      const request = await api.patch("/api/users/profile", { fullName, userName, email });
+
+      console.log(request);
 
       showToast("Profile updated successfully", "success");
 
       refresh();
       onCancel();
     } catch (err) {
+      console.log(err)
       showToast(err.response?.data?.trace || "Update failed", "error");
     }
   };
@@ -36,6 +40,15 @@ const ProfileEditForm = ({ profile, onCancel, refresh, showToast }) => {
           onChange={(e) => setFullName(e.target.value)}
           className="w-full border rounded-lg px-4 py-2"
           placeholder="Full Name"
+          required
+        />
+
+        <input
+          type="text"
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
+          className="w-full border rounded-lg px-4 py-2"
+          placeholder="User Name"
           required
         />
 

@@ -10,14 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateProfileRequest {
-    
-    @NotBlank(message = "Full name is required")
+
     private String fullName;
-    
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
+
     private String email;
 
-    @NotBlank(message = "Username is required")
-    private String username;
+    private String userName;
 }

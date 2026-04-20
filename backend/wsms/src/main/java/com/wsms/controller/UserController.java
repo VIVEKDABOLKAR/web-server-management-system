@@ -54,12 +54,12 @@ public class UserController {
     }
 
     /**
-     * endpoint :- Put /api/users/profile ;
+     * endpoint :- Patch /api/users/profile ;
      * req Body :-updateProfile ;
      * res Body :- success or error message ;
      * Desc :- update user details and return success or error
      */
-    @PutMapping("/profile")
+    @PatchMapping("/profile")
     public ResponseEntity<Map<String,String>> updateProfile(@Valid @RequestBody UpdateProfileRequest request) {
         return ResponseEntity.ok(userService.updateProfile(request));
     }

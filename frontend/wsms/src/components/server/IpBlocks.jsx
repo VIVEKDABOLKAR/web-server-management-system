@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import { FiRefreshCw, FiShield } from "react-icons/fi";
+import PageSectionHeader from "../ui/PageSectionHeader";
 
 const IpBlocks = () => {
-  const [serverId, setServerId] = useState(2);
+  const [serverId, setServerId] = useState("");
   const [ipBlocks, setIpBlocks] = useState([]);
   const [servers, setServers] = useState([]);
   const [error, setError] = useState("");
@@ -12,9 +14,11 @@ const IpBlocks = () => {
     setLoading(true);
     try {
       setError("");
+      if (serverId != "" ){
       const response = await api.get(`/api/ip-blocks/getIpblock/${serverId}`);
       console.log(response);
       setIpBlocks(response.data);
+      }
     } catch (err) {
       console.log(err);
       setError("Failed to load IP blocks");
@@ -56,45 +60,29 @@ const IpBlocks = () => {
   const unblockedCount = ipBlocks.filter((b) => b.status !== "BLOCK").length;
 
   return (
-    <div className="max-w-6xl mx-auto px-8 py-10 bg-white dark:bg-slate-900 min-h-screen transition-colors">
-      {/* ── Top bar ── */}
-      <div className="flex items-center justify-between mb-7 pb-6 border-b-2 border-slate-200 dark:border-slate-700">
-        <div>
-          <p className="text-xs font-bold tracking-widest uppercase text-rose-500 mb-1">
-            Security
-          </p>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mb-1.5">
-            IP Blocks
-          </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-300">
-            Showing{" "}
-            <span className="font-semibold text-rose-500">
-              {ipBlocks.length}
-            </span>{" "}
-            blocked addresses
-          </p>
-        </div>
-        <div className="flex items-center gap-6">
-          {/* Blocked Card */}
-          <div className="flex flex-col justify-between rounded-2xl min-w-[180px] h-[80px] px-6 py-3 bg-[#19192b] border-2 border-[#e53935]">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#e57373] mb-1">
-              Blocked
-            </span>
-            <span className="text-2xl font-bold text-[#ff5252] font-mono leading-tight">
-              {blockedCount}
-            </span>
-          </div>
-          {/* Unblocked Card */}
-          <div className="flex flex-col justify-between rounded-2xl min-w-[180px] h-[80px] px-6 py-3 bg-[#19192b] border-2 border-[#26a69a]">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#4dd0e1] mb-1">
-              Unblocked
-            </span>
-            <span className="text-2xl font-bold text-[#26ffe6] font-mono leading-tight">
-              {unblockedCount}
-            </span>
-          </div>
-        </div>
-      </div>
+      <div className="min-h-full bg-linear-to-br from-slate-100 via-cyan-50 to-blue-100 px-4 py-8 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
+      <div className="mx-auto max-w-7xl">
+      <PageSectionHeader
+        className="mb-8"
+        eyebrow="Security"
+        title="IP Blocks"
+        description="Track suspicious clients and control network access per server."
+        icon={<FiShield className="text-xl" />}
+        badges={[
+          { label: "Total", value: ipBlocks.length, tone: "indigo" },
+          { label: "Blocked", value: blockedCount, tone: "rose" },
+          { label: "Unblocked", value: unblockedCount, tone: "emerald" },
+        ]}
+        actions={(
+          <button
+            onClick={fetchIpBlocks}
+            className="inline-flex items-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-indigo-500 hover:bg-indigo-50 hover:text-indigo-600 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:hover:border-indigo-500 dark:hover:bg-slate-700 dark:hover:text-indigo-300"
+          >
+            <FiRefreshCw className="h-4 w-4" />
+            Refresh
+          </button>
+        )}
+      />
 
       {/* ── Toolbar ── */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
@@ -131,25 +119,6 @@ const IpBlocks = () => {
           </svg>
         </div>
 
-        {/* Refresh button */}
-        <button
-          onClick={fetchIpBlocks}
-          className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-white font-semibold text-sm border-2 border-slate-300 dark:border-slate-600 rounded-xl shadow-sm transition-all hover:border-indigo-500 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-slate-700 active:scale-95"
-        >
-          <svg
-            className="w-4 h-4"
-            viewBox="0 0 16 16"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M13.5 8a5.5 5.5 0 1 1-1.1-3.3" />
-            <path d="M13.5 2.5V5.5H10.5" />
-          </svg>
-          Refresh
-        </button>
       </div>
 
       {/* ── Error ── */}
@@ -350,6 +319,7 @@ const IpBlocks = () => {
             )}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   );

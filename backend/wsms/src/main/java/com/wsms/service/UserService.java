@@ -75,7 +75,7 @@ public class UserService implements UserServiceInterface {
         return UserProfileResponse.builder()
                 .id(user.getId())
                 .fullName(user.getFullName())
-                .username(user.getUsername())
+                .userName(user.getUsername())
                 .email(user.getEmail())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
@@ -93,21 +93,26 @@ public class UserService implements UserServiceInterface {
 
         User user = getCurrentUser();
 
-        if (!user.getEmail().equals(request.getEmail())) {
+        // EMAIL
+        if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
             if (userRepository.existsByEmail(request.getEmail())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already in use");
             }
             user.setEmail(request.getEmail());
         }
 
-        if (!user.getUsername().equals(request.getUsername())) {
-            if (userRepository.existsByUsername(request.getUsername())) {
+        // USERNAME
+        if (request.getUserName() != null && !request.getUserName().equals(user.getUsername())) {
+            if (userRepository.existsByUsername(request.getUserName())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already in use");
             }
-            user.setUsername(request.getUsername());
+            user.setUsername(request.getUserName());
         }
 
-        user.setFullName(request.getFullName());
+        // FULL NAME
+        if (request.getFullName() != null) {
+            user.setFullName(request.getFullName());
+        }
 
         userRepository.save(user);
 

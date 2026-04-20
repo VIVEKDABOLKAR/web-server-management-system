@@ -54,10 +54,10 @@ const Dashboard = () => {
     const inactive = servers.filter(
       (s) => s.status?.toLowerCase() === "inactive",
     ).length;
-    const blocked = servers.filter(
-      (s) => s.status?.toLowerCase() === "blocked",
+    const unknown = servers.filter(
+      (s) => s.status?.toLowerCase() === "unknown",
     ).length;
-    return { total, active, inactive, blocked };
+    return { total, active, inactive, unknown };
   }, [servers]);
 
   const filteredServers = useMemo(() => {
@@ -145,7 +145,7 @@ const Dashboard = () => {
             />
             <StatsCard
               title="Unknown Servers"
-              value={stats.blocked}
+              value={stats.unknown}
               variant="subtle"
               icon="#"
             />

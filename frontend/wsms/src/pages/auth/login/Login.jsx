@@ -5,7 +5,7 @@ import { isAdminToken } from "../../../utils/auth";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    credential: "",
+    email: "",
     password: "",
   });
   const [formError, setFormError] = useState("");
@@ -43,20 +43,17 @@ const Login = () => {
   };
 
   const validateForm = () => {
-    if (!formData.credential || !formData.password) {
+    if (!formData.email || !formData.password) {
       setFormError("All fields are required");
       return false;
     }
-    if (formData.credential.length < 3) {
-      setFormError("Username/email must be at least 3 characters");
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      setFormError("Please enter a valid email address");
       return false;
     }
     if (formData.password.length < 1) {
       setFormError("Password is required");
       return false;
-    }
-    if(!/\S+@\S+\.\S+/.test(formData.email)){
-      setFormError("Please enter a valid email")
     }
     return true;
   };
@@ -108,7 +105,7 @@ const Login = () => {
     }
 
     try {
-      await login({...formData, email: formData.credential, username: formData.credential}).unwrap();
+      await login({ email: formData.email.trim(), password: formData.password }).unwrap();
     } catch {
       // Handled via RTK Query mutation error state.
     }
@@ -155,18 +152,18 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label
-                htmlFor="credential"
+                htmlFor="email"
                 className="block text-slate-800 dark:text-slate-200 font-semibold mb-2 text-sm"
               >
-                Username or Email
+                Email
               </label>
               <input
-                type="text"
-                id="credential"
-                name="credential"
-                value={formData.credential}
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter username or email"
+                placeholder="Enter your email address"
                 className="w-full rounded-xl border border-slate-300/80 bg-white/60 dark:bg-slate-700/50 px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 shadow-sm transition focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 dark:border-slate-600 dark:focus:ring-cyan-500/50 backdrop-blur-sm"
                 required
               />

@@ -1,8 +1,5 @@
 package com.wsms.terminal;
 
-import com.pty4j.PtyProcess;
-import com.pty4j.PtyProcessBuilder;
-import com.pty4j.WinSize;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -22,8 +19,16 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import com.pty4j.PtyProcess;
+import com.pty4j.PtyProcessBuilder;
+import com.pty4j.WinSize;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TerminalWebSocketHandler extends TextWebSocketHandler {
 
     private final Map<String, TerminalSessionState> sessions = new ConcurrentHashMap<>();
@@ -81,6 +86,17 @@ public class TerminalWebSocketHandler extends TextWebSocketHandler {
         if (userEmail != null) {
             sendToClient(state, "Authenticated as: " + userEmail + "\r\n\r\n");
         }
+
+        log.info(
+                "event={} stage={} layer={} sessionId={} userEmail={} remote={} outcome={} message=\"Terminal websocket connected\"",
+                "ws_terminal",
+                "CONNECT",
+                "websocket",
+                session.getId(),
+                userEmail == null ? "unknown" : userEmail,
+                session.getRemoteAddress(),
+                "SUCCESS"
+        );
     }
 
     @Override
@@ -109,11 +125,36 @@ public class TerminalWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+        Object userEmail = session.getAttributes().get("userEmail");
+        log.error(
+                "event={} stage={} layer={} sessionId={} userEmail={} remote={} outcome={} errorType={} message=\"Terminal websocket transport error\"",
+                "ws_terminal",
+                "ERROR",
+                "websocket",
+                session.getId(),
+                userEmail == null ? "unknown" : userEmail,
+                session.getRemoteAddress(),
+                "FAILURE",
+                exception == null ? "unknown" : exception.getClass().getSimpleName()
+        );
         closeSession(session, CloseStatus.SERVER_ERROR);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        Object userEmail = session.getAttributes().get("userEmail");
+        log.info(
+                "event={} stage={} layer={} sessionId={} userEmail={} remote={} outcome={} closeCode={} reason={} message=\"Terminal websocket disconnected\"",
+                "ws_terminal",
+                "DISCONNECT",
+                "websocket",
+                session.getId(),
+                userEmail == null ? "unknown" : userEmail,
+                session.getRemoteAddress(),
+                "SUCCESS",
+                status.getCode(),
+                status.getReason()
+        );
         cleanupSession(session.getId());
     }
 

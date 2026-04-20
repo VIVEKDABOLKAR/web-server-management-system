@@ -5,6 +5,8 @@ import com.wsms.entity.AppConfig;
 import com.wsms.repository.AppConfigRepository;
 import com.wsms.service.interfaces.AppConfigServiceInterface;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AppConfigService implements AppConfigServiceInterface {
 
     private static final long SINGLETON_CONFIG_ID = 1L;
+    private static final String CACHE_NAME = "appConfig";
 
     private final AppConfigRepository appConfigRepository;
 
@@ -35,11 +38,13 @@ public class AppConfigService implements AppConfigServiceInterface {
     }
 
     @Transactional
+    @Cacheable(value = CACHE_NAME)
     public AppConfigDto getConfig() {
         return toDto(getOrCreateConfigEntity());
     }
 
     @Transactional
+    @CacheEvict(value = CACHE_NAME, allEntries = true)
     public AppConfigDto updateConfig(AppConfigDto request) {
         AppConfig config = getOrCreateConfigEntity();
 
@@ -54,13 +59,14 @@ public class AppConfigService implements AppConfigServiceInterface {
 
     @Transactional(readOnly = true)
     public boolean isEmailServiceEnabled() {
-        return getOrCreateConfigEntity().isEmailServiceEnabled();
+        return getConfig().isEmailServiceEnabled();
     }
 
     @Transactional(readOnly = true)
     public boolean isAllowWebClientRequests() {
-        return getOrCreateConfigEntity().isAllowWebClientRequests();
+        return getConfig().isAllowWebClientRequests();
     }
+
 
     private AppConfig getOrCreateConfigEntity() {
         return appConfigRepository.findById(SINGLETON_CONFIG_ID)

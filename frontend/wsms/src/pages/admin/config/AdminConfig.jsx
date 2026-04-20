@@ -14,23 +14,31 @@ const defaultConfig = {
 
 const ToggleField = ({ id, title, description, checked, onChange }) => (
   <div className="flex items-start justify-between gap-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-800/50 p-4">
+    
     <div>
-      <label htmlFor={id} className="block text-sm font-semibold text-slate-800 dark:text-slate-100">
+      <label className="block text-sm font-semibold text-slate-800 dark:text-slate-100">
         {title}
       </label>
-      <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">{description}</p>
+      <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
+        {description}
+      </p>
     </div>
 
-    <label htmlFor={id} className="inline-flex items-center cursor-pointer">
+    <label htmlFor={id} className="inline-flex items-center cursor-pointer group">
       <input
         id={id}
         type="checkbox"
-        className="sr-only peer"
+        className="sr-only"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
       />
-      <span className="w-11 h-6 bg-slate-300 rounded-full peer dark:bg-slate-600 peer-checked:bg-sky-600 relative transition-colors">
-        <span className="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform peer-checked:translate-x-5" />
+
+      {/* Track */}
+      <span className="w-11 h-6 bg-slate-300 dark:bg-slate-600 rounded-full relative transition-colors duration-300 ease-in-out group-has-[:checked]:bg-sky-600">
+        
+        {/* Knob */}
+        <span className="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transform transition-all duration-300 ease-in-out group-has-[:checked]:translate-x-5" />
+      
       </span>
     </label>
   </div>

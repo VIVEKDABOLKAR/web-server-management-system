@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../../services/api";
 import MetricCard from "../../components/MetricCard";
 import GaugeMetricCard from "../../components/server/GaugeMetricCard";
+import PageSectionHeader from "../../components/ui/PageSectionHeader";
 import {
   FiActivity,
   FiClock,
@@ -146,18 +147,19 @@ const Performance = () => {
   return (
     <div className="min-h-full bg-linear-to-br from-slate-100 via-cyan-50 to-blue-100 px-4 py-8 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-8 rounded-3xl border border-slate-300 bg-white/75 p-6 shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/70">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">
-                Performance Command Center
-              </h1>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                Live infrastructure snapshot across your monitored servers.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3">
+        <PageSectionHeader
+          className="mb-8"
+          eyebrow="Operations"
+          title="Performance Command Center"
+          description="Live infrastructure snapshot across your monitored servers."
+          icon={<FiActivity className="text-xl" />}
+          badges={[
+            { label: "Servers", value: servers.length, tone: "indigo" },
+            { label: "Window", value: `Last ${metricsTimeRange}h`, tone: "cyan" },
+            { label: "Layout", value: chartView === "compact" ? "Compact" : "Detailed", tone: "neutral" },
+          ]}
+          actions={(
+            <>
               <div className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
                 <label htmlFor="metrics-hours" className="mr-2 text-slate-500 dark:text-slate-400">
                   Window
@@ -189,9 +191,9 @@ const Performance = () => {
                   <option value="compact">Compact</option>
                 </select>
               </div>
-            </div>
-          </div>
-        </div>
+            </>
+          )}
+        />
 
         {servers.map((server) => {
           const metrics = serverMetrics[server.id] || [];
