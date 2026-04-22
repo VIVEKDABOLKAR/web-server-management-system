@@ -8,6 +8,7 @@ import Sidebar from "./sidebar/Sidebar";
 import { isAdminToken } from "../utils/auth";
 import Sun from "./svg/Sun";
 import Moon from "./svg/Moon";
+import Logo from "./ui/Logo";
 
 const NavbarDashboard = ({
   toggleOpenSidebar,
@@ -132,9 +133,7 @@ const NavbarDashboard = ({
                 className="flex items-center gap-2 cursor-pointer group"
                 onClick={handleDashboardNavigation}
               >
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow transition">
-                  <span className="text-white font-bold text-lg">W</span>
-                </div>
+                <Logo />
                 <span className="text-xl font-bold text-blue-600 dark:text-blue-400 tracking-wide">
                   WSMS
                 </span>

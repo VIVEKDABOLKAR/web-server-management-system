@@ -456,3 +456,94 @@ table.rl-table td {
 /* ── Row stripes ──────────────────────────────── */
 .rl-row-even { background: var(--surface); }
 .rl-row-odd  { background: var(--surface-2); }
+
+/* ── Dark mode support ───────────────────────── */
+.dark .rl-select,
+.dark .rl-method-btns,
+.dark .rl-page-btns {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.dark .rl-select,
+.dark .rl-method-btn,
+.dark .rl-page-btn,
+.dark .rl-page-info,
+.dark .rl-cell-id,
+.dark .rl-cell-server,
+.dark .rl-cell-url,
+.dark .rl-cell-ts {
+  color: #cbd5e1;
+}
+
+.dark .rl-select-icon,
+.dark .rl-chevron {
+  color: #94a3b8;
+}
+
+.dark .rl-card {
+  background: #0f172a;
+  border-color: #334155;
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.5);
+}
+
+.dark table.rl-table thead {
+  background: #111827;
+  border-bottom-color: #334155;
+}
+
+.dark table.rl-table thead th {
+  color: #94a3b8;
+}
+
+.dark table.rl-table tbody tr {
+  border-bottom-color: #1e293b;
+}
+
+.dark .rl-row-even {
+  background: #0f172a;
+}
+
+.dark .rl-row-odd {
+  background: #111827;
+}
+
+.dark table.rl-table tbody tr:hover {
+  background: #1e293b !important;
+}
+
+.dark table.rl-table td {
+  color: #e2e8f0;
+}
+
+.dark .rl-empty,
+.dark .rl-loading {
+  color: #94a3b8;
+}
+
+.dark .rl-cell-ip {
+  background: #1e293b;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+.dark .badge-GET    { background: rgba(30, 64, 175, 0.28); color: #bfdbfe; border-color: rgba(96, 165, 250, 0.55); }
+.dark .badge-POST   { background: rgba(22, 101, 52, 0.28); color: #bbf7d0; border-color: rgba(74, 222, 128, 0.55); }
+.dark .badge-PUT    { background: rgba(133, 77, 14, 0.28); color: #fde68a; border-color: rgba(251, 191, 36, 0.55); }
+.dark .badge-DELETE { background: rgba(159, 18, 57, 0.28); color: #fecdd3; border-color: rgba(251, 113, 133, 0.55); }
+.dark .badge-DEF    { background: #1e293b; color: #cbd5e1; border-color: #334155; }
+
+.dark .badge-2xx { background: rgba(22, 101, 52, 0.28); color: #bbf7d0; border-color: rgba(74, 222, 128, 0.55); }
+.dark .badge-4xx { background: rgba(133, 77, 14, 0.28); color: #fde68a; border-color: rgba(251, 191, 36, 0.55); }
+.dark .badge-5xx { background: rgba(159, 18, 57, 0.28); color: #fecdd3; border-color: rgba(251, 113, 133, 0.55); }
+.dark .badge-nxx { background: #1e293b; color: #cbd5e1; border-color: #334155; }
+
+.dark .rl-page-btn:hover:not(:disabled),
+.dark .rl-method-btn:hover:not(.active) {
+  background: #1e293b;
+  color: #93c5fd;
+}
+
+.dark .rl-page-btn:disabled {
+  color: #64748b;
+}

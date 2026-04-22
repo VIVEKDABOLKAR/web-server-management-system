@@ -33,7 +33,7 @@ import Logout from "./pages/auth/logout/Logout";
 
 import MainLayout from "./pages/layout/MainLayout";
 
-import RequestLog from "./components/server/RequestLog";
+import RequestLog from "./pages/Requestlogs/RequestLog"
 import IpBlocks from "./components/server/IpBlocks";
 import AdminConfig from "./pages/admin/config/AdminConfig";
 import SwaggerDocs from "./pages/admin/config/SwaggerDocs";

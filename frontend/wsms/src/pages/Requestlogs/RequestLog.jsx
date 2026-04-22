@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import api from "../../services/api";
 import "./RequestLog.css";
 import { FiFileText } from "react-icons/fi";
-import PageSectionHeader from "../ui/PageSectionHeader";
+import api from "../../services/api";
+import PageSectionHeader from "../../components/ui/PageSectionHeader";
 
 const methods = ["ALL", "GET", "POST", "PUT", "DELETE"];
 
@@ -25,6 +25,7 @@ export default function RequestLog() {
         ? `/api/request-logs/server/${serverId}`
         : `/api/request-logs/method/${method}`;
       const response = await api.get(url, { params: { serverId, page, size } });
+
       const data = response.data;
       console.log(data);
       setLogs(data.content);

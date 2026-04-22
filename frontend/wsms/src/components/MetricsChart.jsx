@@ -51,7 +51,7 @@ const MetricsChart = ({ metrics, type = "cpu" }) => {
         cpu: parseFloat(metric.cpuUsage?.toFixed(2) || 0),
         memory: parseFloat(metric.memoryUsage?.toFixed(2) || 0),
         disk: parseFloat(metric.diskUsage?.toFixed(2) || 0),
-        requestCount: parseInt(metric.requestCount || -1),
+        requestCount: parseInt(metric.requestCount || 0),
         networkUsage: metric.networkUsage || 0,
       }))
       .reverse(); // Show oldest to newest

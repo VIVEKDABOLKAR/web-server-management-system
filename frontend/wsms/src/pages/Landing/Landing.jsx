@@ -18,6 +18,7 @@ import multiIcon from  "../../assets/svg/multi.svg"
 import trackIcon from  "../../assets/svg/track.svg"
 import Moon from "../../components/svg/Moon";
 import Sun from "../../components/svg/Sun";
+import Logo from "../../components/ui/Logo";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -91,9 +92,7 @@ const Landing = () => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center shadow">
-                <span className="dark:text-white font-bold text-xl">W</span>
-              </div>
+              <Logo />
               <span className="text-xl font-bold dark:text-white tracking-wide">
                 WSMS
               </span>
