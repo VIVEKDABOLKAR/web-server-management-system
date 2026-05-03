@@ -98,6 +98,7 @@
 }
 
 /* FEATURES SECTION ANIMATIONS */
+/* 
 @keyframes card-slide-up {
   from {
     opacity: 0;
@@ -147,13 +148,12 @@
   animation-delay: 0.6s;
 }
 
-/* Allow hover via FeatureSection.css */
-/* .animate-feature-card:hover {
-  transition: all 0.3s ease;
+.animate-feature-card:hover {
+  animation: card-hover-lift 0.3s ease-out forwards;
 } */
 
 /* STATS SECTION ANIMATIONS */
-@keyframes stats-section-fade {
+/* @keyframes stats-section-fade {
   from {
     opacity: 0;
   }
@@ -196,9 +196,10 @@
 
 .animate-stat-card:nth-child(4) {
   animation-delay: 0.6s;
-}
+}*/
 
 /* HOW IT WORKS SECTION ANIMATIONS */
+/*
 @keyframes how-card-slide-left {
   from {
     opacity: 0;
@@ -242,10 +243,10 @@
 
 .animate-how-step {
   animation: how-step-bounce 1.5s ease-in-out infinite;
-}
+} */
 
 /* CTA SECTION ANIMATIONS */
-@keyframes cta-section-fade-up {
+/* @keyframes cta-section-fade-up {
   from {
     opacity: 0;
     transform: translateY(50px);
@@ -258,10 +259,10 @@
 
 .animate-cta-section {
   animation: cta-section-fade-up 0.8s ease-out;
-}
+} */
 
 /* TEXT ANIMATIONS */
-@keyframes text-shimmer {
+/* @keyframes text-shimmer {
   0% {
     background-position: -1000px 0;
   }
@@ -280,10 +281,10 @@
   );
   background-size: 1000px 100%;
   animation: text-shimmer 2s infinite;
-}
+} */
 
 /* GENERAL FADE IN ANIMATIONS */
-@keyframes fade-in {
+/* @keyframes fade-in {
   from {
     opacity: 0;
   }
@@ -309,10 +310,10 @@
 
 .animate-fade-in-up {
   animation: fade-in-up 0.8s ease-out;
-}
+} */
 
 /* BUTTON HOVER ANIMATIONS */
-@keyframes button-glow {
+/* @keyframes button-glow {
   0% {
     filter: drop-shadow(0 0 5px rgba(37, 99, 235, 0.4));
   }
@@ -325,52 +326,11 @@
 }
 
 .animate-button-hover:hover {
-  filter: drop-shadow(0 0 15px rgba(37, 99, 235, 0.6));
-  transition: all 0.3s ease;
-}
-
-/* SCROLL REVEAL ANIMATIONS */
-@keyframes reveal-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.scroll-reveal {
-  animation: reveal-fade-up 0.8s ease-out forwards;
-}
-
-.scroll-reveal.delayed-1 {
-  animation-delay: 0.1s;
-}
-
-.scroll-reveal.delayed-2 {
-  animation-delay: 0.2s;
-}
-
-.scroll-reveal.delayed-3 {
-  animation-delay: 0.3s;
-}
-
-.scroll-reveal.delayed-4 {
-  animation-delay: 0.4s;
-}
-
-.scroll-reveal.delayed-5 {
-  animation-delay: 0.5s;
-}
-
-.scroll-reveal.delayed-6 {
-  animation-delay: 0.6s;
-}
+  animation: button-glow 0.6s ease-in-out;
+} */
 
 /* SMOOTH SCROLL REVEAL (optional parallax effect) */
-@keyframes scroll-reveal {
+/* @keyframes scroll-reveal {
   from {
     clip-path: inset(0 100% 0 0);
   }
@@ -381,22 +341,10 @@
 
 .animate-scroll-reveal {
   animation: scroll-reveal 0.8s ease-out forwards;
-}
-
-/* HIDDEN BY DEFAULT - SHOWN ON SCROLL */
-.reveal-hidden {
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-.reveal-hidden.active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
+} */
 
 /* SECTION ENTRANCE ANIMATIONS */
-@keyframes section-fade-in {
+/* @keyframes section-fade-in {
   from {
     opacity: 0;
   }
@@ -407,10 +355,10 @@
 
 .animate-section {
   animation: section-fade-in 0.7s ease-out;
-}
+} */
 
 /* RESPONSIVE ANIMATION ADJUSTMENTS */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   @keyframes card-slide-up {
     from {
       opacity: 0;
@@ -432,10 +380,10 @@
   .animate-hero-subtitle {
     animation-duration: 0.5s;
   }
-}
+} */
 
 /* STAGGER GRID ANIMATIONS */
-.animate-grid > * {
+/* .animate-grid > * {
   opacity: 0;
   animation: card-slide-up 0.6s ease-out forwards;
 }
@@ -470,4 +418,4 @@
 
 .animate-grid > :nth-child(8) {
   animation-delay: 0.4s;
-}
+} */
