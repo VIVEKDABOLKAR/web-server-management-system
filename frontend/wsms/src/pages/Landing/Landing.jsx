@@ -3,11 +3,14 @@ import { useEffect, useState } from "react";
 import { useDarkMode } from "../../context/DarkModeContext";
 import heroLight from "../../assets/hero-light.png";
 import heroDark from "../../assets/hero-dark.png";
+import heroLightMobile from "../../assets/hero-light-mobile.png";
+import heroDarkMobile from "../../assets/hero-dark-mobile.png";
 import Button from "../../components/Button";
 import NavLinkButton from "../../components/NavLinkButton";
 import "./ScaleAndWorkSection.css";
 import "./FeatureSection.css"
 import "./GetStart.css";
+import "./animations.css";
 
 //icon
 import serverIcon from  "../../assets/svg/pc.svg"
@@ -35,6 +38,30 @@ const Landing = () => {
 
   useEffect(() => {
     document.title = "Web Server Management System";
+  }, []);
+
+  // Scroll reveal animations using Intersection Observer
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px",
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("active");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    const revealElements = document.querySelectorAll(".reveal-hidden");
+    revealElements.forEach((el) => observer.observe(el));
+
+    return () => {
+      revealElements.forEach((el) => observer.unobserve(el));
+    };
   }, []);
 
   const scrollToSection = (id) => {
@@ -85,16 +112,17 @@ const Landing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-linear-to-r from-blue-300 via-cyan-200 to-indigo-300 dark:bg-linear-to-r dark:from-black/80 dark:via-gray-800 dark:to-gray-600 transition-colors">
+    <div className="w-full min-h-screen overflow-x-hidden pt-16 bg-linear-to-r from-blue-300 via-cyan-200 to-indigo-300 dark:bg-linear-to-r dark:from-black/80 dark:via-gray-800 dark:to-gray-600 transition-colors">
+
       {/* Navigation */}
-      <nav className="sticky top-0 left-0 w-full z-50 border-b border-white/20 bg-white/10 dark:bg-slate-900/30 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.15)]">
+      <nav className="fixed top-0 left-0 w-full z-60 border-b border-white/20 bg-white/10 dark:bg-slate-900/30 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.15)] animate-nav">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
               <Logo />
               <span className="text-xl font-bold dark:text-white tracking-wide">
-                WSMS
+                Web Pilot
               </span>
             </div>
 
@@ -164,23 +192,29 @@ const Landing = () => {
       </nav>
 
       {/* Hero Section */}
-
-      <div id="home" className="relative min-h-screen  bg-black/80 text-white  overflow-hidden scroll-mt-20">
+      <div
+        id="home"
+        className={`landing-hero relative min-h-screen w-full text-white overflow-hidden scroll-mt-20 animate-hero-section ${isDarkMode ? "landing-hero-dark" : "landing-hero-light"}`}
+        style={{
+          "--hero-bg": `url(${isDarkMode ? heroDark : heroLight})`,
+          "--hero-bg-mobile": `url(${isDarkMode ? heroDarkMobile : heroLightMobile})`,
+        }}
+      >
         {/* Hero Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
           <div className="text-center mb-16 -mt-8">
-            <h1 className="text-6xl font-bold mb-10 tracking-tight">
+            <h1 className="text-6xl font-bold mb-10 tracking-tight animate-hero-title">
               <span
                 className={`bg-clip-text text-transparent ${isDarkMode
                   ? "bg-linear-to-r from-blue-400 via-cyan-300 to-indigo-400"
                   : "bg-linear-to-r from-black/80 via-gray-800 to-gray-600"
                   }`}
               >
-                Web Server Managment System
+                Web Server Management System
               </span>
               <br />
               <span
-                className={`bg-clip-text text-transparent mt-6 text-5xl ${isDarkMode
+                className={`bg-clip-text text-transparent mt-6 text-5xl animate-hero-subtitle ${isDarkMode
                   ? "bg-linear-to-r from-purple-400 via-blue-400 to-cyan-400"
                   : "bg-linear-to-r from-gray-900 via-gray-700 to-gray-500"
                   }`}
@@ -190,7 +224,7 @@ const Landing = () => {
             </h1>
 
             <p
-              className={`text-xl mb-8 max-w-3xl mx-auto leading-relaxed ${isDarkMode ? "text-white" : "text-black"
+              className={`text-xl mb-8 max-w-3xl mx-auto leading-relaxed animate-hero-description ${isDarkMode ? "text-white" : "text-black"
                 }`}
             >
               Manage, monitor, and optimize your web servers with real-time
@@ -199,26 +233,23 @@ const Landing = () => {
 
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-              <Button text="Start Managing Free" to="/signup" isDarkMode={isDarkMode} className="px-8 py-4 rounded transition font-bold shadow text-lg" />
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10 animate-hero-button">
+              <Button
+                text="Start Managing Free"
+                to="/signup"
+                isDarkMode={isDarkMode}
+                className="px-7 py-3.5 rounded-full text-black font-semibold text-lg transition-all duration-300 bg-gradient-to-r from-blue-300 via-blue-400 to-teal-100 hover:from-sky-300 hover:via-blue-500 hover:to-teal-200 shadow-[0_12px_26px_rgba(37,99,235,0.45)] hover:shadow-[0_18px_32px_rgba(37,99,235,0.55)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_8px_16px_rgba(37,99,235,0.35)] animate-button-pulse animate-button-hover"
+              />
             </div>
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 w-full z-0">
-          <img
-            src={isDarkMode ? heroDark : heroLight}
-            alt="Wave decoration"
-            className="w-full object-cover opacity-90"
-          />
-        </div>
       </div>
 
-      <div className="h-1 bg-white/5" />
-
+      {/* Feature Section */}
       <div
         id="features"
-        className={`features-section scroll-mt-1 ${isDarkMode ? "features-dark" : "features-light"
+        className={`features-section scroll-mt-1 -mt-20 pt-20 animate-section reveal-hidden ${isDarkMode ? "features-dark" : "features-light"
           }`}
       >
         <div className="features-content">
@@ -231,9 +262,9 @@ const Landing = () => {
             Everything you need to keep your servers running smoothly
           </p>
 
-          <div className="features-grid">
+          <div className="features-grid ">
             {features.map((feature, index) => (
-              <div key={index} className="feature-card">
+              <div key={index} className="feature-card ">
 
                 <div className="feature-icon">
                   {feature.icon}
@@ -255,11 +286,10 @@ const Landing = () => {
       </div>
 
 
-      <div className="h-1 bg-white/5" />
       {/* Stats Section */}
       <div
         id="stats"
-        className={`scroll-mt-10 rounded-2xl p-10 shadow-xl hero-bg ${isDarkMode ? "dark-mode text-white" : "light-mode text-black"
+        className={`-mt-12 pt-12 scroll-mt-10 rounded-2xl p-10 shadow-xl hero-bg animate-stats-section reveal-hidden ${isDarkMode ? "dark-mode text-white" : "light-mode text-black"
           }`}
       >
         <h2 className="text-4xl font-bold text-center mb-3">
@@ -319,10 +349,10 @@ const Landing = () => {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-grid">
 
           <div
-            className={`p-6 rounded-2xl shadow-lg border text-center transition ${isDarkMode
+            className={`p-6 rounded-2xl shadow-lg border text-center transition animate-stat-card reveal-hidden ${isDarkMode
               ? "bg-white/10 border-white/10 hover:bg-white/15"
               : "bg-white/60 backdrop-blur-md border-blue-100 hover:bg-white/70"
               }`}
@@ -335,7 +365,7 @@ const Landing = () => {
           </div>
 
           <div
-            className={`p-6 rounded-2xl shadow-lg border text-center transition ${isDarkMode
+            className={`p-6 rounded-2xl shadow-lg border text-center transition animate-stat-card reveal-hidden ${isDarkMode
               ? "bg-white/10 border-white/10 hover:bg-white/15"
               : "bg-white/60 backdrop-blur-md border-blue-100 hover:bg-white/70"
               }`}
@@ -348,7 +378,7 @@ const Landing = () => {
           </div>
 
           <div
-            className={`p-6 rounded-2xl shadow-lg border text-center transition ${isDarkMode
+            className={`p-6 rounded-2xl shadow-lg border text-center transition animate-stat-card reveal-hidden ${isDarkMode
               ? "bg-white/10 border-white/10 hover:bg-white/15"
               : "bg-white/60 backdrop-blur-md border-blue-100 hover:bg-white/70"
               }`}
@@ -361,7 +391,7 @@ const Landing = () => {
           </div>
 
           <div
-            className={`p-6 rounded-2xl shadow-lg border text-center transition ${isDarkMode
+            className={`p-6 rounded-2xl shadow-lg border text-center transition animate-stat-card reveal-hidden ${isDarkMode
               ? "bg-white/10 border-white/10 hover:bg-white/15"
               : "bg-white/60 backdrop-blur-md border-blue-100 hover:bg-white/70"
               }`}
@@ -378,7 +408,7 @@ const Landing = () => {
       <>
         <div
           id="how"
-          className={`how-section mt-1 scroll-mt-5 ${isDarkMode ? "how-dark" : "how-light"
+          className={`how-section scroll-mt-5 -mt-8 pt-8 animate-section reveal-hidden ${isDarkMode ? "how-dark" : "how-light"
             }`}
         >
           <div className="how-content">
@@ -391,34 +421,34 @@ const Landing = () => {
               Get started in minutes with our simple setup process
             </p>
 
-            <div className="how-grid">
+            <div className="how-grid animate-grid">
 
-              <div className="how-card">
-                <div className="how-step blue">1</div>
+              <div className="how-card animate-how-card">
+                <div className="how-step blue animate-how-step">1</div>
                 <h3 className="how-card-title">Sign Up</h3>
                 <p className="how-card-desc">
                   Create your free account in seconds
                 </p>
               </div>
 
-              <div className="how-card">
-                <div className="how-step purple">2</div>
+              <div className="how-card animate-how-card">
+                <div className="how-step purple animate-how-step">2</div>
                 <h3 className="how-card-title">Add Server</h3>
                 <p className="how-card-desc">
                   Register your server with simple details
                 </p>
               </div>
 
-              <div className="how-card">
-                <div className="how-step pink">3</div>
+              <div className="how-card animate-how-card">
+                <div className="how-step pink animate-how-step">3</div>
                 <h3 className="how-card-title">Install Agent</h3>
                 <p className="how-card-desc">
                   Deploy our lightweight monitoring agent
                 </p>
               </div>
 
-              <div className="how-card">
-                <div className="how-step blue">4</div>
+              <div className="how-card animate-how-card">
+                <div className="how-step blue animate-how-step">4</div>
                 <h3 className="how-card-title">Manage & Monitor</h3>
                 <p className="how-card-desc">
                   Manage server operations with live health and performance data
@@ -432,11 +462,11 @@ const Landing = () => {
       </>
 
 
-      <div className="h-1 bg-white/5" />
+      
 
       <>
         {/* Final CTA */}
-        <div id="cta" className={`cta-section mt-16 scroll-mt-20 ${isDarkMode ? "cta-dark" : "cta-light"}`}>
+        <div id="cta" className={`cta-section scroll-mt-20 -mt-10 pt-10 animate-cta-section reveal-hidden ${isDarkMode ? "cta-dark" : "cta-light"}`}>
 
           <div className="cta-content">
             <h2 className="cta-title">
@@ -468,12 +498,10 @@ const Landing = () => {
       <footer className="mt-16 border-t border-white/25 bg-white/35 dark:bg-slate-900/45 backdrop-blur-xl transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-blue-600 rounded-md flex items-center justify-center shadow">
-                <span className="text-white font-bold text-sm">W</span>
-              </div>
+            <div className="flex items-center gap-3 ">
+              <Logo />
               <div>
-                <p className="text-lg font-bold text-slate-900 dark:text-slate-100">WSMS</p>
+                <p className="text-lg font-bold text-slate-900 dark:text-slate-100">Web Pilot</p>
                 <p className="text-xs text-slate-600 dark:text-slate-400">Web Server Management System</p>
               </div>
             </div>
@@ -485,7 +513,7 @@ const Landing = () => {
 
             <div className="md:text-right text-sm text-slate-600 dark:text-slate-400">
               <p>Built for modern infrastructure teams.</p>
-              <p className="mt-2">© 2026 Web Server Management System</p>
+              <p className="mt-2">© 2026 Web Pilot</p>
             </div>
           </div>
         </div>

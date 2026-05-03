@@ -88,6 +88,51 @@
   );
 }
 
+.landing-hero {
+  position: relative;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: cover;
+  background-image:
+    var(--hero-bg);
+}
+
+.landing-hero-light {
+  background-color: #0f172a;
+}
+
+.landing-hero-dark {
+  background-color: #000000;
+}
+
+.landing-hero-light::before,
+.landing-hero-dark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 35%, rgba(96, 165, 250, 0.18), transparent 55%);
+  z-index: 0;
+}
+
+.landing-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .landing-hero {
+    background-image: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.28),
+        rgba(0, 0, 0, 0.78)
+      ),
+      var(--hero-bg-mobile);
+    background-size: cover;
+    background-position: center bottom;
+  }
+}
+
 /* ============================= */
 /* HOW SECTION */
 /* ============================= */
@@ -166,6 +211,47 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
+}
+
+/* Responsive adjustments for How It Works */
+@media (max-width: 1024px) {
+  .how-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Remove negative top margin effect on small screens */
+  .how-section {
+    margin-top: 0 !important;
+    padding: 40px 20px !important;
+  }
+
+  .how-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .how-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .how-step {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .how-title {
+    font-size: 28px;
+  }
+
+  .how-subtitle {
+    margin-bottom: 28px;
+  }
 }
 
 

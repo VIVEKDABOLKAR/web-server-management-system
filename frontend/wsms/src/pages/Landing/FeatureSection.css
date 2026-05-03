@@ -133,9 +133,19 @@
 }
 
 /* HOVER */
+.feature-card {
+  transition: all 0.3s ease;
+}
+
 .feature-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Prevent animation conflict on hover */
+.feature-card:hover,
+.feature-card:focus {
+  animation: none !important;
 }
 
 /* ============================= */

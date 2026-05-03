@@ -5,9 +5,17 @@
   border-radius: 20px;
   padding: 100px 40px;
   overflow: hidden;
-  width: 70%;
+  width: min(1100px, 90%);
   text-align: center;
 
+}
+
+@media (max-width: 640px) {
+  .cta-section {
+    padding: 48px 20px;
+    border-radius: 12px;
+    width: 92%;
+  }
 }
 
 /* ============================= */
